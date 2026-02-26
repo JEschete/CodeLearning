@@ -1,0 +1,293 @@
+\section{Templates}
+
+Templates are one of C++'s most powerful features, enabling \textbf{generic programming}—writing code that works with any data type. Templates are the foundation of the Standard Template Library (STL) and are essential for modern C++ development.
+
+\subsection{Introduction to Generic Programming}
+
+Consider a function that swaps two integers:
+
+\begin{lstlisting}
+	void swap(int& a, int& b) {
+		int temp = a;
+		a = b;
+		b = temp;
+	}
+\end{lstlisting}
+
+What if we need to swap doubles? Or strings? Without templates, we'd need to write separate functions for each type:
+
+\begin{lstlisting}
+	void swap(double& a, double& b) { /* same logic */ }
+	void swap(std::string& a, std::string& b) { /* same logic */ }
+	// ... and so on for every type
+\end{lstlisting}
+
+Templates solve this problem by letting us write the logic once and have the compiler generate type-specific versions as needed.
+
+\subsection{Function Templates}
+
+A \textbf{function template} defines a blueprint for a function that can work with any type.
+
+\subsubsection{Basic Syntax}
+
+\begin{lstlisting}
+	template <typename T>
+	void swap(T& a, T& b) {
+		T temp = a;
+		a = b;
+		b = temp;
+	}
+\end{lstlisting}
+
+\begin{itemize}
+	\item \texttt{template <typename T>} declares this as a template with type parameter \texttt{T}
+	\item \texttt{T} is a placeholder for any type
+	\item The compiler generates a specific version for each type used
+\end{itemize}
+
+\subsubsection{Using Function Templates}
+
+\begin{lstlisting}
+	int main() {
+		int a = 5, b = 10;
+		swap(a, b);           // Compiler generates swap<int>
+		
+		double x = 1.5, y = 2.5;
+		swap(x, y);           // Compiler generates swap<double>
+		
+		std::string s1 = "hello", s2 = "world";
+		swap(s1, s2);         // Compiler generates swap<std::string>
+		
+		// Explicit type specification (rarely needed)
+		swap<int>(a, b);
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Multiple Type Parameters}
+
+Templates can have multiple type parameters:
+
+\begin{lstlisting}
+	template <typename T, typename U>
+	void printPair(const T& first, const U& second) {
+		std::cout << first << ", " << second << std::endl;
+	}
+	
+	printPair(42, "hello");        // T=int, U=const char*
+	printPair(3.14, 100);          // T=double, U=int
+\end{lstlisting}
+
+\subsubsection{Return Type Deduction}
+
+\begin{lstlisting}
+	template <typename T, typename U>
+	auto add(T a, U b) -> decltype(a + b) {
+		return a + b;
+	}
+	
+	// C++14 and later: simplified
+	template <typename T, typename U>
+	auto add(T a, U b) {
+		return a + b;
+	}
+	
+	auto result = add(5, 3.14);  // Returns double (7.14)
+\end{lstlisting}
+
+\subsection{Class Templates}
+
+A \textbf{class template} defines a blueprint for a class that can work with any type.
+
+\subsubsection{Basic Syntax}
+
+\begin{lstlisting}
+	template <typename T>
+	class Box {
+		private:
+		T value;
+		
+		public:
+		Box(T val) : value(val) {}
+		
+		T getValue() const { return value; }
+		void setValue(T val) { value = val; }
+	};
+\end{lstlisting}
+
+\subsubsection{Using Class Templates}
+
+\begin{lstlisting}
+	int main() {
+		Box<int> intBox(42);
+		Box<double> doubleBox(3.14);
+		Box<std::string> stringBox("Hello");
+		
+		std::cout << intBox.getValue() << std::endl;      // 42
+		std::cout << doubleBox.getValue() << std::endl;   // 3.14
+		std::cout << stringBox.getValue() << std::endl;   // Hello
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Defining Member Functions Outside the Class}
+
+\begin{lstlisting}
+	template <typename T>
+	class Box {
+		private:
+		T value;
+		public:
+		Box(T val);
+		T getValue() const;
+		void setValue(T val);
+	};
+	
+	// Each member function needs the template declaration
+	template <typename T>
+	Box<T>::Box(T val) : value(val) {}
+	
+	template <typename T>
+	T Box<T>::getValue() const {
+		return value;
+	}
+	
+	template <typename T>
+	void Box<T>::setValue(T val) {
+		value = val;
+	}
+\end{lstlisting}
+
+\subsection{Non-Type Template Parameters}
+
+Templates can also accept compile-time constant values, not just types:
+
+\begin{lstlisting}
+	template <typename T, int Size>
+	class FixedArray {
+		private:
+		T data[Size];
+		
+		public:
+		T& operator[](int index) { return data[index]; }
+		constexpr int size() const { return Size; }
+	};
+	
+	FixedArray<int, 10> arr;    // Array of 10 ints
+	FixedArray<double, 5> arr2; // Array of 5 doubles
+\end{lstlisting}
+
+\subsection{Template Specialization}
+
+Sometimes you need different behavior for specific types. \textbf{Template specialization} allows this.
+
+\subsubsection{Full Specialization}
+
+\begin{lstlisting}
+	// Primary template
+	template <typename T>
+	class Printer {
+		public:
+		void print(const T& value) {
+			std::cout << value << std::endl;
+		}
+	};
+	
+	// Full specialization for bool
+	template <>
+	class Printer<bool> {
+		public:
+		void print(const bool& value) {
+			std::cout << (value ? "true" : "false") << std::endl;
+		}
+	};
+	
+	Printer<int> intPrinter;
+	intPrinter.print(42);          // Outputs: 42
+	
+	Printer<bool> boolPrinter;
+	boolPrinter.print(true);       // Outputs: true (not 1)
+\end{lstlisting}
+
+\subsubsection{Partial Specialization}
+
+Partial specialization allows specializing for a subset of types:
+
+\begin{lstlisting}
+	// Primary template
+	template <typename T>
+	class Storage {
+		T data;
+		public:
+		void store(const T& val) { data = val; }
+	};
+	
+	// Partial specialization for pointers
+	template <typename T>
+	class Storage<T*> {
+		T* data;
+		public:
+		void store(T* val) { 
+			data = new T(*val);  // Store a copy
+		}
+		~Storage() { delete data; }
+	};
+\end{lstlisting}
+
+\subsection{Template Compilation Model}
+
+\begin{remark}
+	Templates are compiled differently than regular code. The compiler needs to see the complete template definition when it's instantiated. This is why template code is typically placed entirely in header files, not split between \texttt{.h} and \texttt{.cpp} files.
+\end{remark}
+
+\begin{lstlisting}
+	// box.h - Complete template in header
+	#pragma once
+	
+	template <typename T>
+	class Box {
+		private:
+		T value;
+		public:
+		Box(T val) : value(val) {}
+		T getValue() const { return value; }
+	};
+\end{lstlisting}
+
+\subsection{Common Standard Library Templates}
+
+The STL is built on templates. Here are some you'll use frequently:
+
+\begin{lstlisting}
+	#include <vector>
+	#include <map>
+	#include <memory>
+	#include <optional>
+	
+	std::vector<int> numbers;              // Dynamic array of ints
+	std::map<std::string, int> ages;       // Key-value pairs
+	std::unique_ptr<MyClass> ptr;          // Smart pointer
+	std::optional<double> maybeValue;      // Optional value (C++17)
+	std::pair<int, std::string> p;         // Pair of values
+\end{lstlisting}
+
+\subsection{Best Practices}
+
+\begin{enumerate}
+	\item \textbf{Use \texttt{typename} over \texttt{class}} in template declarations—they're equivalent, but \texttt{typename} is clearer
+	\item \textbf{Keep templates in headers}—the compiler needs the full definition at instantiation
+	\item \textbf{Use \texttt{const T\&}} for parameters to avoid unnecessary copies
+	\item \textbf{Consider \texttt{static\_assert}} to provide clear error messages for invalid types
+	\item \textbf{Prefer standard library templates} over writing your own when possible
+\end{enumerate}
+
+\begin{lstlisting}
+	template <typename T>
+	T maximum(const T& a, const T& b) {
+		static_assert(std::is_arithmetic<T>::value, 
+		"maximum() requires numeric types");
+		return (a > b) ? a : b;
+	}
+\end{lstlisting}

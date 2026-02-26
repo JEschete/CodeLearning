@@ -1,0 +1,215 @@
+\contentsline {part}{I\hspace {1em}Fundamentals}{7}{part.1}%
+\contentsline {section}{\numberline {1}Structure of a C++ Program}{7}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Your First C++ Program}{7}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Overview of C++ Program Elements}{8}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Keywords}{8}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Identifiers}{9}{subsubsection.1.2.2}%
+\contentsline {paragraph}{Identifier Naming Rules}{9}{subsubsection.1.2.2}%
+\contentsline {paragraph}{Naming Conventions}{9}{theorem.1.3}%
+\contentsline {subsubsection}{\numberline {1.2.3}Operators}{10}{subsubsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {1.2.4}Punctuation}{10}{subsubsection.1.2.4}%
+\contentsline {subsubsection}{\numberline {1.2.5}Syntax}{11}{subsubsection.1.2.5}%
+\contentsline {subsection}{\numberline {1.3}The \texttt {\#include} Preprocessor Directive}{11}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}What Does \texttt {\#include} Do?}{12}{subsubsection.1.3.1}%
+\contentsline {subsubsection}{\numberline {1.3.2}Angle Brackets vs. Quotes}{12}{subsubsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.4}Comments}{12}{subsection.1.4}%
+\contentsline {subsubsection}{\numberline {1.4.1}Why Comments Matter}{13}{subsubsection.1.4.1}%
+\contentsline {subsubsection}{\numberline {1.4.2}C++ Comment Styles}{13}{subsubsection.1.4.2}%
+\contentsline {paragraph}{Single-Line Comments}{13}{subsubsection.1.4.2}%
+\contentsline {paragraph}{Multi-Line Comments}{13}{lstnumber.-10.5}%
+\contentsline {subsubsection}{\numberline {1.4.3}Best Practices for Comments}{13}{subsubsection.1.4.3}%
+\contentsline {paragraph}{Write Self-Documenting Code}{13}{subsubsection.1.4.3}%
+\contentsline {paragraph}{Don't Comment the Obvious}{14}{subsubsection.1.4.3}%
+\contentsline {paragraph}{Explain the "Why", Not Just the "What"}{14}{lstnumber.-12.7}%
+\contentsline {paragraph}{Keep Comments Updated}{14}{lstnumber.-13.4}%
+\contentsline {subsection}{\numberline {1.5}The \texttt {main()} Function}{14}{subsection.1.5}%
+\contentsline {subsubsection}{\numberline {1.5.1}Basic Form}{14}{subsubsection.1.5.1}%
+\contentsline {subsubsection}{\numberline {1.5.2}Command-Line Arguments}{15}{subsubsection.1.5.2}%
+\contentsline {subsubsection}{\numberline {1.5.3}What Happens Before and After \texttt {main()}}{16}{subsubsection.1.5.3}%
+\contentsline {subsection}{\numberline {1.6}Namespaces}{16}{subsection.1.6}%
+\contentsline {subsubsection}{\numberline {1.6.1}What is a Namespace?}{16}{subsubsection.1.6.1}%
+\contentsline {subsubsection}{\numberline {1.6.2}Accessing Namespace Members}{16}{subsubsection.1.6.2}%
+\contentsline {paragraph}{1. Fully Qualified Names (Recommended)}{17}{subsubsection.1.6.2}%
+\contentsline {paragraph}{2. Using Declarations}{17}{lstnumber.-20.2}%
+\contentsline {paragraph}{3. Using Directives}{17}{lstnumber.-21.5}%
+\contentsline {subsubsection}{\numberline {1.6.3}Creating Your Own Namespaces}{17}{subsubsection.1.6.3}%
+\contentsline {subsection}{\numberline {1.7}Basic Input and Output (I/O) Using \texttt {cin} and \texttt {cout}}{18}{subsection.1.7}%
+\contentsline {subsubsection}{\numberline {1.7.1}Output with \texttt {cout}}{18}{subsubsection.1.7.1}%
+\contentsline {paragraph}{Chaining Output}{18}{lstnumber.-24.6}%
+\contentsline {paragraph}{Outputting Different Data Types}{18}{lstnumber.-25.2}%
+\contentsline {paragraph}{New Lines}{19}{lstnumber.-26.9}%
+\contentsline {subsubsection}{\numberline {1.7.2}Input with \texttt {cin}}{19}{subsubsection.1.7.2}%
+\contentsline {paragraph}{Reading Different Data Types}{20}{lstnumber.-28.12}%
+\contentsline {paragraph}{Chaining Input}{20}{lstnumber.-29.16}%
+\contentsline {subsubsection}{\numberline {1.7.3}How \texttt {cin} Handles Input}{20}{subsubsection.1.7.3}%
+\contentsline {subsubsection}{\numberline {1.7.4}Reading Entire Lines with \texttt {getline}}{21}{subsubsection.1.7.4}%
+\contentsline {paragraph}{Mixing \texttt {cin >>} and \texttt {getline}}{21}{lstnumber.-32.13}%
+\contentsline {subsubsection}{\numberline {1.7.5}Input Validation}{22}{subsubsection.1.7.5}%
+\contentsline {subsubsection}{\numberline {1.7.6}Common I/O Patterns}{23}{subsubsection.1.7.6}%
+\contentsline {subsection}{\numberline {1.8}The C++ Preprocessor}{23}{subsection.1.8}%
+\contentsline {subsubsection}{\numberline {1.8.1}What Does the Preprocessor Do?}{23}{subsubsection.1.8.1}%
+\contentsline {subsubsection}{\numberline {1.8.2}Common Preprocessor Directives}{24}{subsubsection.1.8.2}%
+\contentsline {subsubsection}{\numberline {1.8.3}The \texttt {\#define} Directive}{24}{subsubsection.1.8.3}%
+\contentsline {paragraph}{Constant Macros}{24}{subsubsection.1.8.3}%
+\contentsline {paragraph}{Function-like Macros}{24}{lstnumber.-40.3}%
+\contentsline {subsubsection}{\numberline {1.8.4}Conditional Compilation}{25}{subsubsection.1.8.4}%
+\contentsline {subsubsection}{\numberline {1.8.5}Include Guards}{25}{subsubsection.1.8.5}%
+\contentsline {subsubsection}{\numberline {1.8.6}The Preprocessor vs. The Compiler}{26}{subsubsection.1.8.6}%
+\contentsline {subsection}{\numberline {1.9}The Compilation Process}{26}{subsection.1.9}%
+\contentsline {subsubsection}{\numberline {1.9.1}From Source Code to Executable}{26}{subsubsection.1.9.1}%
+\contentsline {subsubsection}{\numberline {1.9.2}Compiling from the Command Line}{26}{subsubsection.1.9.2}%
+\contentsline {subsection}{\numberline {1.10}Header Files and Source Files}{27}{subsection.1.10}%
+\contentsline {subsubsection}{\numberline {1.10.1}The Separation of Declarations and Definitions}{27}{subsubsection.1.10.1}%
+\contentsline {subsubsection}{\numberline {1.10.2}Header Files (\texttt {.h} or \texttt {.hpp})}{27}{subsubsection.1.10.2}%
+\contentsline {subsubsection}{\numberline {1.10.3}Source Files (\texttt {.cpp})}{28}{subsubsection.1.10.3}%
+\contentsline {subsubsection}{\numberline {1.10.4}Using Your Header Files}{28}{subsubsection.1.10.4}%
+\contentsline {subsubsection}{\numberline {1.10.5}Why Separate Headers and Source Files?}{28}{subsubsection.1.10.5}%
+\contentsline {subsection}{\numberline {1.11}Exercises}{29}{subsection.1.11}%
+\contentsline {section}{\numberline {2}Variables and Constants}{30}{section.2}%
+\contentsline {subsection}{\numberline {2.1}What is a Variable?}{30}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Variables in Memory}{30}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Why Variables Matter}{30}{subsubsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.2}Declaring and Initializing Variables}{31}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Variable Declaration}{31}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Variable Initialization}{31}{subsubsection.2.2.2}%
+\contentsline {paragraph}{Copy Initialization (C-style)}{31}{subsubsection.2.2.2}%
+\contentsline {paragraph}{Direct Initialization}{32}{lstnumber.-57.3}%
+\contentsline {paragraph}{Brace Initialization (C++11, Recommended)}{32}{lstnumber.-58.3}%
+\contentsline {subsubsection}{\numberline {2.2.3}Declaration with Initialization}{32}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Declaring Multiple Variables}{33}{subsubsection.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.5}Assignment vs. Initialization}{33}{subsubsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.3}Global Variables}{33}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Local vs. Global Scope}{33}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Characteristics of Global Variables}{34}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Why Global Variables Are Discouraged}{34}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}When Globals Might Be Acceptable}{35}{subsubsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.4}C++ Built-in Primitive Types}{35}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Integer Types}{36}{subsubsection.2.4.1}%
+\contentsline {paragraph}{Signed vs. Unsigned}{36}{lstnumber.-67.5}%
+\contentsline {subsubsection}{\numberline {2.4.2}Floating-Point Types}{36}{subsubsection.2.4.2}%
+\contentsline {paragraph}{Floating-Point Precision Issues}{37}{theorem.2.8}%
+\contentsline {subsubsection}{\numberline {2.4.3}Boolean Type}{37}{subsubsection.2.4.3}%
+\contentsline {paragraph}{Boolean Conversions}{37}{lstnumber.-72.7}%
+\contentsline {subsubsection}{\numberline {2.4.4}Character Type}{38}{subsubsection.2.4.4}%
+\contentsline {paragraph}{Escape Sequences}{38}{lstnumber.-75.5}%
+\contentsline {subsubsection}{\numberline {2.4.5}The \texttt {auto} Keyword}{39}{subsubsection.2.4.5}%
+\contentsline {subsection}{\numberline {2.5}What is the Size of a Variable? (\texttt {sizeof})}{39}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Using \texttt {sizeof}}{39}{subsubsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.2}\texttt {sizeof} with Variables and Expressions}{40}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}Why Size Matters}{40}{subsubsection.2.5.3}%
+\contentsline {subsubsection}{\numberline {2.5.4}Fixed-Width Integer Types}{41}{subsubsection.2.5.4}%
+\contentsline {subsubsection}{\numberline {2.5.5}The \texttt {<climits>} and \texttt {<cfloat>} Headers}{41}{subsubsection.2.5.5}%
+\contentsline {subsection}{\numberline {2.6}What is a Constant?}{42}{subsection.2.6}%
+\contentsline {subsubsection}{\numberline {2.6.1}Why Use Constants?}{42}{subsubsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.7}Declaring and Using Constants}{42}{subsection.2.7}%
+\contentsline {subsubsection}{\numberline {2.7.1}The \texttt {const} Keyword}{42}{subsubsection.2.7.1}%
+\contentsline {subsubsection}{\numberline {2.7.2}The \texttt {constexpr} Keyword (C++11)}{43}{subsubsection.2.7.2}%
+\contentsline {paragraph}{Difference Between \texttt {const} and \texttt {constexpr}}{43}{lstnumber.-85.6}%
+\contentsline {subsubsection}{\numberline {2.7.3}\texttt {constexpr} Functions}{44}{subsubsection.2.7.3}%
+\contentsline {subsubsection}{\numberline {2.7.4}Constant Expressions in Practice}{44}{subsubsection.2.7.4}%
+\contentsline {subsubsection}{\numberline {2.7.5}Preprocessor Constants (\texttt {\#define}) — Avoid!}{44}{subsubsection.2.7.5}%
+\contentsline {subsubsection}{\numberline {2.7.6}Enumeration Constants}{45}{subsubsection.2.7.6}%
+\contentsline {subsection}{\numberline {2.8}Best Practices Summary}{45}{subsection.2.8}%
+\contentsline {subsection}{\numberline {2.9}Exercises}{46}{subsection.2.9}%
+\contentsline {section}{\numberline {3}Enumerations}{48}{section.3}%
+\contentsline {section}{\numberline {4}Statements and Operators}{49}{section.4}%
+\contentsline {section}{\numberline {5}Controlling Program Flow}{50}{section.5}%
+\contentsline {section}{\numberline {6}Characters and Strings}{51}{section.6}%
+\contentsline {section}{\numberline {7}Functions}{52}{section.7}%
+\contentsline {section}{\numberline {8}Arrays and Vectors}{53}{section.8}%
+\contentsline {part}{II\hspace {1em}Memory and Pointers}{54}{part.2}%
+\contentsline {section}{\numberline {9}Pointers and References}{54}{section.9}%
+\contentsline {section}{\numberline {10}Memory Management}{55}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Stack vs. Heap Memory}{55}{subsection.10.1}%
+\contentsline {subsubsection}{\numberline {10.1.1}The Stack}{55}{subsubsection.10.1.1}%
+\contentsline {subsubsection}{\numberline {10.1.2}The Heap}{55}{subsubsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.2}Dynamic Memory Allocation}{56}{subsection.10.2}%
+\contentsline {subsubsection}{\numberline {10.2.1}The \texttt {new} Operator}{56}{subsubsection.10.2.1}%
+\contentsline {subsubsection}{\numberline {10.2.2}The \texttt {delete} Operator}{56}{subsubsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.3}Memory Problems}{57}{subsection.10.3}%
+\contentsline {subsubsection}{\numberline {10.3.1}Memory Leaks}{57}{subsubsection.10.3.1}%
+\contentsline {subsubsection}{\numberline {10.3.2}Dangling Pointers}{57}{subsubsection.10.3.2}%
+\contentsline {subsubsection}{\numberline {10.3.3}Double Delete}{57}{subsubsection.10.3.3}%
+\contentsline {subsubsection}{\numberline {10.3.4}Mismatched new/delete}{58}{subsubsection.10.3.4}%
+\contentsline {subsection}{\numberline {10.4}RAII: Resource Acquisition Is Initialization}{58}{subsection.10.4}%
+\contentsline {subsection}{\numberline {10.5}When to Use Dynamic Allocation}{59}{subsection.10.5}%
+\contentsline {part}{III\hspace {1em}Object-Oriented Programming}{60}{part.3}%
+\contentsline {section}{\numberline {11}OOP - Classes and Objects}{60}{section.11}%
+\contentsline {section}{\numberline {12}Operator Overloading}{61}{section.12}%
+\contentsline {section}{\numberline {13}Templates}{62}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Introduction to Generic Programming}{62}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}Function Templates}{62}{subsection.13.2}%
+\contentsline {subsubsection}{\numberline {13.2.1}Basic Syntax}{62}{subsubsection.13.2.1}%
+\contentsline {subsubsection}{\numberline {13.2.2}Using Function Templates}{63}{subsubsection.13.2.2}%
+\contentsline {subsubsection}{\numberline {13.2.3}Multiple Type Parameters}{63}{subsubsection.13.2.3}%
+\contentsline {subsubsection}{\numberline {13.2.4}Return Type Deduction}{63}{subsubsection.13.2.4}%
+\contentsline {subsection}{\numberline {13.3}Class Templates}{64}{subsection.13.3}%
+\contentsline {subsubsection}{\numberline {13.3.1}Basic Syntax}{64}{subsubsection.13.3.1}%
+\contentsline {subsubsection}{\numberline {13.3.2}Using Class Templates}{64}{subsubsection.13.3.2}%
+\contentsline {subsubsection}{\numberline {13.3.3}Defining Member Functions Outside the Class}{64}{subsubsection.13.3.3}%
+\contentsline {subsection}{\numberline {13.4}Non-Type Template Parameters}{65}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}Template Specialization}{65}{subsection.13.5}%
+\contentsline {subsubsection}{\numberline {13.5.1}Full Specialization}{66}{subsubsection.13.5.1}%
+\contentsline {subsubsection}{\numberline {13.5.2}Partial Specialization}{66}{subsubsection.13.5.2}%
+\contentsline {subsection}{\numberline {13.6}Template Compilation Model}{67}{subsection.13.6}%
+\contentsline {subsection}{\numberline {13.7}Common Standard Library Templates}{67}{subsection.13.7}%
+\contentsline {subsection}{\numberline {13.8}Best Practices}{68}{subsection.13.8}%
+\contentsline {section}{\numberline {14}Inheritance}{69}{section.14}%
+\contentsline {section}{\numberline {15}Polymoprhism}{70}{section.15}%
+\contentsline {part}{IV\hspace {1em}Modern C++ and Resource Management}{71}{part.4}%
+\contentsline {section}{\numberline {16}Smart Pointers}{71}{section.16}%
+\contentsline {section}{\numberline {17}Move Semantics}{72}{section.17}%
+\contentsline {subsection}{\numberline {17.1}The Problem: Expensive Copies}{72}{subsection.17.1}%
+\contentsline {subsection}{\numberline {17.2}Lvalues and Rvalues}{72}{subsection.17.2}%
+\contentsline {subsubsection}{\numberline {17.2.1}Lvalues}{72}{subsubsection.17.2.1}%
+\contentsline {subsubsection}{\numberline {17.2.2}Rvalues}{72}{subsubsection.17.2.2}%
+\contentsline {subsubsection}{\numberline {17.2.3}Why This Matters}{73}{subsubsection.17.2.3}%
+\contentsline {subsection}{\numberline {17.3}Rvalue References}{73}{subsection.17.3}%
+\contentsline {subsection}{\numberline {17.4}Move Constructor and Move Assignment}{73}{subsection.17.4}%
+\contentsline {subsubsection}{\numberline {17.4.1}The Move Constructor}{73}{subsubsection.17.4.1}%
+\contentsline {subsubsection}{\numberline {17.4.2}The Move Assignment Operator}{74}{subsubsection.17.4.2}%
+\contentsline {subsubsection}{\numberline {17.4.3}When Move Operations Are Called}{74}{subsubsection.17.4.3}%
+\contentsline {subsection}{\numberline {17.5}std::move}{75}{subsection.17.5}%
+\contentsline {subsection}{\numberline {17.6}The Rule of Five}{75}{subsection.17.6}%
+\contentsline {subsection}{\numberline {17.7}The Rule of Zero}{76}{subsection.17.7}%
+\contentsline {subsection}{\numberline {17.8}Perfect Forwarding}{77}{subsection.17.8}%
+\contentsline {subsection}{\numberline {17.9}Best Practices}{77}{subsection.17.9}%
+\contentsline {section}{\numberline {18}Exception Handling}{79}{section.18}%
+\contentsline {part}{V\hspace {1em}The Standard Library}{80}{part.5}%
+\contentsline {section}{\numberline {19}IO Streams}{80}{section.19}%
+\contentsline {section}{\numberline {20}The Standard Template Library}{81}{section.20}%
+\contentsline {section}{\numberline {21}Lambda Expressions}{82}{section.21}%
+\contentsline {part}{VI\hspace {1em}Advanced Topics}{83}{part.6}%
+\contentsline {section}{\numberline {22}Modern C++ Features}{83}{section.22}%
+\contentsline {subsection}{\numberline {22.1}Type Inference with \texttt {auto}}{83}{subsection.22.1}%
+\contentsline {subsection}{\numberline {22.2}Range-Based For Loops}{83}{subsection.22.2}%
+\contentsline {subsection}{\numberline {22.3}Uniform Initialization}{84}{subsection.22.3}%
+\contentsline {subsection}{\numberline {22.4}nullptr}{85}{subsection.22.4}%
+\contentsline {subsection}{\numberline {22.5}constexpr}{85}{subsection.22.5}%
+\contentsline {subsection}{\numberline {22.6}Structured Bindings (C++17)}{85}{subsection.22.6}%
+\contentsline {subsection}{\numberline {22.7}std::optional (C++17)}{86}{subsection.22.7}%
+\contentsline {subsection}{\numberline {22.8}std::variant (C++17)}{87}{subsection.22.8}%
+\contentsline {subsection}{\numberline {22.9}if/switch with Initializers (C++17)}{87}{subsection.22.9}%
+\contentsline {subsection}{\numberline {22.10}String View (C++17)}{88}{subsection.22.10}%
+\contentsline {subsection}{\numberline {22.11}Concepts (C++20)}{89}{subsection.22.11}%
+\contentsline {subsection}{\numberline {22.12}Ranges (C++20)}{89}{subsection.22.12}%
+\contentsline {subsection}{\numberline {22.13}Three-Way Comparison (C++20)}{90}{subsection.22.13}%
+\contentsline {subsection}{\numberline {22.14}Summary: Which Standard to Use}{91}{subsection.22.14}%
+\contentsline {section}{\numberline {23}Concurrency and Multithreading}{92}{section.23}%
+\contentsline {subsection}{\numberline {23.1}Why Concurrency?}{92}{subsection.23.1}%
+\contentsline {subsection}{\numberline {23.2}Creating Threads}{92}{subsection.23.2}%
+\contentsline {subsubsection}{\numberline {23.2.1}Threads with Arguments}{92}{subsubsection.23.2.1}%
+\contentsline {subsubsection}{\numberline {23.2.2}Threads with Lambdas}{93}{subsubsection.23.2.2}%
+\contentsline {subsection}{\numberline {23.3}Joining and Detaching}{93}{subsection.23.3}%
+\contentsline {subsection}{\numberline {23.4}Data Races and Synchronization}{94}{subsection.23.4}%
+\contentsline {subsection}{\numberline {23.5}Mutexes}{94}{subsection.23.5}%
+\contentsline {subsubsection}{\numberline {23.5.1}std::lock\_guard (RAII Locking)}{95}{subsubsection.23.5.1}%
+\contentsline {subsubsection}{\numberline {23.5.2}std::unique\_lock (Flexible Locking)}{95}{subsubsection.23.5.2}%
+\contentsline {subsection}{\numberline {23.6}Deadlocks}{95}{subsection.23.6}%
+\contentsline {subsubsection}{\numberline {23.6.1}Avoiding Deadlocks}{96}{subsubsection.23.6.1}%
+\contentsline {subsection}{\numberline {23.7}Condition Variables}{96}{subsection.23.7}%
+\contentsline {subsection}{\numberline {23.8}Atomic Operations}{97}{subsection.23.8}%
+\contentsline {subsection}{\numberline {23.9}Futures and Promises}{98}{subsection.23.9}%
+\contentsline {subsubsection}{\numberline {23.9.1}Promise and Future Pair}{98}{subsubsection.23.9.1}%
+\contentsline {subsection}{\numberline {23.10}Thread-Local Storage}{99}{subsection.23.10}%
+\contentsline {subsection}{\numberline {23.11}Best Practices}{99}{subsection.23.11}%

@@ -1,0 +1,205 @@
+\section{Memory Management}
+
+Understanding how memory works in C++ is crucial for writing efficient, bug-free programs. This section covers the fundamentals of memory allocation, the difference between stack and heap, and the principles that guide resource management in C++.
+
+\subsection{Stack vs. Heap Memory}
+
+C++ programs use two primary regions of memory for storing data:
+
+\subsubsection{The Stack}
+
+The \textbf{stack} is a region of memory that stores local variables and function call information. It operates in a last-in, first-out (LIFO) manner.
+
+\begin{itemize}
+	\item \textbf{Automatic management}: Memory is allocated when a variable comes into scope and deallocated when it goes out of scope
+	\item \textbf{Fast allocation}: Stack allocation is extremely fast (just moving a pointer)
+	\item \textbf{Limited size}: Typically 1-8 MB depending on the system
+	\item \textbf{Contiguous}: Variables are stored in contiguous memory
+\end{itemize}
+
+\begin{lstlisting}
+	void exampleFunction() {
+		int x = 10;           // Allocated on the stack
+		double y = 3.14;      // Allocated on the stack
+		int arr[100];         // Array allocated on the stack
+		
+		// When this function returns, x, y, and arr are automatically deallocated
+	}
+\end{lstlisting}
+
+\subsubsection{The Heap}
+
+The \textbf{heap} (also called the \textbf{free store}) is a region of memory used for dynamic allocation—memory that you explicitly request at runtime.
+
+\begin{itemize}
+	\item \textbf{Manual management}: You must explicitly allocate and deallocate
+	\item \textbf{Slower allocation}: Heap allocation involves more overhead
+	\item \textbf{Large size}: Limited only by available system memory
+	\item \textbf{Non-contiguous}: Allocations may be scattered throughout memory
+\end{itemize}
+
+\begin{lstlisting}
+	void exampleFunction() {
+		int* ptr = new int(42);      // Allocated on the heap
+		int* arr = new int[1000];    // Array allocated on the heap
+		
+		// Must manually deallocate!
+		delete ptr;
+		delete[] arr;
+	}
+\end{lstlisting}
+
+\subsection{Dynamic Memory Allocation}
+
+\subsubsection{The \texttt{new} Operator}
+
+The \texttt{new} operator allocates memory on the heap and returns a pointer to it:
+
+\begin{lstlisting}
+	// Allocate a single value
+	int* p1 = new int;          // Uninitialized
+	int* p2 = new int(42);      // Initialized to 42
+	int* p3 = new int{42};      // C++11 uniform initialization
+	
+	// Allocate an array
+	int* arr = new int[10];     // Array of 10 integers (uninitialized)
+	int* arr2 = new int[10]();  // Array of 10 integers (zero-initialized)
+	int* arr3 = new int[5]{1, 2, 3, 4, 5};  // C++11 initializer list
+\end{lstlisting}
+
+\subsubsection{The \texttt{delete} Operator}
+
+The \texttt{delete} operator deallocates memory previously allocated with \texttt{new}:
+
+\begin{lstlisting}
+	int* p = new int(42);
+	delete p;       // Deallocate single value
+	
+	int* arr = new int[10];
+	delete[] arr;   // Deallocate array - note the []
+\end{lstlisting}
+
+\begin{remark}
+	\textbf{Critical}: Always use \texttt{delete[]} for arrays allocated with \texttt{new[]}. Using \texttt{delete} instead of \texttt{delete[]} on an array causes undefined behavior.
+\end{remark}
+
+\subsection{Memory Problems}
+
+Dynamic memory management is error-prone. Here are common problems:
+
+\subsubsection{Memory Leaks}
+
+A \textbf{memory leak} occurs when allocated memory is never deallocated:
+
+\begin{lstlisting}
+	void leakyFunction() {
+		int* p = new int(42);
+		// Oops! We never delete p
+		// The memory is leaked when this function returns
+	}
+	
+	void anotherLeak() {
+		int* p = new int(42);
+		p = new int(100);  // Original memory is leaked!
+		delete p;          // Only deletes the second allocation
+	}
+\end{lstlisting}
+
+\subsubsection{Dangling Pointers}
+
+A \textbf{dangling pointer} points to memory that has been deallocated:
+
+\begin{lstlisting}
+	int* p = new int(42);
+	delete p;
+	// p is now a dangling pointer
+	*p = 100;  // Undefined behavior! Accessing freed memory
+\end{lstlisting}
+
+Best practice: Set pointers to \texttt{nullptr} after deleting:
+
+\begin{lstlisting}
+	int* p = new int(42);
+	delete p;
+	p = nullptr;  // Now it's clear the pointer is invalid
+\end{lstlisting}
+
+\subsubsection{Double Delete}
+
+Deleting the same memory twice causes undefined behavior:
+
+\begin{lstlisting}
+	int* p = new int(42);
+	delete p;
+	delete p;  // Undefined behavior! Double delete
+\end{lstlisting}
+
+\subsubsection{Mismatched new/delete}
+
+Using the wrong form of delete:
+
+\begin{lstlisting}
+	int* arr = new int[10];
+	delete arr;    // WRONG! Should be delete[]
+	
+	int* p = new int(42);
+	delete[] p;    // WRONG! Should be delete
+\end{lstlisting}
+
+\subsection{RAII: Resource Acquisition Is Initialization}
+
+\textbf{RAII} is a fundamental C++ idiom that ties resource management to object lifetime. The principle is simple:
+
+\begin{itemize}
+	\item Acquire resources in a constructor
+	\item Release resources in the destructor
+	\item Let scope-based destruction handle cleanup automatically
+\end{itemize}
+
+\begin{example}[RAII Wrapper Class]{\leavevmode}
+	
+	\begin{lstlisting}
+		class IntArray {
+			private:
+			int* data;
+			size_t size;
+			
+			public:
+			// Constructor acquires the resource
+			IntArray(size_t n) : data(new int[n]), size(n) {}
+			
+			// Destructor releases the resource
+			~IntArray() {
+				delete[] data;
+			}
+			
+			// Access elements
+			int& operator[](size_t i) { return data[i]; }
+		};
+		
+		void useArray() {
+			IntArray arr(100);  // Memory allocated
+			arr[0] = 42;
+			// When arr goes out of scope, destructor automatically frees memory
+		}  // No leak possible!
+	\end{lstlisting}
+\end{example}
+
+\begin{remark}
+	RAII is why C++ can be both low-level (manual memory control) and safe (automatic cleanup). Smart pointers, covered in a later section, are the standard library's RAII wrappers for dynamic memory.
+\end{remark}
+
+\subsection{When to Use Dynamic Allocation}
+
+Use stack allocation (local variables) by default. Use heap allocation when:
+
+\begin{enumerate}
+	\item \textbf{Size is unknown at compile time}: You don't know how much memory you need until runtime
+	\item \textbf{Size is too large for the stack}: Large arrays or data structures
+	\item \textbf{Lifetime must extend beyond the current scope}: Data needs to outlive the function that created it
+	\item \textbf{Polymorphism}: Storing derived class objects through base class pointers
+\end{enumerate}
+
+\begin{remark}
+	In modern C++, prefer smart pointers (\texttt{std::unique\_ptr}, \texttt{std::shared\_ptr}) and standard containers (\texttt{std::vector}, \texttt{std::string}) over raw \texttt{new}/\texttt{delete}. These handle memory management automatically while following RAII principles.
+\end{remark}

@@ -1,0 +1,835 @@
+\section{Variables and Constants}
+
+Variables and constants are fundamental concepts in any programming language. They allow us to store, retrieve, and manipulate data in our programs. This section covers how to declare, initialize, and use variables and constants in C++.
+
+\subsection{What is a Variable?}
+
+A \textbf{variable} is a named storage location in memory that holds a value which can be modified during program execution. Think of it as a labeled box where you can store and retrieve data.
+
+\subsubsection{Variables in Memory}
+
+When you create a variable, the computer:
+\begin{enumerate}
+	\item Reserves a portion of memory (the size depends on the variable's type)
+	\item Associates that memory location with the variable's name
+	\item Allows you to read from and write to that location using the name
+\end{enumerate}
+
+\begin{lstlisting}
+	int age = 25;  // Reserve memory for an integer, name it "age", store 25
+\end{lstlisting}
+
+\subsubsection{Why Variables Matter}
+
+Variables allow programs to:
+\begin{itemize}
+	\item Store user input for later processing
+	\item Keep track of changing values (counters, totals, etc.)
+	\item Hold intermediate results during calculations
+	\item Make code readable by giving meaningful names to data
+\end{itemize}
+
+\begin{example}[Variables in Action]{\leavevmode}
+	
+	\begin{lstlisting}
+		#include <iostream>
+		
+		int main() {
+			int score = 0;           // Track the player's score
+			
+			score = score + 10;      // Player earns 10 points
+			score = score + 25;      // Player earns 25 more points
+			
+			std::cout << "Final score: " << score << std::endl;  // Output: 35
+			
+			return 0;
+		}
+	\end{lstlisting}
+\end{example}
+
+\subsection{Declaring and Initializing Variables}
+
+Before using a variable in C++, you must \textbf{declare} it—tell the compiler its name and type. You can also \textbf{initialize} it—give it an initial value.
+
+\subsubsection{Variable Declaration}
+
+The basic syntax for declaring a variable is:
+
+\begin{lstlisting}
+	type variable_name;
+\end{lstlisting}
+
+\begin{lstlisting}
+	int age;              // Declare an integer variable named "age"
+	double salary;        // Declare a double variable named "salary"
+	char letter;          // Declare a character variable named "letter"
+	std::string name;     // Declare a string variable named "name"
+\end{lstlisting}
+
+\begin{remark}
+	An uninitialized variable contains \textbf{garbage}—whatever random data was previously in that memory location. Using an uninitialized variable leads to unpredictable behavior. Always initialize your variables!
+\end{remark}
+
+\subsubsection{Variable Initialization}
+
+\textbf{Initialization} means giving a variable its first value. C++ offers several ways to initialize variables:
+
+\paragraph{Copy Initialization (C-style)}
+
+\begin{lstlisting}
+	int age = 25;
+	double price = 19.99;
+	std::string name = "Alice";
+\end{lstlisting}
+
+This is the traditional style inherited from C.
+
+\paragraph{Direct Initialization}
+
+\begin{lstlisting}
+	int age(25);
+	double price(19.99);
+	std::string name("Alice");
+\end{lstlisting}
+
+Uses parentheses, similar to constructor syntax.
+
+\paragraph{Brace Initialization (C++11, Recommended)}
+
+\begin{lstlisting}
+	int age{25};
+	double price{19.99};
+	std::string name{"Alice"};
+\end{lstlisting}
+
+Also called \textbf{uniform initialization} or \textbf{list initialization}. This is the modern, preferred style because:
+\begin{itemize}
+	\item Works consistently with all types
+	\item Prevents narrowing conversions (catches potential bugs)
+	\item Works with initializer lists for containers
+\end{itemize}
+
+\begin{example}[Brace Initialization Prevents Errors]{\leavevmode}
+	
+	\begin{lstlisting}
+		int x = 3.14;    // Compiles! Silently truncates to 3 (data loss)
+		int y{3.14};     // ERROR! Compiler catches the narrowing conversion
+		
+		int a = 1000000000000;  // May silently overflow
+		int b{1000000000000};   // ERROR! Value too large for int
+	\end{lstlisting}
+\end{example}
+
+\subsubsection{Declaration with Initialization}
+
+You can declare and initialize in one statement:
+
+\begin{lstlisting}
+	int count{0};
+	double temperature{98.6};
+	char grade{'A'};
+	bool is_valid{true};
+	std::string message{"Hello, World!"};
+\end{lstlisting}
+
+\subsubsection{Declaring Multiple Variables}
+
+You can declare multiple variables of the same type in one statement:
+
+\begin{lstlisting}
+	int x, y, z;                    // Three uninitialized integers
+	int a{1}, b{2}, c{3};           // Three initialized integers
+	double width{10.5}, height{20.0};  // Two initialized doubles
+\end{lstlisting}
+
+\begin{remark}
+	While declaring multiple variables on one line is allowed, many style guides recommend declaring each variable on its own line for clarity:
+	
+	\begin{lstlisting}
+		int width{10};
+		int height{20};
+		int depth{5};
+	\end{lstlisting}
+\end{remark}
+
+\subsubsection{Assignment vs. Initialization}
+
+It's important to understand the difference:
+
+\begin{lstlisting}
+	int x;          // Declaration (no initialization)
+	x = 10;         // Assignment (giving a value after declaration)
+	
+	int y{20};      // Declaration WITH initialization (preferred)
+	y = 30;         // Assignment (changing the value)
+\end{lstlisting}
+
+Initialization happens once when the variable is created. Assignment can happen any number of times afterward.
+
+\subsection{Global Variables}
+
+Variables can be declared at different \textbf{scopes}. So far, we've seen \textbf{local variables}—declared inside functions. \textbf{Global variables} are declared outside of any function.
+
+\subsubsection{Local vs. Global Scope}
+
+\begin{lstlisting}
+	#include <iostream>
+	
+	int global_count{0};    // Global variable - accessible everywhere
+	
+	int main() {
+		int local_count{0};  // Local variable - only accessible in main()
+		
+		global_count = 10;   // OK - global is accessible here
+		local_count = 5;     // OK - local is accessible here
+		
+		return 0;
+	}
+	
+	void otherFunction() {
+		global_count = 20;   // OK - global is accessible here too
+		// local_count = 10; // ERROR! local_count doesn't exist here
+	}
+\end{lstlisting}
+
+\subsubsection{Characteristics of Global Variables}
+
+\begin{itemize}
+	\item Declared outside any function, typically at the top of the file
+	\item Accessible from any function in the same file (and other files with \texttt{extern})
+	\item Exist for the entire duration of the program
+	\item Automatically initialized to zero if not explicitly initialized
+\end{itemize}
+
+\subsubsection{Why Global Variables Are Discouraged}
+
+While global variables might seem convenient, they're generally considered \textbf{bad practice} for several reasons:
+
+\begin{enumerate}
+	\item \textbf{Hidden dependencies}: Functions that use globals have hidden inputs/outputs not visible in their signature
+	\item \textbf{Hard to track changes}: Any function can modify a global, making bugs hard to find
+	\item \textbf{Testing difficulties}: Functions using globals are harder to test in isolation
+	\item \textbf{Name collisions}: In large programs, global names can conflict
+	\item \textbf{Thread safety issues}: Globals are problematic in multithreaded programs
+\end{enumerate}
+
+\begin{example}[Problems with Global Variables]{\leavevmode}
+	
+	\begin{lstlisting}
+		int total{0};  // Global variable
+		
+		void addToTotal(int value) {
+			total += value;  // Modifies global state - hidden side effect!
+		}
+		
+		void resetTotal() {
+			total = 0;       // Another function modifying the same global
+		}
+		
+		int main() {
+			addToTotal(10);
+			addToTotal(20);
+			// What is total now? Have to trace through all functions to know
+			// What if resetTotal() was called somewhere in between?
+			
+			return 0;
+		}
+	\end{lstlisting}
+\end{example}
+
+\begin{remark}
+	Instead of global variables, prefer:
+	\begin{itemize}
+		\item Passing data as function parameters
+		\item Returning values from functions
+		\item Using classes to encapsulate related data
+		\item Using \texttt{const} or \texttt{constexpr} for truly global constants
+	\end{itemize}
+\end{remark}
+
+\subsubsection{When Globals Might Be Acceptable}
+
+There are limited cases where globals are acceptable:
+\begin{itemize}
+	\item \textbf{True constants}: Values that never change (use \texttt{const} or \texttt{constexpr})
+	\item \textbf{Configuration settings}: Read-only program settings
+	\item \textbf{Singleton patterns}: When you truly need exactly one instance
+\end{itemize}
+
+\subsection{C++ Built-in Primitive Types}
+
+C++ provides several \textbf{primitive types} (also called \textbf{fundamental types} or \textbf{built-in types}) for storing different kinds of data.
+
+\subsubsection{Integer Types}
+
+Integer types store whole numbers (no decimal point):
+
+\begin{center}
+	\begin{tabular}{|l|l|l|}
+		\hline
+		\textbf{Type} & \textbf{Typical Size} & \textbf{Range (typical)} \\
+		\hline
+		\texttt{char} & 1 byte & -128 to 127 \\
+		\texttt{short} & 2 bytes & -32,768 to 32,767 \\
+		\texttt{int} & 4 bytes & -2.1 billion to 2.1 billion \\
+		\texttt{long} & 4 or 8 bytes & At least as large as \texttt{int} \\
+		\texttt{long long} & 8 bytes & -9.2 quintillion to 9.2 quintillion \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+	char small_num{100};
+	short medium_num{30000};
+	int regular_num{2000000000};
+	long big_num{2000000000L};
+	long long huge_num{9000000000000000000LL};
+\end{lstlisting}
+
+\paragraph{Signed vs. Unsigned}
+
+By default, integer types are \textbf{signed} (can hold negative values). Use \texttt{unsigned} for non-negative values only:
+
+\begin{lstlisting}
+	int signed_val{-10};           // Can be negative
+	unsigned int unsigned_val{10}; // Only non-negative (0 to ~4.2 billion)
+	
+	unsigned short age{25};        // Age is never negative
+	unsigned long population{7800000000UL};  // Population count
+\end{lstlisting}
+
+\begin{remark}
+	Be careful with unsigned types! Subtracting from zero wraps around to a huge positive number:
+	
+	\begin{lstlisting}
+		unsigned int x{5};
+		x = x - 10;  // x is now 4294967291, not -5!
+	\end{lstlisting}
+\end{remark}
+
+\subsubsection{Floating-Point Types}
+
+Floating-point types store numbers with decimal points:
+
+\begin{center}
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		\textbf{Type} & \textbf{Size} & \textbf{Precision} & \textbf{Range} \\
+		\hline
+		\texttt{float} & 4 bytes & ~7 digits & $\pm 3.4 \times 10^{38}$ \\
+		\texttt{double} & 8 bytes & ~15 digits & $\pm 1.7 \times 10^{308}$ \\
+		\texttt{long double} & 8-16 bytes & ~18+ digits & Even larger \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+	float temperature{98.6f};       // Note the 'f' suffix for float literals
+	double pi{3.14159265358979};    // Default for decimal literals
+	long double precise{3.14159265358979323846L};  // 'L' suffix
+\end{lstlisting}
+
+\begin{remark}
+	\texttt{double} is the default and recommended floating-point type. Use \texttt{float} only when memory is tight or you're interfacing with APIs that require it. Avoid \texttt{long double} unless you need extreme precision.
+\end{remark}
+
+\paragraph{Floating-Point Precision Issues}
+
+Floating-point numbers have limited precision and can't represent all decimal values exactly:
+
+\begin{lstlisting}
+	double x{0.1};
+	double y{0.2};
+	double z{0.3};
+	
+	if (x + y == z) {
+		std::cout << "Equal\n";     // This might NOT print!
+	} else {
+		std::cout << "Not equal\n"; // 0.1 + 0.2 != 0.3 exactly
+	}
+	
+	// Better approach: check if "close enough"
+	if (std::abs((x + y) - z) < 0.0001) {
+		std::cout << "Close enough\n";
+	}
+\end{lstlisting}
+
+\subsubsection{Boolean Type}
+
+The \texttt{bool} type stores truth values:
+
+\begin{lstlisting}
+	bool is_valid{true};
+	bool game_over{false};
+	bool has_permission{true};
+	
+	if (is_valid) {
+		std::cout << "Valid!\n";
+	}
+\end{lstlisting}
+
+Booleans use 1 byte of memory (not 1 bit) for efficiency reasons.
+
+\paragraph{Boolean Conversions}
+
+In C++, many types can convert to \texttt{bool}:
+\begin{itemize}
+	\item \texttt{0} converts to \texttt{false}; any non-zero value converts to \texttt{true}
+	\item \texttt{nullptr} converts to \texttt{false}; any other pointer converts to \texttt{true}
+\end{itemize}
+
+\begin{lstlisting}
+	int count{5};
+	if (count) {  // true because count != 0
+		std::cout << "Count is non-zero\n";
+	}
+	
+	int zero{0};
+	if (!zero) {  // true because zero == 0 (which is false)
+		std::cout << "Zero is falsy\n";
+	}
+\end{lstlisting}
+
+\subsubsection{Character Type}
+
+The \texttt{char} type stores single characters:
+
+\begin{lstlisting}
+	char letter{'A'};
+	char digit{'7'};
+	char newline{'\n'};
+	char tab{'\t'};
+\end{lstlisting}
+
+Characters are actually stored as integer values (ASCII codes):
+
+\begin{lstlisting}
+	char ch{'A'};
+	std::cout << ch << std::endl;           // Output: A
+	std::cout << static_cast<int>(ch) << std::endl;  // Output: 65 (ASCII code)
+	
+	char next = ch + 1;  // 'B' (65 + 1 = 66)
+\end{lstlisting}
+
+\paragraph{Escape Sequences}
+
+Special characters use escape sequences:
+
+\begin{center}
+	\begin{tabular}{|l|l|}
+		\hline
+		\textbf{Escape Sequence} & \textbf{Meaning} \\
+		\hline
+		\texttt{\textbackslash n} & Newline \\
+		\texttt{\textbackslash t} & Tab \\
+		\texttt{\textbackslash \textbackslash} & Backslash \\
+		\texttt{\textbackslash '} & Single quote \\
+		\texttt{\textbackslash "} & Double quote \\
+		\texttt{\textbackslash 0} & Null character \\
+		\hline
+	\end{tabular}
+\end{center}
+
+\subsubsection{The \texttt{auto} Keyword}
+
+C++11 introduced \texttt{auto}, which lets the compiler deduce the type:
+
+\begin{lstlisting}
+	auto x{42};          // int
+	auto y{3.14};        // double
+	auto z{3.14f};       // float (because of 'f' suffix)
+	auto name{"Alice"};  // const char* (C-string, not std::string!)
+	auto str{std::string{"Alice"}};  // std::string
+\end{lstlisting}
+
+\begin{remark}
+	Use \texttt{auto} when:
+	\begin{itemize}
+		\item The type is obvious from the initializer
+		\item The type is long and complex (like iterator types)
+	\end{itemize}
+	
+	Avoid \texttt{auto} when:
+	\begin{itemize}
+		\item The type isn't obvious and serves as documentation
+		\item You want to ensure a specific type
+	\end{itemize}
+\end{remark}
+
+\subsection{What is the Size of a Variable? (\texttt{sizeof})}
+
+The amount of memory a variable uses depends on its type. C++ provides the \texttt{sizeof} operator to determine the size in bytes.
+
+\subsubsection{Using \texttt{sizeof}}
+
+\begin{lstlisting}
+	#include <iostream>
+	
+	int main() {
+		std::cout << "Size of char: " << sizeof(char) << " byte(s)\n";
+		std::cout << "Size of short: " << sizeof(short) << " byte(s)\n";
+		std::cout << "Size of int: " << sizeof(int) << " byte(s)\n";
+		std::cout << "Size of long: " << sizeof(long) << " byte(s)\n";
+		std::cout << "Size of long long: " << sizeof(long long) << " byte(s)\n";
+		std::cout << "Size of float: " << sizeof(float) << " byte(s)\n";
+		std::cout << "Size of double: " << sizeof(double) << " byte(s)\n";
+		std::cout << "Size of bool: " << sizeof(bool) << " byte(s)\n";
+		
+		return 0;
+	}
+\end{lstlisting}
+
+Typical output on a 64-bit system:
+\begin{lstlisting}[numbers=none]
+	Size of char: 1 byte(s)
+	Size of short: 2 byte(s)
+	Size of int: 4 byte(s)
+	Size of long: 8 byte(s)
+	Size of long long: 8 byte(s)
+	Size of float: 4 byte(s)
+	Size of double: 8 byte(s)
+	Size of bool: 1 byte(s)
+\end{lstlisting}
+
+\subsubsection{\texttt{sizeof} with Variables and Expressions}
+
+You can use \texttt{sizeof} with variables and expressions:
+
+\begin{lstlisting}
+	int age{25};
+	double salary{50000.0};
+	
+	std::cout << sizeof(age) << std::endl;       // Size of int
+	std::cout << sizeof(salary) << std::endl;    // Size of double
+	std::cout << sizeof(age + salary) << std::endl;  // Size of result (double)
+\end{lstlisting}
+
+\subsubsection{Why Size Matters}
+
+Understanding type sizes is important for:
+\begin{itemize}
+	\item \textbf{Memory efficiency}: Choosing appropriate types for large arrays
+	\item \textbf{Range limitations}: Knowing when values might overflow
+	\item \textbf{Portability}: Sizes can vary across systems
+	\item \textbf{Binary file I/O}: Reading/writing data in specific formats
+	\item \textbf{Interfacing with hardware}: Embedded systems and device drivers
+\end{itemize}
+
+\subsubsection{Fixed-Width Integer Types}
+
+For guaranteed sizes across platforms, use fixed-width types from \texttt{<cstdint>}:
+
+\begin{lstlisting}
+	#include <cstdint>
+	
+	int8_t tiny{127};           // Exactly 8 bits (1 byte)
+	int16_t small{32000};       // Exactly 16 bits (2 bytes)
+	int32_t medium{2000000000}; // Exactly 32 bits (4 bytes)
+	int64_t large{9000000000000000000LL};  // Exactly 64 bits (8 bytes)
+	
+	uint8_t unsigned_tiny{255};  // Unsigned 8-bit
+	uint32_t unsigned_medium{4000000000U};  // Unsigned 32-bit
+\end{lstlisting}
+
+\subsubsection{The \texttt{<climits>} and \texttt{<cfloat>} Headers}
+
+These headers provide constants for the limits of each type:
+
+\begin{lstlisting}
+	#include <climits>
+	#include <cfloat>
+	#include <iostream>
+	
+	int main() {
+		std::cout << "Int range: " << INT_MIN << " to " << INT_MAX << std::endl;
+		std::cout << "Unsigned int max: " << UINT_MAX << std::endl;
+		std::cout << "Double max: " << DBL_MAX << std::endl;
+		std::cout << "Double precision: " << DBL_DIG << " digits" << std::endl;
+		
+		return 0;
+	}
+\end{lstlisting}
+
+Or use the more modern \texttt{<limits>} header:
+
+\begin{lstlisting}
+	#include <limits>
+	
+	std::cout << "Int max: " << std::numeric_limits<int>::max() << std::endl;
+	std::cout << "Double max: " << std::numeric_limits<double>::max() << std::endl;
+\end{lstlisting}
+
+\subsection{What is a Constant?}
+
+A \textbf{constant} is a value that cannot be changed after it's initialized. Constants make code safer, clearer, and easier to maintain.
+
+\subsubsection{Why Use Constants?}
+
+\begin{enumerate}
+	\item \textbf{Prevent accidental changes}: The compiler catches attempts to modify
+	\item \textbf{Self-documenting code}: Names explain what values mean
+	\item \textbf{Single point of change}: Update the value in one place
+	\item \textbf{Compiler optimizations}: Compiler can make optimizations knowing values don't change
+\end{enumerate}
+
+\begin{example}[Magic Numbers vs. Constants]{\leavevmode}
+	
+	\begin{lstlisting}
+		// BAD: Magic numbers - what do these mean?
+		double area = 3.14159 * radius * radius;
+		if (age >= 21) { /* ... */ }
+		double price = amount * 0.0825;
+		
+		// GOOD: Named constants - self-documenting
+		const double PI{3.14159};
+		const int DRINKING_AGE{21};
+		const double TAX_RATE{0.0825};
+		
+		double area = PI * radius * radius;
+		if (age >= DRINKING_AGE) { /* ... */ }
+		double price = amount * TAX_RATE;
+	\end{lstlisting}
+\end{example}
+
+\subsection{Declaring and Using Constants}
+
+C++ provides several ways to declare constants, each with different use cases.
+
+\subsubsection{The \texttt{const} Keyword}
+
+The most common way to create a constant:
+
+\begin{lstlisting}
+	const double PI{3.14159265358979};
+	const int MAX_STUDENTS{30};
+	const std::string COMPANY_NAME{"Acme Corp"};
+	
+	PI = 3.14;  // ERROR! Cannot modify a const
+\end{lstlisting}
+
+\texttt{const} variables:
+\begin{itemize}
+	\item Must be initialized when declared
+	\item Cannot be modified after initialization
+	\item Have a specific type (type-safe)
+	\item Respect scope rules
+\end{itemize}
+
+\subsubsection{The \texttt{constexpr} Keyword (C++11)}
+
+\texttt{constexpr} creates \textbf{compile-time constants}—values computed during compilation:
+
+\begin{lstlisting}
+	constexpr double PI{3.14159265358979};
+	constexpr int MAX_SIZE{100};
+	constexpr int DOUBLED{MAX_SIZE * 2};  // Computed at compile time
+	
+	// Can be used where compile-time constants are required
+	int array[MAX_SIZE];  // OK - array size must be compile-time constant
+\end{lstlisting}
+
+\paragraph{Difference Between \texttt{const} and \texttt{constexpr}}
+
+\begin{lstlisting}
+	int get_value() { return 42; }
+	
+	const int a{get_value()};     // OK - initialized at runtime
+	constexpr int b{get_value()}; // ERROR - get_value() isn't constexpr
+	
+	constexpr int c{42};          // OK - literal is compile-time constant
+	const int d{42};              // OK - but might be runtime constant
+\end{lstlisting}
+
+Use \texttt{constexpr} when:
+\begin{itemize}
+	\item The value is truly known at compile time
+	\item You need to use it in compile-time contexts (array sizes, template parameters)
+\end{itemize}
+
+Use \texttt{const} when:
+\begin{itemize}
+	\item The value is determined at runtime but shouldn't change
+	\item You're working with function parameters or class members
+\end{itemize}
+
+\subsubsection{\texttt{constexpr} Functions}
+
+Functions can be \texttt{constexpr} too, allowing compile-time computation:
+
+\begin{lstlisting}
+	constexpr int square(int x) {
+		return x * x;
+	}
+	
+	constexpr int result{square(5)};  // Computed at compile time: 25
+	int array[square(10)];            // Array of 100 elements
+\end{lstlisting}
+
+\subsubsection{Constant Expressions in Practice}
+
+\begin{lstlisting}
+	#include <iostream>
+	
+	// Physical constants
+	constexpr double SPEED_OF_LIGHT{299792458.0};  // m/s
+	constexpr double GRAVITATIONAL_CONSTANT{6.67430e-11};  // N⋅m²/kg²
+	
+	// Application constants
+	constexpr int MAX_PLAYERS{4};
+	constexpr int BOARD_WIDTH{800};
+	constexpr int BOARD_HEIGHT{600};
+	
+	// Derived constants
+	constexpr int BOARD_AREA{BOARD_WIDTH * BOARD_HEIGHT};
+	constexpr double ASPECT_RATIO{static_cast<double>(BOARD_WIDTH) / BOARD_HEIGHT};
+	
+	int main() {
+		std::cout << "Board area: " << BOARD_AREA << " pixels\n";
+		std::cout << "Aspect ratio: " << ASPECT_RATIO << "\n";
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Preprocessor Constants (\texttt{\#define}) — Avoid!}
+
+The old C-style way of defining constants:
+
+\begin{lstlisting}
+	#define PI 3.14159
+	#define MAX_SIZE 100
+\end{lstlisting}
+
+\textbf{Don't use this approach!} It has several problems:
+\begin{itemize}
+	\item No type checking (just text substitution)
+	\item No scope (global everywhere after the \texttt{\#define})
+	\item Harder to debug (name may not appear in debugger)
+	\item Can cause unexpected behavior with complex expressions
+\end{itemize}
+
+\begin{example}[Problems with \texttt{\#define}]{\leavevmode}
+	
+	\begin{lstlisting}
+		#define SQUARE(x) x * x
+		
+		int result = SQUARE(2 + 3);  // Expands to: 2 + 3 * 2 + 3 = 11, not 25!
+		
+		// Compare with constexpr function:
+		constexpr int square(int x) { return x * x; }
+		int correct = square(2 + 3);  // Returns 25 as expected
+	\end{lstlisting}
+\end{example}
+
+\subsubsection{Enumeration Constants}
+
+For related sets of named constants, use enumerations (covered in detail in the Enumerations section):
+
+\begin{lstlisting}
+	enum class Color { Red, Green, Blue };
+	enum class Day { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
+	
+	Color favorite{Color::Blue};
+	Day today{Day::Wednesday};
+\end{lstlisting}
+
+\subsection{Best Practices Summary}
+
+\begin{enumerate}
+	\item \textbf{Always initialize variables} — Never use uninitialized variables
+	
+	\item \textbf{Use brace initialization} — \texttt{int x\{5\};} catches errors
+	
+	\item \textbf{Choose appropriate types} — Don't use \texttt{double} for whole numbers
+	
+	\item \textbf{Prefer \texttt{const} and \texttt{constexpr}} — Make values constant when possible
+	
+	\item \textbf{Avoid global variables} — Pass data through function parameters
+	
+	\item \textbf{Use meaningful names} — \texttt{temperature} not \texttt{t}
+	
+	\item \textbf{Declare variables close to first use} — Improves readability
+	
+	\item \textbf{Use fixed-width types when size matters} — \texttt{int32\_t} for guaranteed 32 bits
+\end{enumerate}
+
+\subsection{Exercises}
+
+\begin{example}[Exercise 1: Variable Declaration]{\leavevmode}
+	
+	Declare and initialize variables to store:
+	\begin{itemize}
+		\item Your age (whole number)
+		\item Your GPA (decimal number)
+		\item Your first initial (single character)
+		\item Your full name (text)
+		\item Whether you're a student (true/false)
+	\end{itemize}
+	
+	Print each variable with a descriptive label.
+\end{example}
+
+\begin{example}[Exercise 2: Size Investigation]{\leavevmode}
+	
+	Write a program that displays the size (in bytes) of all the fundamental types on your system. Also display the minimum and maximum values for \texttt{int} and \texttt{double}.
+\end{example}
+
+\begin{example}[Exercise 3: Constants in Practice]{\leavevmode}
+	
+	Create a program that calculates the area and circumference of a circle. Use:
+	\begin{itemize}
+		\item A \texttt{constexpr} for PI
+		\item A variable to store the radius (ask the user for input)
+		\item Calculate and display the area ($\pi r^2$) and circumference ($2\pi r$)
+	\end{itemize}
+	
+	\textbf{Sample interaction:}
+	\begin{lstlisting}[numbers=none]
+		Enter the radius of the circle: 5
+		Area: 78.5398
+		Circumference: 31.4159
+	\end{lstlisting}
+\end{example}
+
+\begin{example}[Section Challenge]{\leavevmode}
+	
+	Write a program for a carpet cleaning service that:
+	\begin{enumerate}
+		\item Declares constants for:
+		\begin{itemize}
+			\item Price per small room: \$25
+			\item Price per large room: \$35
+			\item Sales tax rate: 6\%
+		\end{itemize}
+		\item Asks the user for the number of small rooms and large rooms
+		\item Calculates and displays:
+		\begin{itemize}
+			\item Cost for small rooms
+			\item Cost for large rooms
+			\item Subtotal (before tax)
+			\item Tax amount
+			\item Total (after tax)
+		\end{itemize}
+	\end{enumerate}
+	
+	\textbf{Sample interaction:}
+	\begin{lstlisting}[numbers=none]
+		Welcome to the Carpet Cleaning Service!
+		
+		Enter the number of small rooms: 3
+		Enter the number of large rooms: 2
+		
+		Price per small room: $25
+		Price per large room: $35
+		
+		Cost for small rooms: $75
+		Cost for large rooms: $70
+		=============================
+		Subtotal: $145
+		Tax (6%): $8.70
+		=============================
+		Total: $153.70
+		
+		Thank you for your business!
+	\end{lstlisting}
+\end{example}

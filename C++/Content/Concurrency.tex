@@ -1,0 +1,357 @@
+\section{Concurrency and Multithreading}
+
+Modern computers have multiple processor cores, and C++ provides built-in support for concurrent programming starting with C++11. This section introduces the fundamentals of writing multithreaded C++ programs.
+
+\subsection{Why Concurrency?}
+
+Concurrency allows programs to:
+\begin{itemize}
+	\item \textbf{Improve performance}: Utilize multiple CPU cores for parallel computation
+	\item \textbf{Maintain responsiveness}: Keep UIs responsive while performing background work
+	\item \textbf{Handle I/O efficiently}: Process data while waiting for network or disk operations
+	\item \textbf{Model real-world parallelism}: Some problems are naturally concurrent
+\end{itemize}
+
+\subsection{Creating Threads}
+
+The \texttt{std::thread} class represents a thread of execution:
+
+\begin{lstlisting}
+	#include <thread>
+	#include <iostream>
+	
+	void sayHello() {
+		std::cout << "Hello from thread!\n";
+	}
+	
+	int main() {
+		std::thread t(sayHello);  // Create and start thread
+		
+		std::cout << "Hello from main!\n";
+		
+		t.join();  // Wait for thread to finish
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Threads with Arguments}
+
+\begin{lstlisting}
+	void greet(const std::string& name, int times) {
+		for (int i = 0; i < times; ++i) {
+			std::cout << "Hello, " << name << "!\n";
+		}
+	}
+	
+	int main() {
+		std::thread t(greet, "Alice", 3);
+		t.join();
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Threads with Lambdas}
+
+\begin{lstlisting}
+	int main() {
+		int result = 0;
+		
+		std::thread t([&result]() {
+			result = 42;
+		});
+		
+		t.join();
+		std::cout << "Result: " << result << "\n";
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Joining and Detaching}
+
+Every \texttt{std::thread} must be either joined or detached before destruction:
+
+\begin{lstlisting}
+	std::thread t(someFunction);
+	
+	// Option 1: Wait for thread to complete
+	t.join();
+	
+	// Option 2: Let thread run independently
+	t.detach();  // Thread continues even after t is destroyed
+	
+	// Destructor without join/detach calls std::terminate!
+\end{lstlisting}
+
+\begin{remark}
+	Prefer \texttt{join()} over \texttt{detach()}. Detached threads are harder to manage and can cause issues if they access resources that have been destroyed.
+\end{remark}
+
+\subsection{Data Races and Synchronization}
+
+When multiple threads access shared data, and at least one modifies it, you have a \textbf{data race}—undefined behavior:
+
+\begin{lstlisting}
+	int counter = 0;
+	
+	void increment() {
+		for (int i = 0; i < 100000; ++i) {
+			++counter;  // DATA RACE! Multiple threads modifying counter
+		}
+	}
+	
+	int main() {
+		std::thread t1(increment);
+		std::thread t2(increment);
+		
+		t1.join();
+		t2.join();
+		
+		// counter is NOT guaranteed to be 200000!
+		std::cout << counter << "\n";  // Could be any value
+	}
+\end{lstlisting}
+
+\subsection{Mutexes}
+
+A \texttt{std::mutex} provides mutual exclusion—only one thread can hold it at a time:
+
+\begin{lstlisting}
+	#include <mutex>
+	
+	int counter = 0;
+	std::mutex mtx;
+	
+	void increment() {
+		for (int i = 0; i < 100000; ++i) {
+			mtx.lock();
+			++counter;      // Protected by mutex
+			mtx.unlock();
+		}
+	}
+\end{lstlisting}
+
+\subsubsection{std::lock\_guard (RAII Locking)}
+
+Never use raw \texttt{lock()}/\texttt{unlock()}—use RAII wrappers:
+
+\begin{lstlisting}
+	void increment() {
+		for (int i = 0; i < 100000; ++i) {
+			std::lock_guard<std::mutex> lock(mtx);  // Locks on construction
+			++counter;
+			// Automatically unlocks when lock goes out of scope
+		}
+	}
+\end{lstlisting}
+
+\subsubsection{std::unique\_lock (Flexible Locking)}
+
+\texttt{std::unique\_lock} offers more flexibility than \texttt{lock\_guard}:
+
+\begin{lstlisting}
+	std::unique_lock<std::mutex> lock(mtx);
+	
+	// Can unlock and relock
+	lock.unlock();
+	// ... do work that doesn't need the lock ...
+	lock.lock();
+	
+	// Can transfer ownership
+	std::unique_lock<std::mutex> lock2 = std::move(lock);
+	
+	// Can defer locking
+	std::unique_lock<std::mutex> lock3(mtx, std::defer_lock);
+	// ... later ...
+	lock3.lock();
+\end{lstlisting}
+
+\subsection{Deadlocks}
+
+A \textbf{deadlock} occurs when threads wait for each other indefinitely:
+
+\begin{lstlisting}
+	std::mutex mtx1, mtx2;
+	
+	void thread1() {
+		std::lock_guard<std::mutex> lock1(mtx1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::lock_guard<std::mutex> lock2(mtx2);  // Waits for mtx2
+	}
+	
+	void thread2() {
+		std::lock_guard<std::mutex> lock2(mtx2);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::lock_guard<std::mutex> lock1(mtx1);  // Waits for mtx1
+	}
+	// DEADLOCK: thread1 holds mtx1, waits for mtx2
+	//           thread2 holds mtx2, waits for mtx1
+\end{lstlisting}
+
+\subsubsection{Avoiding Deadlocks}
+
+Use \texttt{std::lock} to lock multiple mutexes atomically:
+
+\begin{lstlisting}
+	void safeFunction() {
+		std::unique_lock<std::mutex> lock1(mtx1, std::defer_lock);
+		std::unique_lock<std::mutex> lock2(mtx2, std::defer_lock);
+		
+		std::lock(lock1, lock2);  // Locks both without deadlock
+		
+		// ... work with protected data ...
+	}
+	
+	// C++17: std::scoped_lock handles multiple mutexes automatically
+	void saferFunction() {
+		std::scoped_lock lock(mtx1, mtx2);  // Locks both, unlocks on destruction
+		// ... work with protected data ...
+	}
+\end{lstlisting}
+
+\subsection{Condition Variables}
+
+\texttt{std::condition\_variable} allows threads to wait for conditions:
+
+\begin{lstlisting}
+	#include <condition_variable>
+	#include <queue>
+	
+	std::queue<int> dataQueue;
+	std::mutex mtx;
+	std::condition_variable cv;
+	
+	void producer() {
+		for (int i = 0; i < 10; ++i) {
+			{
+				std::lock_guard<std::mutex> lock(mtx);
+				dataQueue.push(i);
+			}
+			cv.notify_one();  // Wake up one waiting consumer
+		}
+	}
+	
+	void consumer() {
+		while (true) {
+			std::unique_lock<std::mutex> lock(mtx);
+			
+			cv.wait(lock, []{ return !dataQueue.empty(); });  // Wait for data
+			
+			int value = dataQueue.front();
+			dataQueue.pop();
+			
+			lock.unlock();
+			
+			std::cout << "Consumed: " << value << "\n";
+		}
+	}
+\end{lstlisting}
+
+\subsection{Atomic Operations}
+
+For simple operations, \texttt{std::atomic} provides lock-free thread safety:
+
+\begin{lstlisting}
+	#include <atomic>
+	
+	std::atomic<int> counter{0};
+	
+	void increment() {
+		for (int i = 0; i < 100000; ++i) {
+			++counter;  // Atomic increment - no mutex needed!
+		}
+	}
+	
+	int main() {
+		std::thread t1(increment);
+		std::thread t2(increment);
+		
+		t1.join();
+		t2.join();
+		
+		std::cout << counter << "\n";  // Guaranteed to be 200000
+	}
+\end{lstlisting}
+
+\subsection{Futures and Promises}
+
+\texttt{std::future} and \texttt{std::promise} provide a way to transfer values between threads:
+
+\begin{lstlisting}
+	#include <future>
+	
+	int computeValue() {
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		return 42;
+	}
+	
+	int main() {
+		// std::async runs function asynchronously, returns future
+		std::future<int> result = std::async(std::launch::async, computeValue);
+		
+		std::cout << "Doing other work...\n";
+		
+		// get() blocks until result is ready
+		std::cout << "Result: " << result.get() << "\n";
+		
+		return 0;
+	}
+\end{lstlisting}
+
+\subsubsection{Promise and Future Pair}
+
+\begin{lstlisting}
+	void producer(std::promise<int>& prom) {
+		// Do some work...
+		prom.set_value(42);  // Fulfill the promise
+	}
+	
+	int main() {
+		std::promise<int> prom;
+		std::future<int> fut = prom.get_future();
+		
+		std::thread t(producer, std::ref(prom));
+		
+		std::cout << "Waiting for result...\n";
+		std::cout << "Got: " << fut.get() << "\n";
+		
+		t.join();
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Thread-Local Storage}
+
+\texttt{thread\_local} variables have separate instances for each thread:
+
+\begin{lstlisting}
+	thread_local int threadId = 0;
+	
+	void worker(int id) {
+		threadId = id;  // Each thread has its own copy
+		
+		// ... later ...
+		std::cout << "Thread " << threadId << " working\n";
+	}
+\end{lstlisting}
+
+\subsection{Best Practices}
+
+\begin{enumerate}
+	\item \textbf{Minimize shared mutable state}: The less data threads share, the fewer synchronization issues
+	
+	\item \textbf{Use high-level constructs}: Prefer \texttt{std::async}, \texttt{std::future} over raw threads when possible
+	
+	\item \textbf{Always use RAII for locks}: \texttt{lock\_guard}, \texttt{unique\_lock}, \texttt{scoped\_lock}
+	
+	\item \textbf{Prefer atomics for simple operations}: Faster than mutexes for counters and flags
+	
+	\item \textbf{Be aware of false sharing}: Keep frequently-modified atomic variables on separate cache lines
+	
+	\item \textbf{Test thoroughly}: Concurrency bugs are notoriously hard to reproduce and debug
+\end{enumerate}
+
+\begin{remark}
+	Concurrent programming is challenging. Start with simple patterns, understand the fundamentals thoroughly, and consider using higher-level libraries (like Intel TBB or cpp-taskflow) for complex scenarios.
+\end{remark}

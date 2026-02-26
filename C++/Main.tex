@@ -1,0 +1,201 @@
+\documentclass[12pt,letterpaper]{article}
+% ============================================================================
+% PACKAGES
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{etoolbox}
+% ============================================================================
+% DOCUMENT METADATA
+% ============================================================================
+\title{Learning C++}
+\author{Jude Eschete}
+\date{\today}
+% ============================================================================
+% FORMATTING SETTINGS
+% ============================================================================
+% Hyperlink colors
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=cyan,
+	citecolor=blue,
+	pdftitle={Learning C++},
+	pdfauthor={Jude Eschete}
+}
+% C++ Code Block Styling
+\definecolor{codebackground}{rgb}{0.95,0.95,0.95}
+\definecolor{codekeyword}{rgb}{0.0,0.0,0.5}
+\definecolor{codecomment}{rgb}{0.0,0.5,0.0}
+\definecolor{codestring}{rgb}{0.6,0.1,0.1}
+\lstdefinestyle{cppstyle}{
+	language=C++,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{codekeyword}\bfseries,
+	commentstyle=\color{codecomment}\itshape,
+	stringstyle=\color{codestring},
+	backgroundcolor=\color{codebackground},
+	frame=single,
+	rulecolor=\color{black!30},
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	numbersep=8pt,
+	tabsize=4,
+	showstringspaces=false,
+	breaklines=true,
+	breakatwhitespace=true,
+	captionpos=b,
+	xleftmargin=15pt,
+	xrightmargin=5pt,
+	framexleftmargin=10pt,
+	aboveskip=10pt,
+	belowskip=10pt
+}
+\lstset{style=cppstyle}
+% Section formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+% Page style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+% Spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+% ============================================================================
+% DOCUMENT CONTENT
+% ============================================================================
+\begin{document}
+	
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+	
+	% ============================================================================
+	% PART I: FUNDAMENTALS
+	% ============================================================================
+	\part{Fundamentals}
+	
+	\input{Content/Structure of a C++ Program}
+	\newpage
+	
+	\input{Content/Variables and Constants}
+	\newpage
+	
+	\input{Content/Enumerations}
+	\newpage
+	
+	\input{Content/Statements and Operators}
+	\newpage
+	
+	\input{Content/Controlling Program Flow}
+	\newpage
+	
+	\input{Content/Characters and Strings}
+	\newpage
+	
+	\input{Content/Functions}
+	\newpage
+	
+	\input{Content/Arrays and Vectors}
+	\newpage
+	
+	% ============================================================================
+	% PART II: MEMORY AND POINTERS
+	% ============================================================================
+	\part{Memory and Pointers}
+	
+	\input{Content/Pointers and References}
+	\newpage
+	
+	\input{Content/Memory Management}
+	\newpage
+	
+	% ============================================================================
+	% PART III: OBJECT-ORIENTED PROGRAMMING
+	% ============================================================================
+	\part{Object-Oriented Programming}
+	
+	\input{Content/OOP - Classes and Objects}
+	\newpage
+	
+	\input{Content/Operator Overloading}
+	\newpage
+	
+	\input{Content/Templates}
+	\newpage
+	
+	\input{Content/Inheritance}
+	\newpage
+	
+	\input{Content/Polymorphism}
+	\newpage
+	
+	% ============================================================================
+	% PART IV: MODERN C++ AND RESOURCE MANAGEMENT
+	% ============================================================================
+	\part{Modern C++ and Resource Management}
+	
+	\input{Content/Smart Pointers}
+	\newpage
+	
+	\input{Content/Move Semantics}
+	\newpage
+	
+	\input{Content/Exception Handling}
+	\newpage
+	
+	% ============================================================================
+	% PART V: THE STANDARD LIBRARY
+	% ============================================================================
+	\part{The Standard Library}
+	
+	\input{Content/IO Streams}
+	\newpage
+	
+	\input{Content/The Standard Template Library}
+	\newpage
+	
+	\input{Content/Lambda Expressions}
+	\newpage
+	
+	% ============================================================================
+	% PART VI: ADVANCED TOPICS
+	% ============================================================================
+	\part{Advanced Topics}
+	
+	\input{Content/Modern C++ Features}
+	\newpage
+	
+	\input{Content/Concurrency}
+	
+\end{document}
