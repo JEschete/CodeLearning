@@ -1,0 +1,14 @@
+********************************
+*   Welcome to Corner Market   *
+* apple                  1.50  *
+* milk                   3.25  *
+* apple                  1.50  *
+* bread                  2.75  *
+********************************
+* Subtotal:        $     9.00  *
+* Tax:             $     0.63  *
+* Total:           $     9.63  *
+********************************
+milk, bread, apple
+(4, 3, 9.63)
+Budget good: True 
