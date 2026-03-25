@@ -1,0 +1,1180 @@
+% ===================================================================
+%  ANTENNA PATTERN IMPLEMENTATION ANALYSIS
+%  Comparative Study: AntennaForge (Python) vs ODESSA (C++)
+%
+%  Compile with:  pdflatex antenna_implementation_report.tex
+% ===================================================================
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+% ── Colour definitions ────────────────────────────────────────────
+\definecolor{codegreen}{rgb}{0.0, 0.5, 0.0}
+\definecolor{codegray}{rgb}{0.5, 0.5, 0.5}
+\definecolor{codepurple}{rgb}{0.58, 0.0, 0.82}
+\definecolor{backcolour}{rgb}{0.97, 0.97, 0.97}
+\definecolor{sectionblue}{rgb}{0.1, 0.2, 0.5}
+\definecolor{highlightgreen}{rgb}{0.85, 0.95, 0.85}
+\definecolor{highlightred}{rgb}{0.95, 0.85, 0.85}
+\definecolor{highlightyellow}{rgb}{0.95, 0.95, 0.80}
+
+% ── Code listing style ────────────────────────────────────────────
+\lstdefinestyle{codestyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codepurple}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{codegray},
+}
+\lstset{style=codestyle}
+
+% ── Section formatting ────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{sectionblue}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{sectionblue!80}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{sectionblue!60}}{\thesubsubsection}{1em}{}
+
+% ── Header / footer ──────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Antenna Pattern Implementation Analysis}}
+\fancyhead[R]{\small\thepage}
+\fancyfoot[C]{\small\textit{AntennaForge vs ODESSA Comparative Study}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ── Custom commands ───────────────────────────────────────────────
+\newcommand{\AF}{\textsc{AntennaForge}}
+\newcommand{\OD}{\textsc{ODESSA}}
+\newcommand{\sinc}{\operatorname{sinc}}
+\newcommand{\caveat}[1]{\par\noindent\colorbox{highlightyellow}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\textbf{Note:} #1}}\par\medskip}
+
+% ── Hyperref setup ────────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=sectionblue,
+    citecolor=sectionblue,
+    urlcolor=sectionblue!70,
+    pdftitle={Antenna Pattern Implementation Analysis},
+    pdfauthor={AntennaForge},
+}
+
+% ══════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Title page ────────────────────────────────────────────────────
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries\color{sectionblue} Antenna Pattern\\[0.3em]
+Implementation Analysis\par}
+\vspace{1.5cm}
+{\Large Comparative Study:\\[0.3em]
+\AF{} (Python) vs \OD{} (C++)\par}
+\vspace{2cm}
+{\large February 2026\par}
+\vfill
+{\small
+This document provides a detailed mathematical comparison of antenna
+radiation pattern models implemented in the \AF{} Python framework
+and the \OD{} C++ simulation library. Each antenna type is examined
+for correctness, physical fidelity, numerical robustness, and
+feature completeness.\par}
+\vspace{1cm}
+\end{titlepage}
+
+% ── Table of contents ─────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════
+\section{Executive Summary}
+% ══════════════════════════════════════════════════════════════════
+
+This report analyses seven antenna types implemented across two independent codebases:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{\AF{}} --- a Python-based antenna pattern generation framework using
+        Jinc/Airy, pyramidal horn aperture theory, and full array factor
+        summation models, with extensive post-processing features.
+  \item \textbf{\OD{}} --- a C++ antenna library designed for real-time system-level
+        simulation, with multi-beam management, monopulse processing, and
+        lookup-table pattern support.
+\end{itemize}
+
+\noindent The key findings are summarised in Table~\ref{tab:summary}.
+
+\begin{table}[H]
+\centering
+\caption{High-level comparison of pattern models.}
+\label{tab:summary}
+\small
+\begin{tabularx}{\textwidth}{l X X c}
+\toprule
+\textbf{Antenna} & \textbf{\AF{} Model} & \textbf{\OD{} Model} & \textbf{Availability} \\
+\midrule
+Dish (circular) & Jinc$^2$ (Airy pattern) & sinc (rect.\ aperture) & Both \\
+Horn (pyramidal) & E: sinc$^2$, H: cos-taper & cos($\theta$) approx. & Both \\
+Dipole / Monopole & Classical thin-wire + normalisation & Classical thin-wire & Both \\
+Phased Array & Element $\times$ AF phasor sum & Parametric sinc aperture & Both \\
+Panel / Sector & sinc$^2$ rectangular aperture & --- & \AF{} only \\
+LPDA & Gaussian + radial sidelobes & --- & \AF{} only \\
+Isotropic & (Omni cos$^n$ model) & $G = 1$ & Both \\
+Elliptical Dish & --- & sinc separable $W \times H$ & \OD{} only \\
+Lookup (table) & --- & 2-D / 3-D interpolation & \OD{} only \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Architectural Comparison}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Design Philosophy}
+
+\begin{description}[leftmargin=1.5em, style=nextline]
+  \item[\AF{}] Prioritises \emph{pattern fidelity} and \emph{extensibility}. Each
+    antenna type implements a single \\ \texttt{compute\_point\_gain()} method that
+    returns the co-pol linear gain at one $(az, el)$ point. All system-level
+    effects---frequency-dependent beamwidth, VSWR rolloff, asymmetry, sidelobes,
+    pattern breakup, ground reflection, cross-polarisation, and noise---are
+    handled by the engine before or after the per-point call.
+
+  \item[\OD{}] Prioritises \emph{runtime speed} and \emph{system integration}.
+    Each antenna implements \texttt{CalculateTxGain()} and
+    \texttt{CalculateRxGain()} with monopulse ($\Sigma$, $\Delta_{az}$,
+    $\Delta_{el}$) channels. Multi-beam management (add, resteer, remove) and
+    spoiled transmit beams are natively supported.
+\end{description}
+
+\subsection{Coordinate Conventions}
+
+\begin{table}[H]
+\centering
+\caption{Coordinate and unit conventions.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Aspect} & \textbf{\AF{}} & \textbf{\OD{}} \\
+\midrule
+Angle input & Degrees (converted internally) & Radians (custom unit types) \\
+Boresight & $az = 0$, $el = 0$ (broadside) & $az = 0$, $el = 0$ (along axis for dipoles) \\
+Gain units & Linear (engine converts to dBi) & Dimensionless linear \\
+Frequency & MHz throughout & Hz (SI unit type) \\
+Physical constants & $c = 300/f_\text{MHz}$ (wavelength) & \texttt{speed\_of\_light} constant \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Parabolic Dish Antenna}
+\label{sec:dish}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Physical Background}
+
+A parabolic reflector with a circular aperture of diameter $D$ produces a
+far-field radiation pattern governed by the Fourier transform of the circular
+aperture distribution.  For uniform illumination, the exact result is the
+\emph{Airy pattern}:
+\begin{equation}
+  G(\theta) = G_{\text{peak}} \cdot \eta \cdot
+    \left[ \frac{2\,J_1(u)}{u} \right]^2,
+  \qquad
+  u = \pi \frac{D}{\lambda} \sin\theta
+  \label{eq:airy}
+\end{equation}
+where $J_1$ is the Bessel function of the first kind, order one, and $\eta$ is
+the aperture efficiency (typically 0.55--0.65).
+
+The quantity $[2J_1(u)/u]^2$ is known as the \emph{Jinc-squared} or Airy
+function.  Its first null occurs at $u \approx 3.832$ and first sidelobe at
+$u \approx 5.136$ with an amplitude of $-17.6$~dB relative to the peak.
+
+\subsection{\AF{} Implementation}
+
+\AF{} implements the full Airy/Jinc$^2$ model in \texttt{dish.py}:
+
+\begin{equation}
+  G(\theta_{az}, \theta_{el}) = G_{\text{peak}} \cdot \eta \cdot
+    \left[ \frac{2\,J_1(u)}{u} \right]^2 \cdot f_{\text{front}}(\cos\theta_{az}),
+  \qquad
+  u = K_{3\text{dB}} \cdot r
+  \label{eq:af_dish}
+\end{equation}
+where
+\[
+  r = \sqrt{
+    \left(\frac{\sin\theta_{az}}{\sin(\theta_{az,3\text{dB}}/2)}\right)^2 +
+    \left(\frac{\sin\theta_{el}}{\sin(\theta_{el,3\text{dB}}/2)}\right)^2
+  }
+\]
+is the normalised elliptical radial distance, and $K_{3\text{dB}} = 1.6163$ is
+chosen such that $[\,2J_1(K)/K\,]^2 = 0.5$ (exactly $-3$~dB at the half-power
+beamwidth).
+
+Key implementation details:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Bessel function:} Uses \texttt{scipy.special.j1} when available;
+        falls back to an 8-significant-figure polynomial approximation
+        (Abramowitz \& Stegun) for $|x| < 8$ and asymptotic form for larger
+        arguments.
+  \item \textbf{Singularity at $u = 0$:} Explicitly returns $1.0$ when
+        $|u| < 10^{-10}$, avoiding the $0/0$ indeterminate form.
+  \item \textbf{Elliptical beam:} Supports independent azimuth and elevation
+        beamwidths via the $r$ normalisation, enabling elliptical aperture
+        modelling.
+  \item \textbf{Front-to-back ratio:} Models rear-hemisphere radiation with a
+        configurable FTB parameter and continuous $(1 - \cos\theta_{az})/2$
+        back-lobe weighting.
+  \item \textbf{Front fade:} Uses a sigmoid function
+        $f_{\text{front}} = 1/(1 + e^{-k\cos\theta_{az}})$ with a
+        user-configurable steepness $k$ (default~$40$, range~$1$--$100$)
+        to smoothly transition between front and back hemispheres, eliminating
+        the $\pm 90°$ discontinuity.  Lower $k$ values produce a wider,
+        more physically realistic transition zone.
+\end{itemize}
+
+\subsection{\OD{} Implementation}
+
+\OD{} models the parabolic dish in \texttt{antenna\_parabolic\_dish.cpp} using
+a sinc-based pattern:
+\begin{equation}
+  G(\theta) = G_{\text{peak}} \cdot \eta \cdot
+    \left| \sinc\!\left(\theta \cdot \pi \frac{D}{\lambda}\right) \right|,
+  \qquad
+  G_{\text{peak}} = \eta \left(\frac{\pi D}{\lambda}\right)^2
+  \label{eq:od_dish}
+\end{equation}
+
+The off-axis angle is computed as:
+\[
+  \theta = \sqrt{\theta_{az}^2 + \theta_{el}^2}
+\]
+
+For the combined transmit gain, the azimuth and elevation angles off boresight
+are combined into a single radial angle. Monopulse receive processing computes
+difference channels:
+\[
+  \Delta_{az} = \sqrt{3}\,\frac{\sin(x_{az}) - x_{az}\cos(x_{az})}{x_{az}^2}
+  \cdot G_{\text{peak}},
+  \qquad
+  x = \pi \frac{D f}{c} \cdot \theta_{\text{sat}}
+\]
+
+\subsection{Mathematical Analysis}
+
+\subsubsection{Diffraction Kernel}
+
+The fundamental difference is the choice of diffraction kernel:
+
+\begin{table}[H]
+\centering
+\caption{Diffraction kernel comparison for circular aperture.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Property} & \textbf{Jinc$^2$ (\AF{})} & \textbf{sinc (\OD{})} \\
+\midrule
+Aperture geometry & Circular (correct for dish) & Rectangular (1-D projection) \\
+First null location & $u = 3.832$ ($1.22\lambda/D$) & $u = \pi$ ($\lambda/D$) \\
+First sidelobe & $-17.6$~dB & $-13.3$~dB \\
+Second sidelobe & $-23.8$~dB & $-17.9$~dB \\
+Sidelobe falloff & $\sim u^{-3}$ & $\sim u^{-2}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The sinc function is the Fourier transform of a \emph{rectangular} aperture.
+Applying it to a circular dish produces sidelobes that are 4.3~dB too high at
+the first sidelobe and that decay too slowly ($u^{-2}$ vs $u^{-3}$), resulting
+in an over-estimation of interference power at wide angles.
+
+\subsubsection{Beamwidth Scaling}
+
+Both implementations use the standard $\theta_{3\text{dB}} = 1.22\lambda/D$
+beamwidth relation for a circular aperture.  \AF{} additionally supports
+frequency-dependent beamwidth scaling via three configurable modes (exponent,
+percentage per octave, three-point Lagrange interpolation).
+
+\subsubsection{Peak Gain}
+
+Both use the standard formula:
+\[
+  G_{\text{peak}} = \eta \left(\frac{\pi D}{\lambda}\right)^2
+\]
+\OD{} computes this explicitly in \texttt{GetMaxGain()}.  \AF{} accepts the
+user-specified peak gain in dBi and applies the efficiency factor as a
+multiplicative weight in the pattern computation.
+
+\caveat{The Jinc$^2$ kernel corresponds to the Fourier transform of a
+circular aperture and produces first sidelobes at $-17.6$~dB.  The sinc
+kernel corresponds to a rectangular aperture, with first sidelobes at
+$-13.3$~dB.  This 4.3~dB difference in sidelobe level is the primary
+distinction between the two dish models.}
+
+% ──────────────────────────────────────────────────────────────────
+\subsubsection{\OD{} Monopulse Receive (Feature Absent in \AF{})}
+
+\OD{} implements monopulse difference-channel patterns for tracking radars:
+\begin{align}
+  \Sigma &= G_{\text{peak}} \cdot |\sinc(x)| \\
+  \Delta &= \sqrt{3} \cdot G_{\text{peak}} \cdot
+    \frac{\sin(x) - x\cos(x)}{x^2}
+\end{align}
+
+This is a standard approximation for a monopulse comparator on a uniformly
+illuminated circular aperture.  \AF{} does not currently model monopulse
+processing.
+
+% ══════════════════════════════════════════════════════════════════
+\section{Horn Antenna}
+\label{sec:horn}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Physical Background}
+
+A pyramidal horn antenna has distinct radiation patterns in the E-plane
+(elevation) and H-plane (azimuth):
+
+\begin{align}
+  \text{E-plane (uniform):} \qquad
+    F_E(\theta) &= \sinc\!\left(\frac{\pi a}{\lambda}\sin\theta\right)
+    \label{eq:horn_e} \\[6pt]
+  \text{H-plane (cosine taper):} \qquad
+    F_H(\theta) &= \frac{\cos\!\left(\frac{\pi b}{\lambda}\sin\theta\right)}
+         {1 - \left(\frac{2b}{\lambda}\sin\theta\right)^2}
+    \label{eq:horn_h}
+\end{align}
+
+where $a$ and $b$ are the E-plane and H-plane aperture dimensions, respectively.
+
+For a conical horn (circular aperture), the pattern is symmetric and governed
+by the Airy function---similar to a dish but with a different feed mechanism.
+
+\subsection{\AF{} Implementation}
+
+\AF{} implements the full \emph{pyramidal} horn model with separate E-plane
+and H-plane functions:
+
+\begin{equation}
+  G(\theta_{az}, \theta_{el}) = G_{\text{peak}} \cdot
+    F_H^2(v_{az}) \cdot F_E^2(u_{el}) \cdot f_{\text{front}}
+\end{equation}
+where
+\begin{align}
+  u_{el} &= K_E \cdot \frac{\sin\theta_{el}}{\sin(\theta_{el,3\text{dB}}/2)},
+  &\qquad K_E &= 1.3916 \quad (\sinc^2(K_E) = 0.5) \\
+  v_{az} &= K_H \cdot \frac{\sin\theta_{az}}{\sin(\theta_{az,3\text{dB}}/2)},
+  &\qquad K_H &= 1.1891
+\end{align}
+
+The H-plane function includes proper treatment of the singularity at
+$v = \pm\pi/2$ via L'H\^{o}pital's rule:
+\[
+  \lim_{v \to \pm\pi/2} F_H(v) = \frac{\pi}{4}\cos(v)
+\]
+
+\subsection{\OD{} Implementation}
+
+\OD{} models a \emph{conical} horn in \texttt{antenna\_horn.cpp} using a
+simple cosine approximation:
+\begin{equation}
+  G(\theta) = G_{\text{peak}} \cdot \sin\!\left(\frac{\pi}{2} - \theta\right)
+            = G_{\text{peak}} \cdot \cos(\theta)
+\end{equation}
+where $\theta$ is computed as the radial angle off boresight:
+\[
+  \theta = \sqrt{\theta_{az}^2 + \theta_{el}^2}
+\]
+and the peak gain is:
+\[
+  G_{\text{peak}} = \eta \left(\frac{\pi D_{\text{horn}}}{\lambda}\right)^2
+\]
+
+Angles are saturated to $\pm 90°$ to avoid gain going negative.
+
+\subsection{Mathematical Analysis}
+
+\subsubsection{Pattern Shape Comparison}
+
+The two models produce fundamentally different pattern shapes:
+
+\begin{table}[H]
+\centering
+\caption{Horn antenna pattern characteristics.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Property} & \textbf{Pyramidal (\AF{})} & \textbf{cos($\theta$) (\OD{})} \\
+\midrule
+E/H asymmetry & Yes (independent planes) & No (rotationally symmetric) \\
+Sidelobe structure & Nulls and sidelobes from sinc, cos-taper & None (monotonic decay) \\
+First E-plane null & $u = \pi$ & Does not exist \\
+First H-plane null & $v = 3\pi/2$ & Does not exist \\
+Pattern at $\theta = 45°$ & Product of E/H cuts & $\cos(45°) = 0.707$ ($-1.5$~dB) \\
+Pattern at $\theta = 89°$ & Near zero (nulls dominate) & $\cos(89°) = 0.017$ ($-17.6$~dB) \\
+Physical basis & Aperture diffraction theory & Empirical first-order estimate \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Error Analysis}
+
+The $\cos(\theta)$ model is a reasonable first-order bound for the main beam
+envelope but fails to capture:
+\begin{enumerate}[leftmargin=2em]
+  \item E-plane vs H-plane beamwidth difference (typically 10--30\%)
+  \item Sidelobe nulls and peaks (critical for interference calculations)
+  \item The broader H-plane beam due to cosine aperture taper
+\end{enumerate}
+
+For an X-band standard-gain horn ($G_{\text{peak}} \approx 20$~dBi,
+$\theta_{3\text{dB}} \approx 12°$), the $\cos\theta$ model over-estimates gain
+at $30°$ off-axis by approximately 8--12~dB compared to the pyramidal model.
+
+\caveat{The pyramidal model captures E/H-plane asymmetry, sidelobe structure,
+and null positions, but requires distinct azimuth and elevation beamwidths.
+The $\cos(\theta)$ model is simpler and computationally cheaper, producing a
+smooth monotonic rolloff suitable for envelope-level simulation but without
+sidelobe detail.}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Dipole and Monopole Antenna}
+\label{sec:dipole}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Physical Background}
+
+The thin-wire dipole of total length $L$ (in wavelengths) has the classical
+far-field pattern:
+\begin{equation}
+  F(\theta) = \frac{\cos\!\left(\frac{kL}{2}\cos\theta\right)
+              - \cos\!\left(\frac{kL}{2}\right)}{\sin\theta}
+  \label{eq:dipole_classical}
+\end{equation}
+where $k = 2\pi/\lambda$ and $\theta$ is measured from the dipole axis.
+
+For a quarter-wave monopole ($L = \lambda/4$) over a perfect ground plane, the
+gain is doubled (3~dB increase) in the upper hemisphere, with zero radiation
+below the ground plane.
+
+\subsection{\AF{} Implementation}
+
+\AF{} implements the general dipole pattern in \texttt{monopole.py}:
+\begin{equation}
+  G(\theta_{el}) = G_{\text{peak}} \cdot
+    \left[
+      \frac{\cos\!\left(\frac{kL}{2}\sin\theta_{el}\right)
+            - \cos\!\left(\frac{kL}{2}\right)}
+           {\left(1 - \cos\!\left(\frac{kL}{2}\right)\right) \cos\theta_{el}}
+    \right]^2
+  \label{eq:af_dipole}
+\end{equation}
+
+where $\theta_{el}$ is the elevation angle (measured from the horizontal plane,
+not the dipole axis).  The denominator includes a normalisation factor
+$(1 - \cos(kL/2))$ that ensures the pattern peak is unity, allowing independent
+control of peak gain.
+
+\textbf{Edge-case handling:}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Horizon ($|\cos\theta_{el}| < 10^{-10}$):} Returns
+        $G_\text{peak} \times 10^{-7}$ to avoid division by zero.
+  \item \textbf{Full-wave degenerate ($|1 - \cos(kL/2)| < 10^{-12}$):}
+        Falls back to $\cos^n(\theta_{el})$ model, preventing the $0/0$
+        singularity that occurs at $L = 2\lambda, 4\lambda, \ldots$ where the
+        normalisation factor vanishes.
+  \item \textbf{Minimum gain floor:} Output is clamped to
+        $G_\text{peak} \times 10^{-7}$ ($-70$~dB relative) to avoid
+        numerical underflow.
+\end{itemize}
+
+\subsection{\OD{} Implementation}
+
+\OD{} implements the same classical formula separately for dipoles
+(\texttt{antenna\_comm\_dipole.cpp}) and monopoles
+(\texttt{antenna\_comm\_monopole.cpp}):
+
+\begin{equation}
+  G(\theta) = \left[
+    \frac{\cos\!\left(\frac{kL}{2}\cos\theta'\right)
+          - \cos\!\left(\frac{kL}{2}\right)}{\sin\theta'}
+  \right]^2
+  \label{eq:od_dipole}
+\end{equation}
+where $\theta' = \theta_{\text{bse}} - \pi/2$, rotating from the boresight
+convention (boresight = along dipole axis) to the formula convention (0 = broadside).
+
+For the monopole, the formula is identical but multiplied by 2 (the ground-plane
+gain doubling), with a hard cut to zero for $|\theta_{\text{bse}}| > \pi$:
+\begin{equation}
+  G_{\text{monopole}}(\theta) = 2 \cdot G_{\text{dipole}}(\theta),
+  \qquad |\theta_{\text{bse}}| \leq \pi
+\end{equation}
+
+\subsection{Mathematical Analysis}
+
+\subsubsection{Formula Equivalence}
+
+Both implementations use the same classical thin-wire dipole radiation formula.
+The apparent difference is purely in \emph{angle convention}:
+
+\begin{table}[H]
+\centering
+\caption{Dipole angle conventions.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+ & \textbf{\AF{}} & \textbf{\OD{}} \\
+\midrule
+Input angle & $\theta_{el}$ (from horizon) & $\theta_\text{bse}$ (from dipole axis) \\
+Formula angle & $\sin\theta_{el}$ replaces $\cos\theta$ & $\cos(\theta_\text{bse} - \pi/2)$ \\
+Identity used & $\cos(\pi/2 - x) = \sin(x)$ & same, applied differently \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Setting $\theta_{el} = \pi/2 - \theta$, the two formulations are mathematically
+identical.
+
+\subsubsection{Normalisation}
+
+\AF{} normalises by $(1 - \cos(kL/2))$ to decouple the pattern shape from the
+peak gain value, enabling the user to specify peak gain independently.  \OD{}
+returns the raw un-normalised pattern, where the peak magnitude depends on the
+electrical length $L$.  This means \OD{}'s peak gain is implicit in the formula
+rather than separately controllable.
+
+\subsubsection{Robustness at Degenerate Points}
+
+At $L = 2\lambda$ (full-wave), $\cos(kL/2) = \cos(2\pi) = 1$, making the
+normalisation factor $1 - 1 = 0$.  \AF{} explicitly guards against this with a
+$\cos^n$ fallback.  \OD{} does not guard this case; the pattern goes to
+$0/0$ as $\theta \to 0$ (boresight) for a full-wave dipole.
+
+Additionally, at $\theta = \pm 90°$ (along the dipole axis), both codes
+produce a $0/0$ form.  \AF{} handles this with a magnitude clamp; \OD{} has
+an explicit check:
+\lstinline[language=C++]{if (abs(abs(angle_off_boresight.value()) - PI/2) < 1e-12) return 0.0;}
+
+\subsubsection{Directive Dipole (\OD{} Only)}
+
+\OD{} includes a \texttt{DirectiveDipole} model that combines the standard
+dipole elevation pattern with an azimuthal sinc directivity:
+\begin{equation}
+  G(\theta_{az}, \theta_{el}) = F_{\text{dipole}}^2(\theta_{el}) \cdot
+    G_{\text{az,max}} \cdot \sinc^2\!\left(\theta_{az} \cdot
+    \frac{\pi w}{\lambda}\right)
+\end{equation}
+where $w = 1.22\lambda / \theta_{az,3\text{dB}}$.  This hybrid model provides
+azimuthal directivity to what is otherwise an omnidirectional dipole pattern.
+\AF{} does not have a direct equivalent, though a similar effect can be achieved
+by using the Panel antenna type with a dipole-like elevation beamwidth.
+
+\caveat{The core dipole math is identical between the two implementations.
+\AF{} includes explicit guards for full-wave degenerate and horizon
+singularity cases.  \OD{} offers a directive dipole variant not present
+in \AF{}.  Each approach reflects different design priorities.}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Phased Array Antenna}
+\label{sec:array}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Physical Background}
+
+The far-field pattern of a phased array is described by the \emph{Pattern
+Multiplication Theorem}:
+\begin{equation}
+  G_{\text{total}}(\theta, \phi) = G_{\text{element}}(\theta, \phi) \cdot
+    |AF(\theta, \phi)|^2
+  \label{eq:pmt}
+\end{equation}
+where the Array Factor for an $N$-element linear array along the $x$-axis is:
+\begin{equation}
+  AF(\theta) = \sum_{n=0}^{N-1} w_n \, e^{j n (k d \sin\theta + \beta)}
+  \label{eq:af_linear}
+\end{equation}
+with $d$ the element spacing, $\beta$ the progressive phase shift for beam
+steering, and $w_n$ the element amplitude weights.
+
+\subsection{\AF{} Implementation}
+
+\AF{} implements the full array factor summation from first principles in
+\texttt{array\_antenna.py}:
+
+\begin{equation}
+  |AF|^2 = \frac{1}{(\sum w_n)^2}
+    \left|\sum_{n=0}^{N-1} w_n \, e^{j(n\psi + \phi_n)}\right|^2,
+  \qquad
+  \psi = k d \sin\theta + \beta
+\end{equation}
+
+\textbf{Supported configurations:}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Geometries:} Linear, planar (rectangular), circular.
+  \item \textbf{Planar:} Product of two linear AFs:
+    $AF_{\text{planar}} = AF_x(\theta_{az}) \cdot AF_y(\theta_{el})$.
+  \item \textbf{Circular:} Elements at $\phi_n = 2\pi n / N$ on radius $R$:
+    \[
+      AF = \sum_{n=0}^{N-1} w_n \,
+        \exp\!\bigl[j k R (\cos(\theta_{az} - \phi_n)\cos\theta_{el}
+        - \cos(\theta_{\text{steer}} - \phi_n))\bigr]
+    \]
+  \item \textbf{Weighting:} Uniform or Taylor (raised-cosine taper for sidelobe
+    control).
+  \item \textbf{Beam steering:} Progressive phase
+    $\beta = -k d \sin\theta_{\text{steer}}$.
+  \item \textbf{Element pattern:} Gaussian elliptical beam
+    $G_{\text{elem}} = 0.5^{r^2}$.
+  \item \textbf{Mutual coupling:} Exponential-decay impedance matrix
+    $Z_{mn} = c_0 \, e^{-\alpha |m-n| d/\lambda}$ with Gaussian elimination
+    solver for coupled weights $w_{\text{coupled}} = Z^{-1} w_{\text{ideal}}$.
+\end{itemize}
+
+\subsection{\OD{} Implementation}
+
+\OD{} models the phased array as a parametric sinc-based rectangular aperture
+in \texttt{antenna\_simple\_phased\_array.cpp}:
+
+\begin{equation}
+  G = \frac{G_{\text{peak}}}{N_{\text{beams}}} \cdot
+    \sinc\!\left((\theta_{az} - \theta_{\text{steer}}) \cdot
+    \frac{\pi W}{\lambda}\right) \cdot
+    \sinc\!\left((\theta_{el} - \theta_{\text{steer,el}}) \cdot
+    \frac{\pi H}{\lambda}\right)
+  \label{eq:od_array}
+\end{equation}
+
+\textbf{Key features:}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Multi-beam:} Supports TX, RX, and TX/RX (TRX) beams with
+    independent steering angles. TX gain divided by number of TX beams.
+  \item \textbf{Spoiled transmit:} Per-beam configurable effective aperture
+    dimensions for broadened transmit coverage.
+  \item \textbf{Beam management:} Add, resteer, and remove beams at runtime
+    (essential for system simulation).
+  \item \textbf{Scan loss:} Optional $\cos(\theta_{\text{steer}})$ scan loss
+    when enabled.
+\end{itemize}
+
+\subsection{Mathematical Analysis}
+
+\subsubsection{Pattern Fidelity}
+
+\begin{table}[H]
+\centering
+\caption{Phased array model comparison.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Property} & \textbf{AF Phasor Sum (\AF{})} & \textbf{Sinc Aperture (\OD{})} \\
+\midrule
+Main beam shape & Exact for discrete elements & Continuous-aperture approximation \\
+Grating lobes & Naturally emerge at $d > \lambda/2$ & Not captured \\
+Sidelobe structure & Correct for $N$ elements + taper & Fixed sinc sidelobes \\
+Taylor taper effect & Reduced sidelobes, wider main beam & Not available \\
+Mutual coupling & Perturbed amplitude and phase & Not modelled \\
+Scan loss & Via $\cos\theta$ element factor & Optional toggle \\
+Computation cost & $O(N)$ per angle & $O(1)$ per angle \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The critical difference: for a discrete array with $d/\lambda > 0.5$, grating
+lobes appear at angles where $kd\sin\theta = 2\pi m$.  The AF phasor sum
+naturally produces these; the sinc aperture model cannot.  This can lead to
+significant under-estimation of interference in system simulations when
+element spacing exceeds half a wavelength.
+
+\subsubsection{Multi-Beam Operation}
+
+\OD{}'s multi-beam management is a significant capability for system-level
+simulation.  The total transmitted power is split equally among active TX beams
+($G_{\text{tx}}/N_{\text{beams}}$), and modern digital beamforming is assumed
+for receive (no RX beam-split loss).  \AF{} does not currently model
+multi-beam operation.
+
+\subsubsection{Circular Array}
+
+\AF{}'s circular array uses the geometrically exact phase delay for each element
+on the ring, correctly capturing the non-uniform angular spacing of grating
+lobe-like artefacts characteristic of circular arrays.  \OD{} does not offer a
+circular geometry.
+
+\caveat{The first-principles array factor naturally produces grating lobes,
+taper effects, and coupling perturbations at $O(N)$ cost per point.  The
+parametric sinc model runs at $O(1)$ per point and supports multi-beam
+management, but does not capture grating lobes or discrete-element effects.
+The trade-off is pattern detail vs.\ computational speed and system-level
+features.}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Panel / Sector Antenna}
+\label{sec:panel}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Physical Background}
+
+A rectangular aperture of width $a$ and height $b$ with uniform illumination
+produces a pattern that is the product of two sinc functions:
+\begin{equation}
+  G(\theta_{az}, \theta_{el}) = G_\text{peak} \cdot
+    \sinc^2\!\left(\frac{\pi a}{\lambda}\sin\theta_{az}\right) \cdot
+    \sinc^2\!\left(\frac{\pi b}{\lambda}\sin\theta_{el}\right)
+\end{equation}
+
+\subsection{\AF{} Implementation}
+
+\AF{} implements this model in \texttt{panel.py} with beamwidth-normalised
+arguments:
+\begin{equation}
+  G = G_\text{peak} \cdot \sinc^2(u_{az}) \cdot \sinc^2(u_{el}) \cdot
+    f_\text{front}
+\end{equation}
+where
+\[
+  u_{az} = 1.3916 \cdot \frac{\sin\theta_{az}}{\sin(\theta_{az,3\text{dB}}/2)},
+  \qquad
+  u_{el} = 1.3916 \cdot
+    \frac{\sin(\theta_{el} - \theta_\text{tilt})}
+         {\sin(\theta_{el,3\text{dB}}/2)}
+\]
+
+The constant $K = 1.3916$ satisfies $\sinc^2(K) = 0.5$, ensuring exact $-3$~dB
+at the declared beamwidth.
+
+Additional features:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Electrical downtilt:} Configurable beam tilt in elevation.
+  \item \textbf{FTB modelling:} Same continuous back-lobe model as all
+    directional types.
+\end{itemize}
+
+\subsection{Comparison with \OD{}}
+
+\OD{} does not have a dedicated panel/sector antenna type.  However, the
+\texttt{ParabolicEllipticalDish} uses a separable sinc model with independent
+width and height:
+\begin{equation}
+  G = \eta \cdot \frac{4\pi A}{\lambda^2} \cdot
+    |\sinc(\theta_{az} \cdot \pi W f / c)| \cdot
+    |\sinc(\theta_{el} \cdot \pi H f / c)|
+\end{equation}
+where $A = \pi W H / 4$ (elliptical area).  This is mathematically similar to
+\AF{}'s Panel model but assumes an elliptical rather than rectangular aperture
+and lacks the beamwidth normalisation that guarantees the $-3$~dB points align
+with declared beamwidth.
+
+\caveat{\OD{}'s elliptical dish uses $|\sinc|$ (magnitude, not squared),
+which means its sidelobe envelope decays as $1/u$ rather than $1/u^2$ --- the
+sidelobes are significantly higher than either the squared-sinc model (\AF{}) or
+physical measurement.}
+
+% ══════════════════════════════════════════════════════════════════
+\section{LPDA Antenna}
+\label{sec:lpda}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{\AF{} Implementation}
+
+The Log-Periodic Dipole Array is modelled in \texttt{lpda.py} using a Gaussian
+elliptical main beam with radial sidelobe envelope:
+
+\begin{equation}
+  G_\text{main} = G_\text{peak} \cdot 0.5^{r^2} \cdot f_\text{front},
+  \qquad
+  r^2 = \left(\frac{\theta_{az}}{\theta_{az,3\text{dB}}/2}\right)^2 +
+        \left(\frac{\theta_{el}}{\theta_{el,3\text{dB}}/2}\right)^2
+\end{equation}
+
+The Gaussian beam model $0.5^{r^2}$ is equivalent to:
+\[
+  G = G_\text{peak} \cdot \exp(-\ln 2 \cdot r^2)
+\]
+which produces smooth elliptical iso-gain contours.  This is a pragmatic
+engineering choice: LPDAs do not have a simple closed-form pattern, so the
+Gaussian model matches the main beam shape well while the sidelobe envelope
+provides the correct far-out behaviour.
+
+\textbf{Sidelobe model:}
+\begin{itemize}[leftmargin=2em]
+  \item Radial (elliptical rings, not rectangular bands).
+  \item Configurable first sidelobe level, number, and decay rate.
+  \item Smooth taper beyond last sidelobe (no hard cutoff).
+  \item Envelope: $G_\text{sl} = A_1 \cdot d^n \cdot \cos^2(\text{phase})$
+    with exponential decay beyond last lobe.
+\end{itemize}
+
+\OD{} does not implement an LPDA antenna type.
+
+% ══════════════════════════════════════════════════════════════════
+\section{Omnidirectional / Isotropic Antenna}
+\label{sec:omni}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{\AF{} Omni Implementation}
+
+\AF{}'s omnidirectional antenna uses a $\cos^n$ elevation model with sidelobe
+envelope:
+\begin{equation}
+  G(\theta_{el}) = G_\text{peak} \cdot |\cos\theta_{el}|^{n_{el}},
+  \qquad
+  n_{el} = \frac{\ln 0.5}{\ln \cos(\theta_{el,3\text{dB}}/2)}
+\end{equation}
+
+This models the elevation shaping of real-world omnidirectional antennas
+(collinear arrays, ground-plane monopoles, discone antennas) while maintaining
+360° azimuth coverage.
+
+\subsection{\OD{} Isotropic Implementation}
+
+\OD{}'s isotropic antenna returns $G = 1$ at all angles, serving as a
+theoretical reference.
+
+\subsection{Comparison}
+
+These serve different purposes: \AF{}'s Omni models a \emph{real-world}
+omnidirectional antenna with elevation shaping, while \OD{}'s Isotropic is
+a \emph{theoretical} point source.  For an ideal isotropic reference in \AF{},
+setting $n_{el} = 0$ and $G_\text{peak} = 1$ gives the equivalent result.
+
+% ══════════════════════════════════════════════════════════════════
+\section{System-Level Features}
+\label{sec:features}
+% ══════════════════════════════════════════════════════════════════
+
+Beyond the core antenna patterns, the two frameworks differ in their
+system-level modelling capabilities.  These features are summarised below.
+
+\subsection{Features Unique to \AF{}}
+
+\begin{description}[leftmargin=1.5em, style=nextline]
+  \item[Front-to-Back Ratio] Every directional antenna type includes a
+    configurable FTB with continuous back-lobe weighting
+    $(1 - \cos\theta_{az})/2$.  This ensures no dead zone at $\pm 90°$
+    and physically plausible rear-hemisphere radiation.
+
+  \item[Sigmoid Front Fade] The transition between front and back hemispheres
+    uses a logistic sigmoid $f = 1/(1 + e^{-k\cos\theta})$ whose steepness
+    $k$ is user-configurable (default~$40$, range~$1$--$100$).  At the
+    default $k = 40$ the transition zone spans $\sim 10°$; reducing $k$ to
+    $\sim 12$ widens it to $\sim 30°$, better matching measured horn and
+    dish roll-off.  This eliminates the visible discontinuity at $\pm 90°$
+    in heatmap plots.
+
+  \item[Frequency-Dependent Beamwidth] Three modes:
+    \begin{enumerate}
+      \item Exponent: $\theta_\text{BW}(f) = \theta_\text{BW,ref} \cdot (f_\text{ref}/f)^\alpha$
+      \item Percentage: $X\%$ decay per octave from reference
+      \item Three-point: Quadratic Lagrange through $(f_\text{min}, f_\text{mid}, f_\text{max})$
+    \end{enumerate}
+
+  \item[VSWR Rolloff] Band-edge gain reduction with configurable depth,
+    bandwidth fraction, and shape (linear or cosine).
+
+  \item[Pattern Breakup] Deterministic multi-frequency ripple at high off-axis
+    angles, modelling diffraction and structural scattering.
+
+  \item[Ground Reflection] Two-ray interference model:
+    $G' = G \cdot (1 + \rho^2 + 2\rho\cos(\Delta\phi + \pi))$.
+
+  \item[Cross-Polarisation] Angular-dependent cross-pol with configurable
+    boresight isolation, peak angle, and diagonal-plane factor.
+
+  \item[Asymmetry] Squint (az) and tilt (el) offsets with optional
+    deterministic perturbation for realistic imperfections.
+
+  \item[Sidelobe Envelope] Configurable first sidelobe level, number of
+    sidelobes, decay rate (Taylor vs uniform), and radial (elliptical)
+    geometry.
+
+  \item[Mutual Coupling (Array)] Impedance matrix model with Gaussian
+    elimination solver perturbing element amplitudes and phases.
+
+  \item[Gain-Beamwidth Coupling] Frequency-dependent gain linked to
+    beamwidth via directivity relationships, with three configurable
+    modes (gain drives beamwidth, beamwidth drives gain, independent
+    curves).
+\end{description}
+
+\subsection{Features Unique to \OD{}}
+
+\begin{description}[leftmargin=1.5em, style=nextline]
+  \item[Monopulse Receive] Sum ($\Sigma$) and difference ($\Delta_{az}$,
+    $\Delta_{el}$) channels on dish and elliptical dish antennas, using
+    standard monopulse comparator approximations.
+
+  \item[Multi-Beam Phased Array] Runtime beam management (add, resteer, remove)
+    with TX/RX/TRX beam types, spoiled transmit beams, and automatic power
+    splitting.
+
+  \item[Lookup-Based Antennas] 2-D (separate az/el cuts) and 3-D (full
+    az/el/freq) table-interpolated measured patterns.  Beamwidth is
+    determined from the interpolated data by searching for the $-3$~dB points.
+
+  \item[Directive Dipole] Hybrid dipole elevation $\times$ sinc azimuth model.
+\end{description}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Numerical Robustness and Edge Cases}
+\label{sec:robustness}
+% ══════════════════════════════════════════════════════════════════
+
+\begin{longtable}{p{3.5cm} p{5.5cm} p{5.5cm}}
+\toprule
+\textbf{Edge Case} & \textbf{\AF{}} & \textbf{\OD{}} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Edge Case} & \textbf{\AF{}} & \textbf{\OD{}} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\itshape Continued on next page} \\
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+
+sinc(0)/jinc(0) &
+  Explicit clamp: returns 1.0 when $|u| < 10^{-10}$ &
+  Uses built-in sinc; $0/0$ can occur at exact boresight \\
+
+Dipole at $\theta = \pm 90°$ &
+  Returns $G_\text{peak} \times 10^{-7}$ (floor) &
+  Returns 0.0 (hard check $< 10^{-12}$) \\
+
+Full-wave dipole ($kL = 4\pi$) &
+  $\cos^n$ fallback when $|1 - \cos(kL/2)| < 10^{-12}$ &
+  Not guarded; potential $0/0$ at boresight \\
+
+Horn at $v = \pm\pi/2$ &
+  L'H\^{o}pital limit: $\pi/4 \cdot \cos(v)$ &
+  N/A (no H-plane function) \\
+
+Negative gain &
+  All types clamp to $G_\text{peak} \times 10^{-7}$ minimum &
+  No universal floor; some types can return 0 or near-zero \\
+
+Array with $N = 0$ elements &
+  Weights list is empty; $|AF|^2 = 0$ &
+  Not guarded (likely division by zero) \\
+
+Horn angle saturation &
+  Sigmoid fade (configurable $k$) handles gracefully &
+  Hard saturation at $\pm 90°$: \texttt{Saturate()} \\
+\end{longtable}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Performance Considerations}
+\label{sec:perf}
+% ══════════════════════════════════════════════════════════════════
+
+\begin{table}[H]
+\centering
+\caption{Computational complexity per pattern point.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Type} & \textbf{\AF{}} & \textbf{\OD{}} \\
+\midrule
+Dish & $O(1)$: one Bessel + arithmetic & $O(1)$: one sinc + arithmetic \\
+Horn & $O(1)$: two trig functions & $O(1)$: one trig function \\
+Dipole & $O(1)$: four trig functions & $O(1)$: four trig functions \\
+Phased Array & $O(N)$: phasor sum over $N$ elements & $O(1)$: two sinc evaluations \\
+Panel & $O(1)$: two sinc evaluations & N/A \\
+LPDA & $O(1)$: exp + sidelobe search & N/A \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\AF{} compensates for the $O(N)$ array factor cost with NumPy vectorisation,
+computing the entire $(az, el)$ grid in batched array operations (typically
+50--100$\times$ faster than the scalar Python fallback).  \OD{}'s $O(1)$
+parametric model is advantageous for real-time system simulation where thousands
+of link calculations per timestep are needed.
+
+% ══════════════════════════════════════════════════════════════════
+\section{Conclusions and Recommendations}
+\label{sec:conclusions}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Pattern Modelling Approaches}
+
+The two codebases take different approaches to pattern modelling for each
+shared antenna type:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Dish:} \AF{} uses the Jinc$^2$ (Airy) kernel for circular
+    aperture diffraction; \OD{} uses a sinc kernel derived from rectangular
+    aperture theory.  These produce different sidelobe levels and decay rates.
+  \item \textbf{Horn:} \AF{} models separate E/H-plane aperture distributions
+    for a pyramidal horn; \OD{} uses a rotationally symmetric $\cos(\theta)$
+    envelope for a conical horn.  These target different horn geometries.
+  \item \textbf{Dipole:} Both use the same classical thin-wire formula with
+    different angle conventions and normalisation strategies.
+  \item \textbf{Array:} \AF{} computes a first-principles phasor sum (with
+    grating lobes and taper); \OD{} uses a parametric sinc aperture model
+    (with multi-beam management and $O(1)$ performance).
+\end{enumerate}
+
+\subsection{System-Level Capability}
+
+\OD{} provides system-simulation features not present in \AF{}:
+\begin{itemize}[leftmargin=2em]
+  \item Monopulse tracking (sum/difference channels)
+  \item Multi-beam phased array with runtime beam management
+  \item Measured-pattern lookup tables (2-D and 3-D)
+  \item Directive dipole hybrid model
+\end{itemize}
+
+\AF{} provides post-processing features not present in \OD{}:
+\begin{itemize}[leftmargin=2em]
+  \item Front-to-back ratio with continuous back-lobe weighting
+  \item Frequency-dependent beamwidth (three configurable modes)
+  \item VSWR rolloff, pattern breakup, cross-polarisation
+  \item Ground reflection (two-ray model)
+  \item Mutual coupling for phased arrays
+\end{itemize}
+
+The two feature sets reflect different design priorities: \OD{} targets
+real-time system-of-systems simulation, while \AF{} targets detailed
+pattern generation and analysis.
+
+\subsection{Potential Enhancements}
+
+Based on this analysis, the following cross-pollination opportunities exist:
+
+\begin{table}[H]
+\centering
+\caption{Recommended enhancements.}
+\small
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Enhancement} & \textbf{Target} & \textbf{Source} \\
+\midrule
+Lookup-based antenna & \AF{} & \OD{} (2-D/3-D tables) \\
+Monopulse receive mode & \AF{} & \OD{} (dish, array) \\
+Multi-beam array & \AF{} & \OD{} (beam management) \\
+Directive dipole type & \AF{} & \OD{} (dipole $\times$ sinc) \\
+Jinc$^2$ dish model & \OD{} & \AF{} (Airy pattern) \\
+Pyramidal horn model & \OD{} & \AF{} (E/H aperture) \\
+FTB back-lobe model & \OD{} & \AF{} (continuous weighting) \\
+Freq-dependent BW & \OD{} & \AF{} (3 decay modes) \\
+Pattern breakup & \OD{} & \AF{} (deterministic ripple) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════
+\appendix
+\section{Mathematical Reference}
+\label{app:math}
+% ══════════════════════════════════════════════════════════════════
+
+\subsection{Bessel Function $J_1(x)$}
+
+The first-order Bessel function of the first kind is defined by:
+\begin{equation}
+  J_1(x) = \frac{x}{2} \sum_{m=0}^{\infty}
+    \frac{(-1)^m}{m!\,(m+1)!} \left(\frac{x}{2}\right)^{2m}
+    = \frac{x}{2} - \frac{x^3}{16} + \frac{x^5}{384} - \cdots
+\end{equation}
+
+\AF{}'s fallback approximation uses the rational polynomial fit from
+Abramowitz \& Stegun (1964), \S9.4, providing $\sim$8 significant digits
+for $|x| < 8$.
+
+\subsection{Sinc Function Convention}
+
+Both codebases use the \emph{unnormalised} sinc:
+\[
+  \sinc(x) = \frac{\sin(x)}{x}, \qquad \sinc(0) = 1
+\]
+
+Note: some references use the \emph{normalised} sinc $\sin(\pi x)/(\pi x)$.
+This report and both codebases use the unnormalised form throughout.
+
+\subsection{$\cos^n$ Beam Model}
+
+The exponent $n$ is determined from the half-power beamwidth $\theta_{3\text{dB}}$:
+\[
+  \cos^n(\theta_{3\text{dB}}/2) = 0.5
+  \quad\Longrightarrow\quad
+  n = \frac{\ln 0.5}{\ln \cos(\theta_{3\text{dB}}/2)}
+\]
+
+\subsection{Front-Hemisphere Sigmoid}
+
+The sigmoid transition function:
+\[
+  f(\cos\theta_{az}) = \frac{1}{1 + e^{-k\cos\theta_{az}}}
+\]
+gives $f = 0.5$ at $\theta_{az} = \pm 90°$ for any $k$.  The steepness
+parameter $k$ is user-configurable (default~$40$, range~$1$--$100$) and
+controls the width of the front/back transition zone:
+\begin{center}
+\begin{tabular}{rll}
+  $k$ & Transition zone ($3\%$--$97\%$) & Character \\
+  \hline
+  $10$ & $\sim 40°$ & Gentle, physical \\
+  $20$ & $\sim 20°$ & Moderate \\
+  $40$ & $\sim 10°$ & Sharp (default) \\
+  $80$ & $\sim 5°$  & Very sharp \\
+\end{tabular}
+\end{center}
+Most measured directive antennas exhibit a gradual roll-off through
+$\pm 90°$; reducing $k$ to $10$--$15$ often produces more realistic
+heatmaps, particularly for wide-beam horns and dishes.
+
+\subsection{Array Factor Normalisation}
+
+For uniform weights $w_n = 1$, the array factor of an $N$-element linear array
+simplifies to:
+\[
+  |AF|^2 = \frac{1}{N^2}
+    \left|\frac{\sin(N\psi/2)}{\sin(\psi/2)}\right|^2,
+  \qquad
+  \psi = kd\sin\theta + \beta
+\]
+Grating lobes appear when $\psi = 2\pi m$ for integer $m \neq 0$, i.e.\
+when $\sin\theta = -\beta/(kd) + m\lambda/d$.
+
+\end{document}

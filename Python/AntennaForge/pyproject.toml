@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "antenna-tool"
+version = "1.0.0"
+description = "Antenna radiation pattern generation, analysis, and reporting tool"
+requires-python = ">=3.10"
+dependencies = [
+    "customtkinter>=5.2.0",
+]
+
+[project.optional-dependencies]
+full = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+    "Pillow>=10.2.0",
+]
+
+[project.scripts]
+antennaforge = "antenna_tool.cli:main"
+
+[project.gui-scripts]
+antennaforge-gui = "antenna_tool.gui.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["antenna_tool*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

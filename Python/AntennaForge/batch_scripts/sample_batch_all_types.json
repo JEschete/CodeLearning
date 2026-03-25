@@ -1,0 +1,309 @@
+{
+  "description": "Comprehensive batch — all antenna types with varied settings (sigmoid_k <= 10)",
+  "configs": [
+    {
+      "antenna_type": "LPDA",
+      "max_gain_dbi": 7.0,
+      "az_beamwidth_deg": 65.0,
+      "el_beamwidth_deg": 70.0,
+      "f_min_mhz": 30.0,
+      "f_max_mhz": 300.0,
+      "n_slices": 15,
+      "freq_spacing": "log",
+      "ftb_ratio_db": 15.0,
+      "sigmoid_k": 8.0,
+      "polarization": "vertical",
+      "noise_range_db": 0.5,
+      "output_dir": "./batch_output/lpda_vhf",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -13.2, "n_sidelobes": 5 },
+        "pattern_breakup": { "enabled": true },
+        "vswr_rolloff": { "enabled": true },
+        "cross_pol": { "enabled": true, "boresight_isolation_db": -25.0 }
+      }
+    },
+    {
+      "antenna_type": "LPDA",
+      "max_gain_dbi": 10.0,
+      "az_beamwidth_deg": 50.0,
+      "el_beamwidth_deg": 55.0,
+      "f_min_mhz": 100.0,
+      "f_max_mhz": 1000.0,
+      "n_slices": 20,
+      "freq_spacing": "log",
+      "ftb_ratio_db": 20.0,
+      "sigmoid_k": 6.0,
+      "polarization": "horizontal",
+      "noise_range_db": 0.3,
+      "output_dir": "./batch_output/lpda_uhf",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -15.0, "n_sidelobes": 4 },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 3.0 },
+        "vswr_rolloff": { "enabled": true, "max_rolloff_db": 2.5 },
+        "asymmetry": { "enabled": true, "az_squint_deg": 2.0, "el_tilt_deg": 1.0, "random_asymmetry_db": 0.5 }
+      }
+    },
+    {
+      "antenna_type": "Omni",
+      "max_gain_dbi": 2.15,
+      "el_beamwidth_deg": 80.0,
+      "f_min_mhz": 136.0,
+      "f_max_mhz": 174.0,
+      "n_slices": 10,
+      "freq_spacing": "linear",
+      "sigmoid_k": 5.0,
+      "polarization": "vertical",
+      "noise_range_db": 0.2,
+      "output_dir": "./batch_output/omni_vhf",
+      "features": {
+        "sidelobes": { "enabled": true },
+        "pattern_breakup": { "enabled": true },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Omni",
+      "max_gain_dbi": 5.0,
+      "el_beamwidth_deg": 40.0,
+      "f_min_mhz": 800.0,
+      "f_max_mhz": 960.0,
+      "n_slices": 8,
+      "freq_spacing": "linear",
+      "sigmoid_k": 7.0,
+      "polarization": "vertical",
+      "noise_range_db": 0.4,
+      "output_dir": "./batch_output/omni_uhf",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -10.0 },
+        "ground_reflection": { "enabled": true, "height_wavelengths": 2.0, "reflection_coeff": 0.6 },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Panel",
+      "max_gain_dbi": 14.0,
+      "az_beamwidth_deg": 65.0,
+      "el_beamwidth_deg": 15.0,
+      "f_min_mhz": 1710.0,
+      "f_max_mhz": 2170.0,
+      "n_slices": 12,
+      "freq_spacing": "linear",
+      "ftb_ratio_db": 25.0,
+      "sigmoid_k": 10.0,
+      "polarization": "vertical",
+      "panel_downtilt_deg": 4.0,
+      "noise_range_db": 0.3,
+      "output_dir": "./batch_output/panel_sector_aws",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -15.0, "n_sidelobes": 6 },
+        "pattern_breakup": { "enabled": true },
+        "vswr_rolloff": { "enabled": true },
+        "cross_pol": { "enabled": true, "boresight_isolation_db": -20.0 }
+      }
+    },
+    {
+      "antenna_type": "Panel",
+      "max_gain_dbi": 17.0,
+      "az_beamwidth_deg": 33.0,
+      "el_beamwidth_deg": 7.0,
+      "f_min_mhz": 3300.0,
+      "f_max_mhz": 3800.0,
+      "n_slices": 10,
+      "freq_spacing": "linear",
+      "ftb_ratio_db": 30.0,
+      "sigmoid_k": 9.0,
+      "polarization": "horizontal",
+      "panel_downtilt_deg": 6.0,
+      "noise_range_db": 0.2,
+      "output_dir": "./batch_output/panel_5g_cbrs",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -18.0, "decay_rate_db": 3.0 },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 2.0 },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Dish",
+      "max_gain_dbi": 30.0,
+      "az_beamwidth_deg": 3.5,
+      "el_beamwidth_deg": 3.5,
+      "f_min_mhz": 3700.0,
+      "f_max_mhz": 4200.0,
+      "n_slices": 10,
+      "freq_spacing": "linear",
+      "ftb_ratio_db": 35.0,
+      "sigmoid_k": 10.0,
+      "dish_efficiency": 0.60,
+      "polarization": "vertical",
+      "noise_range_db": 0.1,
+      "output_dir": "./batch_output/dish_cband",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -20.0, "n_sidelobes": 8 },
+        "pattern_breakup": { "enabled": false },
+        "vswr_rolloff": { "enabled": true, "max_rolloff_db": 1.5 },
+        "cross_pol": { "enabled": true, "boresight_isolation_db": -30.0 }
+      }
+    },
+    {
+      "antenna_type": "Dish",
+      "max_gain_dbi": 38.0,
+      "az_beamwidth_deg": 1.2,
+      "el_beamwidth_deg": 1.2,
+      "f_min_mhz": 10700.0,
+      "f_max_mhz": 12750.0,
+      "n_slices": 15,
+      "freq_spacing": "log",
+      "ftb_ratio_db": 40.0,
+      "sigmoid_k": 8.0,
+      "dish_efficiency": 0.70,
+      "polarization": "horizontal",
+      "noise_range_db": 0.1,
+      "output_dir": "./batch_output/dish_ku",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -22.0, "decay_rate_db": 3.5, "n_sidelobes": 10 },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 1.5 },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Horn",
+      "max_gain_dbi": 15.0,
+      "az_beamwidth_deg": 30.0,
+      "el_beamwidth_deg": 25.0,
+      "f_min_mhz": 8000.0,
+      "f_max_mhz": 12000.0,
+      "n_slices": 12,
+      "freq_spacing": "log",
+      "ftb_ratio_db": 25.0,
+      "sigmoid_k": 7.0,
+      "polarization": "vertical",
+      "noise_range_db": 0.2,
+      "output_dir": "./batch_output/horn_xband",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -13.2, "n_sidelobes": 4 },
+        "pattern_breakup": { "enabled": false },
+        "vswr_rolloff": { "enabled": true },
+        "cross_pol": { "enabled": true, "boresight_isolation_db": -28.0 }
+      }
+    },
+    {
+      "antenna_type": "Horn",
+      "max_gain_dbi": 20.0,
+      "az_beamwidth_deg": 15.0,
+      "el_beamwidth_deg": 12.0,
+      "f_min_mhz": 18000.0,
+      "f_max_mhz": 26500.0,
+      "n_slices": 10,
+      "freq_spacing": "log",
+      "ftb_ratio_db": 30.0,
+      "sigmoid_k": 9.0,
+      "polarization": "horizontal",
+      "noise_range_db": 0.15,
+      "output_dir": "./batch_output/horn_kband",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -16.0, "n_sidelobes": 6 },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 2.0 },
+        "vswr_rolloff": { "enabled": true, "max_rolloff_db": 2.0 }
+      }
+    },
+    {
+      "antenna_type": "Monopole",
+      "max_gain_dbi": 2.0,
+      "el_beamwidth_deg": 78.0,
+      "f_min_mhz": 118.0,
+      "f_max_mhz": 137.0,
+      "n_slices": 8,
+      "freq_spacing": "linear",
+      "sigmoid_k": 4.0,
+      "element_length_wavelengths": 0.25,
+      "polarization": "vertical",
+      "noise_range_db": 0.3,
+      "output_dir": "./batch_output/monopole_airband",
+      "features": {
+        "sidelobes": { "enabled": true },
+        "pattern_breakup": { "enabled": true },
+        "ground_reflection": { "enabled": true, "height_wavelengths": 0.25, "reflection_coeff": 0.8, "ground_type": "good_soil" },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Monopole",
+      "max_gain_dbi": 4.0,
+      "el_beamwidth_deg": 50.0,
+      "f_min_mhz": 400.0,
+      "f_max_mhz": 470.0,
+      "n_slices": 8,
+      "freq_spacing": "linear",
+      "sigmoid_k": 6.0,
+      "element_length_wavelengths": 0.625,
+      "polarization": "vertical",
+      "noise_range_db": 0.4,
+      "output_dir": "./batch_output/monopole_uhf_58",
+      "features": {
+        "sidelobes": { "enabled": true },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 5.0 },
+        "ground_reflection": { "enabled": true, "height_wavelengths": 1.5, "reflection_coeff": 0.5 },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Array",
+      "max_gain_dbi": 20.0,
+      "az_beamwidth_deg": 10.0,
+      "el_beamwidth_deg": 12.0,
+      "f_min_mhz": 2400.0,
+      "f_max_mhz": 2500.0,
+      "n_slices": 8,
+      "freq_spacing": "linear",
+      "ftb_ratio_db": 20.0,
+      "sigmoid_k": 8.0,
+      "array_geometry": "linear",
+      "array_n_elements_x": 8,
+      "array_n_elements_y": 1,
+      "array_spacing_x_lambda": 0.5,
+      "array_weighting": "uniform",
+      "array_steer_az_deg": 0.0,
+      "array_mutual_coupling": false,
+      "polarization": "vertical",
+      "noise_range_db": 0.2,
+      "output_dir": "./batch_output/array_linear_wifi",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -13.2 },
+        "pattern_breakup": { "enabled": false },
+        "vswr_rolloff": { "enabled": true }
+      }
+    },
+    {
+      "antenna_type": "Array",
+      "max_gain_dbi": 25.0,
+      "az_beamwidth_deg": 8.0,
+      "el_beamwidth_deg": 8.0,
+      "f_min_mhz": 3400.0,
+      "f_max_mhz": 3600.0,
+      "n_slices": 10,
+      "freq_spacing": "linear",
+      "ftb_ratio_db": 25.0,
+      "sigmoid_k": 10.0,
+      "array_geometry": "planar",
+      "array_n_elements_x": 8,
+      "array_n_elements_y": 8,
+      "array_spacing_x_lambda": 0.5,
+      "array_spacing_y_lambda": 0.5,
+      "array_weighting": "taylor",
+      "array_taper_sll_db": -25.0,
+      "array_steer_az_deg": 15.0,
+      "array_steer_el_deg": 5.0,
+      "array_mutual_coupling": true,
+      "polarization": "vertical",
+      "noise_range_db": 0.15,
+      "output_dir": "./batch_output/array_planar_5g",
+      "features": {
+        "sidelobes": { "enabled": true, "first_sidelobe_db": -25.0, "n_sidelobes": 8 },
+        "pattern_breakup": { "enabled": true, "ripple_amplitude_db": 1.5 },
+        "vswr_rolloff": { "enabled": true },
+        "cross_pol": { "enabled": true, "boresight_isolation_db": -22.0 },
+        "asymmetry": { "enabled": true, "az_squint_deg": 1.5, "el_tilt_deg": 0.5, "random_asymmetry_db": 0.3 }
+      }
+    }
+  ]
+}

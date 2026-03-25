@@ -1,0 +1,1 @@
+"""Multi-pattern report generation."""

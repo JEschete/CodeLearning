@@ -1,0 +1,539 @@
+% ===================================================================
+%  AntennaForge — Antenna Pattern Fidelity Assessment
+%  Per-Antenna Grading, Shortcomings, and Potential Improvements
+% ===================================================================
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{amsmath,amssymb}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{enumitem}
+\DeclareMathOperator{\sinc}{sinc}
+
+% ── Colour Definitions ───────────────────────────────────────────
+\definecolor{afblue}{HTML}{3B82F6}
+\definecolor{afdark}{HTML}{0F172A}
+\definecolor{afgray}{HTML}{475569}
+\definecolor{afred}{HTML}{DC2626}
+\definecolor{afgreen}{HTML}{16A34A}
+\definecolor{aforange}{HTML}{EA580C}
+
+% ── Hyperref Setup ───────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=afblue,
+    urlcolor=afblue,
+    pdftitle={AntennaForge — Antenna Pattern Fidelity Assessment},
+    pdfauthor={AntennaForge Project},
+}
+
+% ── Header / Footer ─────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\bfseries AntennaForge — Pattern Fidelity Assessment}
+\setlength{\headheight}{13.6pt}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Section Formatting ───────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{afdark}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\large\bfseries\color{afblue}}{}{0em}{\thesubsection\quad}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{afgray}}{}{0em}{\thesubsubsection\quad}
+
+% ── Grade box command ────────────────────────────────────────────
+\newcommand{\grade}[2]{%
+    \par\noindent\fcolorbox{#1}{#1!10}{%
+        \parbox{0.95\textwidth}{\textbf{\color{#1}Grade: #2}}%
+    }\par\medskip
+}
+
+\begin{document}
+
+% ── Title ────────────────────────────────────────────────────────
+\begin{center}
+    {\Huge\bfseries\color{afdark} Antenna Pattern Fidelity Assessment}\\[0.5em]
+    {\large\color{afgray} Per-Antenna Grading as Parameterised Synthetic Models}\\[1em]
+    {\color{afgray} AntennaForge Project \quad---\quad March 2026}
+\end{center}
+\vspace{1em}
+
+% ── Preamble ─────────────────────────────────────────────────────
+\section{Scope and Grading Criteria}
+
+This document assesses each AntennaForge antenna type on its merits as a
+\textbf{parameterised synthetic pattern generator}---not against a full-wave
+electromagnetic solver such as NEC, FEKO, or HFSS. The grading criteria are:
+
+\begin{itemize}[nosep]
+    \item \textbf{Physical basis} --- Is the front-lobe model grounded in
+          aperture theory, diffraction, or analytical EM?
+    \item \textbf{Parameter utilisation} --- Are all inputs to
+          \texttt{compute\_point\_gain()} meaningfully used?
+    \item \textbf{Frequency behaviour} --- Does the pattern evolve correctly
+          with frequency without manual intervention?
+    \item \textbf{Back hemisphere} --- Is the back-lobe model reasonable and
+          artefact-free?
+    \item \textbf{Extensibility} --- How easily can the model be improved
+          without restructuring?
+\end{itemize}
+
+\noindent
+Grades use a standard letter scale: \textbf{A+} (excellent),
+\textbf{A} (strong), \textbf{A$-$}, \textbf{B+}, \textbf{B},
+\textbf{B$-$}, \textbf{C+}, etc.
+
+\bigskip
+\noindent
+\textit{Source files assessed:}
+\texttt{antennas/monopole/monopole.py},
+\texttt{antennas/dish/dish.py},
+\texttt{antennas/panel/panel.py},
+\texttt{antennas/horn/horn.py},
+\texttt{antennas/array/array\_antenna.py},
+\texttt{antennas/lpda/lpda.py},
+\texttt{core/pattern\_math.py}.
+
+
+% =================================================================
+\newpage
+\section{Monopole / Dipole}
+% =================================================================
+
+\grade{afgreen}{A+}
+
+\subsection{Model Summary}
+
+The monopole uses the \textbf{exact analytical dipole formula}:
+\[
+G(\theta) = G_\text{peak} \cdot
+    \left[\frac{\cos\!\bigl(\tfrac{kL}{2}\sin\theta\bigr) - \cos\!\bigl(\tfrac{kL}{2}\bigr)}
+         {1 - \cos\!\bigl(\tfrac{kL}{2}\bigr)}\right]^{2}
+    \cdot \frac{1}{\cos^2\theta}
+\]
+where $kL = 2\pi L$ and $L$ is the element length in wavelengths.
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+\texttt{element\_length\_wavelengths} & A+ & Drives the entire pattern shape. Quarter-wave, half-wave, 5/8-wave all produce correct, distinct patterns. \\
+\texttt{monopole\_physical\_length\_m} & A+ & Enables automatic frequency scaling: $L(f) = \text{phys} / \lambda(f)$. Pattern evolves across band exactly as a fixed physical element would. \\
+\texttt{gain\_peak} & A & Passed through. The only user knob---everything else is physics-derived. \\
+Azimuth pattern & A+ & Omnidirectional (\texttt{has\_az\_pattern = False}). Correct for a vertical element over a ground plane. \\
+Degenerate handling & A & Full-wave ($L = 1.0\lambda$) singularity caught; falls back to $\cos^n$ model. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{No ground-plane size effects.} A real monopole's pattern depends on the finite ground plane radius; the model assumes an infinite ground plane.
+    \item \textbf{Gain not derived from directivity.} \texttt{gain\_peak} is a user knob rather than computed from pattern integration ($D = 1.64$ for a quarter-wave monopole, $2.15$ for a half-wave dipole).
+    \item \textbf{No impedance information.} Feed-point impedance ($36.5 + j21.25\,\Omega$ for a quarter-wave monopole) is not computed.
+    \item \textbf{Full-wave fallback is approximate.} The $\cos^n$ fallback at $L = 1.0\lambda$ does not match the true pattern (a four-lobed cloverleaf).
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item Compute theoretical directivity from element length and auto-set \texttt{gain\_peak} when the user does not override it.
+    \item Add finite ground-plane correction using image theory with a truncation factor.
+    \item Compute feed-point impedance from Hallen's or King's equations for thin-wire dipoles.
+    \item Replace the full-wave $\cos^n$ fallback with the proper limit of the dipole formula (L'H\^opital's rule at $\cos(kL/2) \to 1$).
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Dish (Parabolic Reflector)}
+% =================================================================
+
+\grade{afgreen}{A}
+
+\subsection{Model Summary}
+
+Circular aperture model using the \textbf{Jinc-squared (Airy) pattern}:
+\[
+G(\theta) = G_\text{peak} \cdot \eta \cdot
+    \left[\frac{2\,J_1(u)}{u}\right]^{2} \cdot T(r)
+\]
+where $u = 1.6163 \cdot \sin\theta / \sin(\theta_{3\text{dB}}/2)$,
+$\eta$ is aperture efficiency, and $T(r)$ is a Gaussian feed taper envelope.
+
+The constant $1.6163$ is the exact solution to $[2J_1(K)/K]^2 = 0.5$,
+guaranteeing $-3$\,dB at the stated beamwidth.
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+Front lobe (Jinc$^2$) & A+ & Exact circular aperture diffraction. Sidelobe positions and amplitudes match theory ($-17.6$\,dB first sidelobe for uniform illumination). \\
+\texttt{dish\_efficiency} & B+ & Realistic knob (0.55--0.65 typical), but not decomposed into spillover, blockage, and surface-error components. \\
+\texttt{feed\_edge\_taper\_db} & A & Gaussian envelope $\exp(-r^2/2\sigma^2)$ correctly suppresses sidelobes; $\sigma$ derived from taper dB at dish edge. \\
+\texttt{ftb\_ratio\_db} & B & User knob. A real dish FTB depends on edge diffraction, feed spillover, and strut scattering. \\
+Bessel $J_1$ & A & Uses \texttt{scipy.special.j1} when available; Abramowitz \& Stegun polynomial fallback accurate to $\sim 8$ significant figures. \\
+Back lobe & B & Heuristic $(1 - \cos\phi)/2$ weighting with $|\cos\theta|^{0.3n}$ elevation taper. Smooth, artefact-free, but not physics-derived. \\
+\texttt{sigmoid\_k} & B & Default $k = 40$ gives $\sim\!5^\circ$ transition at $\pm 90^\circ$; sharper than physical reality for a dish. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{No frequency-dependent beamwidth.} A real dish has $\text{BW} \propto \lambda / D$. Beamwidth is static unless the engine's frequency-dependent BW feature is manually enabled.
+    \item \textbf{Efficiency is a single scalar.} Real aperture efficiency decomposes into illumination efficiency, spillover, blockage ratio, and surface RMS error---each frequency-dependent.
+    \item \textbf{No aperture geometry input.} Dish diameter ($D$), focal length ($f$), and $f/D$ ratio are not modelled. Beamwidth and gain should be derivable from $D$ and $\lambda$.
+    \item \textbf{Back lobe model is generic.} Identical structure to all other antenna types; does not model feed spillover past the dish rim.
+    \item \textbf{Strut diffraction not modelled.} Quadrupod/tripod support struts create characteristic sidelobe spikes at specific angles.
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item Accept dish diameter as an input; derive $\text{BW} = 70\lambda / D$ and $G = \eta (\pi D / \lambda)^2$ automatically.
+    \item Decompose efficiency into sub-components: illumination ($\eta_\text{ill}$), spillover ($\eta_\text{sp}$), blockage ($\eta_\text{bl}$), surface ($\eta_\text{surf} = \exp[-(4\pi\epsilon/\lambda)^2]$ Ruze equation).
+    \item Model feed spillover as the back-lobe contribution rather than using the generic $(1-\cos\phi)/2$ formula.
+    \item Add optional strut diffraction spikes at user-specified angles and widths.
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Panel (Sector Antenna)}
+% =================================================================
+
+\grade{afgreen}{A}
+
+\subsection{Model Summary}
+
+Rectangular aperture model using \textbf{separable sinc-squared} pattern:
+\[
+G(\phi, \theta) = G_\text{peak} \cdot \sinc^2(u_\text{az}) \cdot \sinc^2(u_\text{el})
+\]
+where $u = 1.3916 \cdot \sin\theta / \sin(\theta_{3\text{dB}}/2)$ and
+$\sinc(x) = \sin(x)/x$. The constant $1.3916$ solves $\sinc^2(K) = 0.5$.
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+Front lobe ($\sinc^2$) & A+ & Exact rectangular aperture diffraction. First sidelobe at $-13.2$\,dB matches uniform illumination theory. Separable in az/el---valid for a rectangular aperture. \\
+\texttt{mechanical\_tilt\_deg} & A & Clean elevation offset $\theta_\text{eff} = \theta - \text{tilt}$. Models real base-station mechanical downtilt. \\
+\texttt{ftb\_ratio\_db} & B & User knob. Real panel FTB depends on reflector depth and edge treatment. \\
+Back lobe & B & Same generic heuristic as all antenna types. \\
+\texttt{sigmoid\_k} & B & Default $k = 40$ is too sharp for a panel antenna's gradual rolloff past $\pm 90^\circ$. \\
+\texttt{n\_az}, \texttt{n\_el} & C+ & Only \texttt{n\_el} is used (for back-lobe broadening); \texttt{n\_az} is dead. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{No electrical downtilt.} Real sector antennas use phase-shifted column feeds to steer the beam in elevation without mechanical tilt. Only mechanical tilt is modelled.
+    \item \textbf{Uniform illumination only.} The $\sinc^2$ pattern corresponds to uniform aperture illumination. Real panels use tapered illumination (e.g.\ Taylor, Dolph--Chebyshev) to control sidelobes, producing a wider main beam with lower sidelobes.
+    \item \textbf{No aperture dimensions.} Panel width/height are not inputs; beamwidth is a user knob rather than derived from aperture size.
+    \item \textbf{No frequency-dependent beamwidth.} BW should scale as $\lambda / W$ where $W$ is aperture width.
+    \item \textbf{\texttt{n\_az} is unused.} Passed into \texttt{compute\_point\_gain()} but never referenced---wasted parameter.
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item Add electrical downtilt via progressive phase across elevation elements.
+    \item Accept aperture dimensions (width, height); derive beamwidths as $\text{BW} \approx 51\lambda / W$ (for $-13$\,dB first SLL) or $70\lambda / W$ (uniform).
+    \item Support illumination taper options (uniform, Taylor, Chebyshev) that modify the pattern from pure $\sinc^2$ to the appropriate windowed shape.
+    \item Remove or utilise the \texttt{n\_az} parameter.
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Horn (Pyramidal)}
+% =================================================================
+
+\grade{afgreen}{A}
+
+\subsection{Model Summary}
+
+Standard pyramidal horn model with \textbf{asymmetric E/H-plane patterns}:
+\begin{align}
+    \text{E-plane (elevation):}\quad & G_\text{el} = \sinc^2(u_\text{el})
+        & u_\text{el} &= 1.3916 \cdot \frac{\sin\theta_\text{el}}{\sin(\theta_{\text{el},3\text{dB}}/2)} \\
+    \text{H-plane (azimuth):}\quad & G_\text{az} = \left[\frac{\cos v}{1 - (2v/\pi)^2}\right]^{2}
+        & v &= 1.1891 \cdot \frac{\sin\theta_\text{az}}{\sin(\theta_{\text{az},3\text{dB}}/2)}
+\end{align}
+Total front-lobe gain: $G = G_\text{peak} \cdot G_\text{az} \cdot G_\text{el}$ (Pattern Multiplication Theorem).
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+E-plane ($\sinc^2$) & A & Uniform illumination model. Correct for the electric-field distribution in the E-plane of a pyramidal horn. \\
+H-plane (cosine taper) & A+ & The $\cos v / [1-(2v/\pi)^2]$ function is the \textbf{standard textbook model} (Balanis, Collin \& Zucker). Correctly produces wider H-plane beam and lower H-plane sidelobes than E-plane. \\
+Singularity handling & A & L'H\^opital's rule correctly applied at $v = \pi/2$ where the denominator vanishes. \\
+\texttt{horn\_aperture\_wavelengths} & B$-$ & Defined in \texttt{default\_params()} and prompted during \texttt{configure()}, but \textbf{not actually used} in \texttt{compute\_point\_gain()}. The value is collected but never wired to beamwidth derivation. \\
+\texttt{ftb\_ratio\_db} & B & User knob. Real horn FTB depends on flare angle and waveguide modes. \\
+Back lobe & B & Generic heuristic. Uses $0.3 \times n_\text{el}$ broadening factor (tightest of all types). \\
+\texttt{n\_az}, \texttt{n\_el} & C+ & Only \texttt{n\_el} used for back lobe; \texttt{n\_az} is dead. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{\texttt{horn\_aperture\_wavelengths} is collected but unused.} The configure step prompts the user for aperture size and states ``beamwidth is derived from aperture size,'' but \texttt{compute\_point\_gain()} never references this value. This is a broken contract with the user.
+    \item \textbf{No flare angle or waveguide geometry.} Horn beamwidth should be derivable from aperture dimensions $a \times b$ and flare semi-angles $\psi_E$, $\psi_H$.
+    \item \textbf{No phase error (quadratic taper).} Real horns have a quadratic phase error across the aperture due to the spherical wavefront from the throat. This broadens the beam and raises sidelobes. The model assumes zero phase error (ideal horn).
+    \item \textbf{No gain from geometry.} Standard gain horn gain is $G = \frac{4\pi}{\lambda^2} \cdot A_\text{eff}$, which is not computed.
+    \item \textbf{No frequency scaling.} Horn beamwidth narrows with increasing frequency ($\text{BW} \propto \lambda / a$); this is not automatic.
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Wire up \texttt{horn\_aperture\_wavelengths}}---the most impactful fix. Derive $\text{BW}_\text{az} \approx 67\lambda/a$ and $\text{BW}_\text{el} \approx 51\lambda/b$ from aperture dimensions.
+    \item Add quadratic phase error parameter $s = a^2 / (8\lambda R)$ that modifies the pattern via the Fresnel integral formulation.
+    \item Compute standard gain horn directivity from aperture area.
+    \item Accept E-plane and H-plane aperture dimensions separately (rectangular horn is not always square).
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Phased Array}
+% =================================================================
+
+\grade{afblue}{A$-$}
+
+\subsection{Model Summary}
+
+Implements the \textbf{Pattern Multiplication Theorem}:
+$G_\text{total} = G_\text{element} \times \text{AF}$, where the Array Factor is:
+\[
+\text{AF}(\theta) = \frac{\left|\sum_{n=0}^{N-1} w_n \, e^{\,j n (kd\sin\theta + \beta)}\right|^2}
+    {\left(\sum_{n} w_n\right)^2}
+\]
+with progressive phase steering $\beta = -kd\sin\theta_\text{steer}$.
+
+Supports linear, planar (separable $\text{AF}_x \times \text{AF}_y$), and circular
+array geometries.
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+Array Factor & A+ & Exact wave superposition. Grating lobes, beam steering, and null positions are all physically correct. \\
+Progressive phase steering & A+ & Standard formula $\beta = -kd\sin\theta_s$. Works for both linear and planar arrays. \\
+Taylor weighting & B+ & Cosine-on-pedestal approximation, not exact Taylor. Produces reasonable sidelobe control but the exact sidelobe levels may differ from true Taylor by 1--2\,dB. \\
+Mutual coupling & B & Exponential decay model $Z_{mn} = c_0 e^{-\alpha |m-n| d}$ with distance-dependent phase. Captures the trend but magnitude and phase are not derived from element geometry. Gaussian elimination solver is correct. \\
+Element patterns & B$-$ & Three hardcoded models (Gaussian, cosine, patch) that are \textbf{not derived from element physics}. A ``patch'' element uses $\cos^{1.5}$ rolloff---empirical, not from cavity model. \\
+RMS errors & A & Per-element Gaussian amplitude/phase perturbations with deterministic seed. Models real manufacturing tolerances correctly. \\
+Circular array & A$-$ & Correct 3D phase computation with radial and parallel orientations. Arc-spacing approximation for coupling is reasonable. \\
+Grating lobe warning & A & Correctly flags $d > \lambda/2$. \\
+\texttt{ftb\_ratio\_db} & B & User knob. Real array FTB depends on element pattern and back-radiation, not an independent parameter. \\
+Back lobe & B$-$ & Simplest back-lobe model of all types: just $\text{FTB} \times (1-\cos\phi)/2$ with no elevation shaping. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Element patterns are empirical.} The three built-in element models are parametric fits, not derived from any physical element. A real array's performance depends critically on the element pattern, especially at wide scan angles.
+    \item \textbf{Taylor weighting is approximate.} The cosine-on-pedestal formula does not exactly reproduce Taylor $\bar{n}$ weights. For precise sidelobe specifications, exact Taylor or Dolph--Chebyshev weights are needed.
+    \item \textbf{Mutual coupling is frequency-independent.} The coupling matrix depends on element spacing in wavelengths but does not vary with frequency. Real coupling changes significantly across the band.
+    \item \textbf{No scan impedance.} Active element impedance varies with scan angle (scan blindness at certain angles). This is not modelled.
+    \item \textbf{No frequency scaling of spacing.} Element spacing is specified in wavelengths (fixed electrical spacing), not in physical metres. A real array with fixed physical spacing would see $d/\lambda$ increase with frequency.
+    \item \textbf{Back lobe has no elevation taper.} Unlike all other antenna types, the array back lobe is flat in elevation.
+    \item \textbf{Planar AF is separable only.} The product $\text{AF}_x \times \text{AF}_y$ is valid for rectangular lattices but not for triangular or hexagonal lattices.
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item Allow any registered antenna type as the element pattern (already hinted at in the docstring but not implemented).
+    \item Implement exact Taylor $\bar{n}$ weights and Dolph--Chebyshev weights.
+    \item Add physical element spacing (metres) option with frequency-dependent $d/\lambda$ computation.
+    \item Add scan impedance variation using an active-element-pattern model.
+    \item Support triangular and hexagonal lattice geometries.
+    \item Add elevation shaping to the back-lobe model for consistency with other antenna types.
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{LPDA (Log-Periodic Dipole Array)}
+% =================================================================
+
+\grade{aforange}{B+}
+
+\subsection{Model Summary}
+
+The LPDA uses an \textbf{elliptical Gaussian beam} model:
+\[
+G(\phi, \theta) = G_\text{peak} \cdot 0.5^{\,r^2} \cdot f_\text{sigmoid}(\cos\phi)
+\]
+where $r^2 = (\phi / \phi_\text{hw})^2 + (\theta / \theta_\text{hw})^2$ and
+$f_\text{sigmoid}$ is a smooth front-hemisphere fade.
+
+Back lobe: $G_\text{back} = G_\text{peak} \cdot \text{FTB}_\text{lin} \cdot
+\frac{1 - \cos\phi}{2} \cdot |\cos\theta|^{0.5 n_\text{el}}$.
+
+Total pattern: $G = \max(G_\text{front}, G_\text{back})$.
+
+\subsection{Parameter Assessment}
+
+\begin{longtable}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Grade} & \textbf{Notes} \\
+\midrule
+\endhead
+Main beam (Gaussian) & A & Smooth elliptical iso-gain contours. Avoids rectangular artefacts of separable $\cos^n$ models. The $0.5^{r^2}$ formulation guarantees $-3$\,dB at the beamwidth contour. Good choice for a synthetic beam. \\
+\texttt{az\_bw}, \texttt{el\_bw} & A & Direct, intuitive control. Correctly normalised via half-widths. \\
+\texttt{ftb\_ratio\_db} & B+ & Clean $\text{dB} \to \text{linear}$ conversion. Static across frequency---real LPDA FTB degrades at band edges. \\
+\texttt{ftb\_affects\_gain} & B$-$ & Rough energy conservation: $G' = G / (1 + \text{FTB}_\text{lin})$. Ignores sidelobe power. Better than nothing but undercounts total back-hemisphere radiation. \\
+\texttt{sigmoid\_k} & B & Default $k = 40$ gives $\sim\!5^\circ$ transition at $\pm 90^\circ$---unrealistically sharp. An LPDA has a broader rolloff; $k = 10$--$15$ would be more representative. \\
+Sidelobes (radial) & A$-$ & Elliptical rings via \texttt{compute\_sidelobe\_radial()} are a good model. Configurable first SLL, decay rate, and lobe count. Not LPDA-specific but reasonable. \\
+Back lobe & A & Smooth $(1 - \cos\phi)/2$ weighting with no dead zones at $\pm 90^\circ$ endfire. Broader elevation ($0.5 \times n_\text{el}$) than front is physically reasonable. \\
+\texttt{n\_az} & F & \textbf{Dead parameter.} Passed into \texttt{compute\_point\_gain()} but never referenced anywhere in the function body. \\
+\texttt{n\_el} & C+ & Only used for back-lobe elevation broadening ($0.5 \times n_\text{el}$). Not used in the front-lobe Gaussian model. \\
+\texttt{gain\_peak} & A & Correct role for a parameterised model. Passed through, optionally scaled by energy conservation. \\
+\texttt{cfg} extensibility & A & \texttt{sigmoid\_k}, \texttt{ftb\_affects\_gain}, and all sidelobe parameters accessible via config dict without code changes. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Generic beam shape.} The elliptical Gaussian is not LPDA-specific. The same model could represent a Yagi, log-spiral, or any other directional antenna. There is nothing in the pattern computation that reflects LPDA physics (active region, element superposition, feed network).
+    \item \textbf{\texttt{n\_az} is a dead parameter.} It is computed by the engine from \texttt{az\_bw} via \texttt{bw\_to\_exponent()}, passed into the function, and then ignored. This is wasted computation and a confusing contract.
+    \item \textbf{Sigmoid default is too sharp.} $k = 40$ creates a near-binary front/back division. An LPDA's radiation past $\pm 90^\circ$ tapers more gradually.
+    \item \textbf{No frequency-dependent FTB.} LPDA front-to-back ratio typically degrades by 3--5\,dB at band edges where fewer elements are active. The model uses a single static value.
+    \item \textbf{Energy conservation is crude.} The $1/(1 + \text{FTB}_\text{lin})$ correction does not account for sidelobe or wide-angle power.
+    \item \textbf{Geometry module is disconnected.} \texttt{core/lpda\_geometry.py} computes Carrel-based element lengths, boom length, estimated directivity ($10 \log_{10}(N_\text{active} \cdot 2\sigma / (1-\tau))$), beamwidth ($70\lambda / L_\text{boom}$), and FTB ($8 + 40(\tau - 0.8)$). \textbf{None of these feed into the pattern computation.}
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Wire geometry to pattern (highest impact).} Use \texttt{lpda\_geometry.py} outputs to auto-populate \texttt{az\_bw}, \texttt{el\_bw}, \texttt{gain\_peak}, and \texttt{ftb\_ratio\_db} when the user supplies $\tau$, $\sigma$, and frequency range. The Carrel estimates already exist---they just need to be connected.
+    \item \textbf{Frequency-dependent FTB.} Model FTB degradation at band edges using a curve tied to the number of active elements at each frequency.
+    \item \textbf{Reduce sigmoid default.} Change $k$ from $40$ to $12$--$15$ for a more realistic $\pm 30^\circ$ transition zone.
+    \item \textbf{Remove or utilise \texttt{n\_az}.} Either delete it from the function signature or use it (e.g.\ as an alternative beam-shaping exponent when beamwidth is very wide).
+    \item \textbf{Improve energy conservation.} Integrate sidelobe power into the conservation approximation, or replace with a proper pattern-integral normalisation.
+    \item \textbf{Active-region beamwidth scaling.} Beamwidth should narrow at higher frequencies (more active elements, longer effective boom). This could be done via the existing engine frequency-dependent BW feature, but should be auto-configured from $\tau$ and $\sigma$ rather than requiring manual setup.
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Shared Effects (\texttt{core/pattern\_math.py})}
+% =================================================================
+
+\grade{afblue}{B+}
+
+These effects are applied by the engine to \textbf{all antenna types} after
+\texttt{compute\_point\_gain()} returns. They are assessed independently of any
+specific antenna.
+
+\subsection{Effect Assessment}
+
+\begin{longtable}{@{}lllp{5.5cm}@{}}
+\toprule
+\textbf{Effect} & \textbf{Grade} & \textbf{Basis} & \textbf{Notes} \\
+\midrule
+\endhead
+Front-hemisphere sigmoid & B & Heuristic & Smooth $1/(1+e^{-k\cos\phi})$ transition. Eliminates heatmap artefacts. Not physics-derived but effective. \\
+$\text{BW} \leftrightarrow n$ conversion & A & Exact math & $n = \ln 0.5 / \ln(\cos(\text{BW}/2))$ is the exact inverse. \\
+Frequency-dependent BW & A$-$ & Aperture theory & Three modes (exponent, percentage, three-point). Exponent mode implements $\text{BW} \propto (f_\text{ref}/f)^\alpha$. Well-designed but requires manual feature configuration. \\
+Sidelobe envelope & B+ & Empirical & Taylor-decay model with cosine-modulated lobes. Elliptical radial version produces realistic ring patterns. Not antenna-specific. \\
+Pattern breakup & B & Synthetic & Deterministic sinusoidal ripple with onset angle. Visually realistic but not derived from any physical mechanism. \\
+Ground reflection & A & Image theory & 2-ray model: $1 + \rho^2 + 2\rho\cos(\Delta\varphi + \pi)$. Correct interference fringe spacing. \\
+Cross-polarisation & B & Empirical & Gaussian-envelope cross-pol with $\sin(2\arctan)$ diagonal factor. Produces the correct 45\textdegree\ peak pattern but levels are user-specified, not derived. \\
+VSWR rolloff & B & Parametric & Cosine/linear taper at band edges. Models the trend but not derived from impedance mismatch. \\
+Gain--BW coupling & A & Directivity law & $G \propto 1/(\text{BW}_\text{az} \cdot \text{BW}_\text{el})$. Correctly preserves the directivity relationship. \\
+Asymmetry & B+ & Empirical & Pointing offset + deterministic pseudo-random perturbation. Models real installation misalignment. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Shortcomings}
+
+\begin{enumerate}[nosep]
+    \item \textbf{VSWR rolloff is not derived from impedance.} It applies a parametric gain penalty at band edges rather than computing $\text{VSWR} = (1 + |\Gamma|) / (1 - |\Gamma|)$ from actual antenna impedance.
+    \item \textbf{Ground reflection uses a fixed $\rho$.} Real reflection coefficient depends on polarisation, frequency, grazing angle, and soil permittivity.
+    \item \textbf{Cross-pol model has no polarisation basis.} There is no Jones matrix, Stokes parameter, or axial ratio computation. The model is a gain-envelope approximation only.
+    \item \textbf{Sidelobe model is antenna-agnostic.} The same envelope is used for all antenna types despite very different sidelobe structures (e.g.\ dish Airy sidelobes vs.\ array grating lobes).
+\end{enumerate}
+
+\subsection{Potential Improvements}
+
+\begin{enumerate}[nosep]
+    \item Add angle-dependent and polarisation-dependent ground reflection coefficient (Fresnel equations).
+    \item Compute VSWR from antenna impedance when impedance data is available.
+    \item Allow per-antenna-type sidelobe models (the dish already has Jinc$^2$ sidelobes built into its front lobe; the engine sidelobe overlay may double-count).
+    \item Add Ludwig-3 cross-pol definition for linearly polarised antennas.
+\end{enumerate}
+
+
+% =================================================================
+\newpage
+\section{Summary}
+% =================================================================
+
+\begin{center}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Antenna} & \textbf{Front Lobe} & \textbf{Freq.\ Scaling} & \textbf{Geom.\ $\to$ Pattern} & \textbf{Back Lobe} & \textbf{Params Used} & \textbf{Overall} \\
+\midrule
+Monopole & Exact formula   & Auto   & Full    & Omni (correct) & All   & \textbf{A+} \\
+Dish     & Exact Airy      & Manual & Partial & Heuristic      & All   & \textbf{A}  \\
+Panel    & Exact $\sinc^2$ & Manual & None    & Heuristic      & Mostly & \textbf{A}  \\
+Horn     & Exact E/H       & Manual & \textbf{Broken}\footnotemark & Heuristic      & Mostly & \textbf{A}  \\
+Array    & Exact AF        & Manual & Partial & Flat           & All   & \textbf{A$-$}  \\
+LPDA     & Empirical       & Manual & \textbf{Disconnected} & Heuristic      & Mostly & \textbf{B+} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotetext{\texttt{horn\_aperture\_wavelengths} is prompted but never used in pattern computation.}
+
+\bigskip
+
+\subsection{Top Priority Improvements (Cross-Cutting)}
+
+\begin{enumerate}
+    \item \textbf{Wire LPDA geometry to pattern.} The Carrel equations in \texttt{lpda\_geometry.py} already compute beamwidth, directivity, and FTB estimates. Connecting them to the LPDA pattern generator would elevate it from B+ to A$-$ with no new physics required.
+
+    \item \textbf{Wire horn aperture to beamwidth.} \texttt{horn\_aperture\_wavelengths} is collected from the user but ignored. This is a broken promise that should be fixed.
+
+    \item \textbf{Add geometry-derived beamwidth to dish and panel.} Accepting aperture dimensions and deriving $\text{BW} = k\lambda/D$ would make frequency scaling automatic rather than requiring manual feature configuration.
+
+    \item \textbf{Reduce sigmoid default from $k=40$ to $k=12$.} Applies to all directional antenna types. The current default produces an unrealistically sharp front/back boundary.
+
+    \item \textbf{Clean up dead parameters.} \texttt{n\_az} is unused in LPDA, Panel, and Horn. Either utilise it or remove it from the call signature.
+\end{enumerate}
+
+\end{document}

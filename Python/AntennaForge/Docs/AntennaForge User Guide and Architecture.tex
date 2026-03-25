@@ -1,0 +1,2454 @@
+% ===================================================================
+%  AntennaForge — User Guide and Architecture Design Document
+%  Auto-generated comprehensive reference
+% ===================================================================
+\documentclass[11pt,a4paper,twoside]{article}
+
+% ── Packages ──────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{parskip}
+
+% ── Colour Definitions ───────────────────────────────────────────
+\definecolor{afblue}{HTML}{3B82F6}
+\definecolor{afdark}{HTML}{0F172A}
+\definecolor{afgray}{HTML}{475569}
+\definecolor{aflight}{HTML}{F8FAFC}
+\definecolor{afgreen}{HTML}{16A34A}
+\definecolor{afred}{HTML}{DC2626}
+\definecolor{aforange}{HTML}{D97706}
+\definecolor{afcode}{HTML}{1E293B}
+
+% ── Hyperref Setup ───────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=afblue,
+    urlcolor=afblue,
+    citecolor=afblue,
+    pdftitle={AntennaForge User Guide and Architecture},
+    pdfauthor={AntennaForge Project},
+    pdfsubject={Antenna Pattern Generation, Analysis, and Reporting},
+}
+
+% ── Code Listing Style ───────────────────────────────────────────
+\lstdefinestyle{afstyle}{
+    backgroundcolor=\color{aflight},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{afblue}\bfseries,
+    commentstyle=\color{afgray}\itshape,
+    stringstyle=\color{afgreen},
+    frame=single,
+    rulecolor=\color{afgray!30},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=4,
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{afgray},
+}
+\lstset{style=afstyle}
+
+% ── Header / Footer ─────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\nouppercase{\leftmark}}
+\fancyhead[RE]{AntennaForge User Guide}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Fix headheight warning
+\setlength{\headheight}{13.59999pt}
+
+% ── Section Formatting ───────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{afdark}}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\large\bfseries\color{afblue}}{}{0em}{\thesubsection\quad}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{afgray}}{}{0em}{\thesubsubsection\quad}
+
+% ── Custom column types ──────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Document Begin ───────────────────────────────────────────────
+\begin{document}
+
+% ===================================================================
+%  TITLE PAGE
+% ===================================================================
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\Huge\bfseries\color{afdark} AntennaForge\\[0.3em]}
+{\LARGE\color{afblue} User Guide \& Architecture Design Document\\[2em]}
+{\Large Version 1.0\\[1em]}
+{\large\color{afgray} Comprehensive Reference for All Features,\\
+Fields, Controls, and Internal Architecture\\[3em]}
+\vfill
+{\large\today}
+\end{titlepage}
+
+% ===================================================================
+%  TABLE OF CONTENTS
+% ===================================================================
+\newpage
+\tableofcontents
+\newpage
+
+% ===================================================================
+%  PART I — INTRODUCTION AND OVERVIEW
+% ===================================================================
+\newpage
+\section{Introduction}
+\label{sec:introduction}
+
+\textbf{Disclaimer:} AntennaForge generates \emph{synthetic} radiation patterns based on analytical mathematical models (e.g., Gaussian, $\cos^n$, sinc, Jinc). These are idealised approximations designed for system-level simulation. They are \textbf{not} derived from electromagnetic simulation of physical geometry (Method of Moments, FEM, FDTD) and may not capture near-field effects, complex structural scattering, or specific hardware imperfections unless explicitly modelled via the available physics features.
+
+AntennaForge is a Python-based antenna radiation pattern generator, analyser, and reporting tool. It produces realistic two-dimensional gain patterns in CSV format for a wide range of antenna types, supports frequency-dependent behaviour and numerous physics-based features, and provides a complete suite of visualisation, analysis, arithmetic, rotation, interpolation, link budget, and reporting capabilities.
+
+AntennaForge operates in three modes:
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Graphical User Interface (GUI)} — A modern desktop application built with customtkinter, featuring nine tabbed pages with full widget-based control.
+    \item \textbf{Interactive CLI} — A terminal-based menu-driven interface with state-machine navigation and GoBack support.
+    \item \textbf{Command-Line Interface (CLI)} — Direct invocation via command-line arguments for scriptable, headless operation.
+\end{enumerate}
+
+\subsection{Key Capabilities}
+\begin{itemize}
+    \item Seven built-in antenna models: LPDA, Omni, Panel, Dish, Horn, Monopole, and Phased Array.
+    \item Multi-frequency pattern generation with linear or logarithmic spacing.
+    \item Nine configurable physics features: frequency-dependent beamwidth (azimuth and elevation independently), Taylor sidelobes, pattern breakup, ground reflection, cross-polarisation, VSWR rolloff, asymmetry/squint, and gain-beamwidth coupling.
+    \item Pattern arithmetic (add, subtract, multiply, scale, max envelope, average).
+    \item Three-axis pattern rotation (yaw, pitch, roll) with bilinear/bicubic regridding.
+    \item Frequency interpolation (two-file, multi-file) and angular resampling.
+    \item EIRP calculation, power density computation, and free-space path loss.
+    \item Full link budget analysis (boresight margin and angular map modes).
+    \item Sidelobe mask compliance testing against ITU-R S.580-6, ITU-R S.465-6, and MIL-STD standards.
+    \item PDF and \LaTeX\ report generation with 13 configurable sections, cover pages, and classification markings.
+    \item Batch processing from JSON recipe files with dry-run validation.
+    \item Animated frequency-sweep GIFs (heatmap and polar styles).
+\end{itemize}
+
+\newpage
+\subsection{System Requirements}
+\begin{itemize}
+    \item Python 3.9 or later (3.10+ recommended).
+    \item \textbf{Required:} None — AntennaForge can run with the Python standard library alone (pure-Python fallback).
+    \item \textbf{Optional (recommended):}
+    \begin{itemize}
+        \item \texttt{numpy} — Vectorised computation (10--100$\times$ faster pattern generation).
+        \item \texttt{scipy} — Bicubic interpolation, Bessel functions for Dish patterns, advanced resampling.
+        \item \texttt{matplotlib} — All plotting and report generation.
+        \item \texttt{Pillow} — Image handling for the GUI plot viewer.
+        \item \texttt{customtkinter} — GUI framework (required only for GUI mode).
+        \item \texttt{python-pptx} — PowerPoint report generation.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Installation}
+\begin{lstlisting}[language=bash,caption={Standard installation}]
+pip install numpy scipy matplotlib Pillow customtkinter
+\end{lstlisting}
+
+An offline installation mode is also supported via bundled wheel files in the \texttt{wheels/} directory. See \texttt{PORTABLE\_SETUP.md} for details.
+
+\subsection{Launching AntennaForge}
+\begin{lstlisting}[language=bash,caption={Launch modes}]
+# GUI mode
+python AntennaForge.py
+
+# Interactive CLI mode
+python -m antenna_tool
+
+# Direct CLI generation
+python -m antenna_tool --type LPDA --max-gain 10 --az-bw 65 --el-bw 70 \
+    --f-min 30 --f-max 300 --slices 10 --output ./patterns
+\end{lstlisting}
+
+% ===================================================================
+%  PART II — ARCHITECTURE OVERVIEW
+% ===================================================================
+\newpage
+\section{Architecture Overview}
+\label{sec:architecture}
+
+\subsection{Directory Structure}
+The AntennaForge codebase is organised into the following packages:
+
+\begin{longtable}{L{3.5cm} L{10cm}}
+\toprule
+\textbf{Package / File} & \textbf{Purpose} \\
+\midrule
+\endhead
+	exttt{reporting/} & PDF report generator (\texttt{report.py}), \LaTeX\ report generator (\texttt{latex\_report.py}), and PowerPoint report generator (\texttt{pptx\_report.py}). The \LaTeX\ generator saves plot images into \texttt{images/} subfolders alongside the \texttt{.tex} file; the PDF generator renders directly into the PDF; the PPTX generator builds slide decks (requires \texttt{python-pptx}). \\
+\texttt{AntennaForge.py} & GUI launcher (launches the customtkinter desktop application). \\
+\texttt{\_\_main\_\_.py} & Package entry point for \texttt{python -m antenna\_tool} (delegates to \texttt{core/cli.py}). \\
+\texttt{core/} & Engine, pattern math, I/O, operations, rotation, interpolation, EIRP, link budget, sidelobe masks, batch processing, parameter fitting, CLI, logging, and dependency checking. \\
+\texttt{antennas/} & Base antenna class, antenna registry, and seven antenna model sub-packages (array, dish, horn, lpda, monopole, omni, panel). \\
+\texttt{analysis/} & Pattern analysis and statistics (beamwidth measurement, sidelobe detection, symmetry, comparison). \\
+\texttt{graphing/} & Matplotlib-based plotting: single-file plots, multi-file plots, animation/GIF generation, and live preview plots for the GUI. \\
+\texttt{gui/} & customtkinter desktop application: app shell, theme engine, user preferences, reusable widgets, and nine page modules. \\
+\texttt{ui/} & Terminal-mode UI: interactive menus, prompts, and feature configuration wizards. \\
+\texttt{scripts/} & Utility scripts: offline wheel download, installation, diff tables, and dataset batch generation. \\
+\texttt{tests/} & pytest test suite. \\
+\texttt{Docs/} & Documentation (this document). \\
+\bottomrule
+\end{longtable}
+
+\subsection{Data Flow}
+The central data flow of AntennaForge is:
+\begin{enumerate}
+    \item \textbf{Configuration} — The user specifies antenna type, gain, beamwidths, frequency band, features, and output settings. This is stored as a Python dictionary conforming to the schema in \texttt{config.py}.
+    \item \textbf{Generation} — The engine (\texttt{core/engine.py}) iterates over frequency slices. For each frequency, it computes a 2D gain grid over all azimuth/elevation angles using the selected antenna model and all enabled physics features. The result is written to CSV.
+    \item \textbf{Post-processing} — The user may apply arithmetic operations, rotation, interpolation, or resampling to the generated CSVs.
+    \item \textbf{Analysis} — Pattern CSVs are loaded and analysed for beamwidth, sidelobes, symmetry, and mask compliance.
+    \item \textbf{Visualisation} — Patterns are plotted as heatmaps, cuts, polar plots, 3D surfaces, gain-vs-frequency trends, or animated GIFs. Plot images are saved in \texttt{images/<plot\_type>/} subfolders alongside the source CSVs.
+    \item \textbf{Reporting} — A complete PDF or \LaTeX\ report is generated from a directory of pattern CSVs. The PDF report renders all figures in-memory via \texttt{PdfPages}. The \LaTeX\ report generates PNG images into \texttt{images/} subfolders (\texttt{heatmaps/}, \texttt{polar/}, \texttt{3d\_surface/}, \texttt{xpol/}) and references them via \texttt{\textbackslash includegraphics}.
+\end{enumerate}
+
+\subsection{CSV File Format}
+\label{sec:csvformat}
+All patterns are stored in a simple CSV format:
+\begin{itemize}
+    \item \textbf{Row 0 (header):} The first cell is \texttt{0} (placeholder), followed by azimuth angles in degrees (e.g., \texttt{0, 1, 2, \ldots, 359}).
+    \item \textbf{Rows 1--$N$:} Each row begins with an elevation angle (e.g., \texttt{-90, -89, \ldots, 90}), followed by gain values in dBi for each azimuth at that elevation.
+\end{itemize}
+
+File naming convention: \texttt{<Type>\_<Freq>MHz\_<Pol>.csv}, for example: \texttt{LPDA\_150p00MHz\_copol.csv}. Cross-polarisation files use \texttt{\_xpol.csv} suffix.
+
+\subsection{Plot Image Directory Structure}
+\label{sec:plotimages}
+Plot images are organised into subfolders by plot type. The \textbf{graphing} modules and the \textbf{\LaTeX\ report generator} each create an \texttt{images/} tree:
+
+\begin{itemize}
+    \item \texttt{images/heatmaps/} — Heatmap + az/el cuts combo plots.
+    \item \texttt{images/cuts/} — Principal-plane cut plots (graphing module only).
+    \item \texttt{images/polar/} — Polar pattern plots.
+    \item \texttt{images/3d\_surface/} — 3-D surface plots.
+    \item \texttt{images/xpol/} — Cross-polarisation heatmaps (\LaTeX\ report only).
+    \item \texttt{images/gain\_vs\_freq/} — Gain-vs-frequency trend (graphing module).
+    \item \texttt{images/bw\_vs\_freq/} — Beamwidth-vs-frequency trend (graphing module).
+    \item \texttt{images/overlay\_cuts/} — Overlay of all frequency cuts (graphing module).
+    \item Global trend plots (\texttt{gain\_vs\_freq.png}, \texttt{bw\_vs\_freq.png}, \texttt{overlay\_cuts.png}) are saved directly to \texttt{images/} by the \LaTeX\ report generator.
+\end{itemize}
+
+The PDF report generator (\texttt{reporting/report.py}) renders all figures directly into the PDF via Matplotlib's \texttt{PdfPages} backend and does not write any intermediate PNG files.
+
+\subsection{Configuration System}
+\label{sec:config}
+The \texttt{DEFAULT\_CONFIG} dictionary in \texttt{config.py} defines every parameter with its default value. Antenna-specific parameters (e.g., \texttt{dish\_efficiency}, \texttt{element\_length\_wavelengths}) are merged at runtime from each antenna model's \texttt{default\_params()} method.
+
+Configuration validation is performed by \texttt{validate\_config()}, which checks:
+\begin{itemize}
+    \item Required key presence and types.
+    \item Numeric ranges (e.g., gain: $-30$ to $60$\,dBi; beamwidth: $1^\circ$ to $360^\circ$; frequency: $0.001$ to $10^6$\,MHz).
+    \item Cross-field constraints (e.g., $f_{\min} \leq f_{\max}$).
+    \item Valid enumeration values for spacing (\texttt{linear}, \texttt{log}) and polarisation (\texttt{vertical}, \texttt{horizontal}, \texttt{custom}).
+    \item Feature sub-dictionary integrity.
+    \item Antenna type existence in the registry.
+\end{itemize}
+
+% ===================================================================
+%  PART III — ANTENNA MODELS
+% ===================================================================
+\newpage
+\section{Antenna Models}
+\label{sec:antennas}
+
+AntennaForge includes seven built-in antenna models. Each model inherits from the abstract base class \texttt{AntennaBase} and implements its own gain computation formula. All models are registered in the global \texttt{ANTENNA\_REGISTRY} via the \texttt{register()} mechanism in \texttt{antennas/\_\_init\_\_.py}.
+
+\subsection{Base Antenna Class}
+\label{sec:antennabase}
+The \texttt{AntennaBase} abstract class (\texttt{antennas/base.py}) defines the interface:
+\begin{itemize}
+    \item \texttt{name} (abstract property) — display/registry name (e.g., \texttt{"LPDA"}).
+    \item \texttt{has\_az\_pattern} (property) — \texttt{True} if the antenna shapes the azimuth pattern (defaults to \texttt{True}; overridden to \texttt{False} for Omni and Monopole).
+    \item \texttt{default\_params()} (abstract) — returns a dictionary of antenna-specific default parameters.
+    \item \texttt{configure(cfg)} (abstract) — interactive prompts for antenna-specific settings (CLI mode).
+    \item \texttt{validate\_config(cfg)} — returns a list of warning strings for unusual configurations.
+    \item \texttt{compute\_point\_gain($\ldots$)} (abstract) — returns the co-pol gain (linear scale) at one (azimuth, elevation) point.
+    \item \texttt{file\_prefix} (property) — prefix for generated CSV filenames.
+\end{itemize}
+
+% ── LPDA ─────────────────────────────────────────────────────────
+\subsection{LPDA (Log-Periodic Dipole Array)}
+\label{sec:lpda}
+
+\textbf{Registry name:} \texttt{LPDA} \quad\textbar\quad \textbf{Has azimuth pattern:} Yes
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{ftb\_ratio\_db} & 15.0 & Front-to-back ratio in dB \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Mathematical Model}
+The LPDA uses an elliptical Gaussian main beam model:
+\begin{equation}
+G_{\text{front}} = G_{\text{peak}} \cdot 0.5^{r^2}
+\end{equation}
+where the radial distance $r$ is computed as:
+\begin{equation}
+r^2 = \left(\frac{\mathrm{az}_{\text{eff}}}{\mathrm{az}_{\text{hw}}}\right)^2 + \left(\frac{\mathrm{el}_{\text{eff}}}{\mathrm{el}_{\text{hw}}}\right)^2
+\end{equation}
+with $\mathrm{az}_{\text{hw}}$ and $\mathrm{el}_{\text{hw}}$ being the half-power half-widths in azimuth and elevation respectively. Sidelobes are added via an elliptical radial envelope. The back lobe is modelled as:
+\begin{equation}
+G_{\text{back}} = \frac{G_{\text{peak}}}{\mathrm{FTB}_{\text{linear}}} \cdot |\cos(\mathrm{el})|
+\end{equation}
+The total gain is the maximum of front and back contributions, ensuring a smooth transition with no dead zones at $\pm 90^\circ$.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Front-to-back ratio $\leq 0$\,dB.
+    \item Azimuth beamwidth $\geq 360^\circ$.
+    \item Gain $\leq 0$\,dBi.
+\end{itemize}
+
+% ── Omni ─────────────────────────────────────────────────────────
+\subsection{Omnidirectional (Omni)}
+\label{sec:omni}
+
+\textbf{Registry name:} \texttt{Omni} \quad\textbar\quad \textbf{Has azimuth pattern:} No (360° uniform in azimuth)
+
+\subsubsection{Default Parameters}
+No antenna-specific parameters (empty dictionary). Azimuth beamwidth is forced to $360^\circ$.
+
+\subsubsection{Mathematical Model}
+The omni pattern has uniform azimuth response and shapes only the elevation:
+\begin{equation}
+G(\theta_{\text{el}}) = G_{\text{peak}} \cdot |\cos(\theta_{\text{el}})|^{n_{\text{el}}}
+\end{equation}
+where $n_{\text{el}}$ is derived from the elevation beamwidth via the \texttt{bw\_to\_exponent()} function:
+\begin{equation}
+n = \frac{-3}{10 \cdot \log_{10}\!\bigl(\cos(\mathrm{BW}/2)\bigr)}
+\end{equation}
+A sidelobe envelope is added in the elevation plane.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Azimuth beamwidth $\neq 360^\circ$.
+\end{itemize}
+
+% ── Panel ────────────────────────────────────────────────────────
+\subsection{Panel (Sector Antenna)}
+\label{sec:panel}
+
+\textbf{Registry name:} \texttt{Panel} \quad\textbar\quad \textbf{Has azimuth pattern:} Yes
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{ftb\_ratio\_db} & 20.0 & Front-to-back ratio in dB \\
+\texttt{mechanical\_tilt\_deg} & 0.0 & Mechanical uptilt/downtilt in degrees (positive = down) \\
+\texttt{max\_gain\_dbi} & 16.0 & Peak gain in dBi \\
+\texttt{az\_beamwidth\_deg} & 65.0 & Azimuth 3\,dB beamwidth \\
+\texttt{el\_beamwidth\_deg} & 10.0 & Elevation 3\,dB beamwidth \\
+\texttt{f\_min\_mhz} & 700.0 & Lower band edge in MHz \\
+\texttt{f\_max\_mhz} & 2700.0 & Upper band edge in MHz \\
+\bottomrule
+\end{tabular}
+
+\textbf{Note:} \texttt{mechanical\_tilt\_deg} replaces the legacy \texttt{panel\_downtilt\_deg} parameter. Both are accepted for backward compatibility, but \texttt{mechanical\_tilt\_deg} takes precedence. This parameter is also available for Horn, Dish, and Array types.
+
+\subsubsection{Mathematical Model}
+The Panel antenna uses a sinc-squared model in both planes:
+\begin{equation}
+G(\theta_{\text{az}}, \theta_{\text{el}}) = G_{\text{peak}} \cdot \operatorname{sinc}^2(u_{\text{az}}) \cdot \operatorname{sinc}^2(u_{\text{el}})
+\end{equation}
+where:
+\begin{equation}
+u = 1.3916 \cdot \frac{\sin(\theta)}{\sin(\theta_{3\text{dB}}/2)}
+\end{equation}
+Mechanical tilt is applied by offsetting the elevation angle before gain computation: $\theta'_{el} = \theta_{el} - \text{tilt}$. The back lobe is weighted by the front-to-back ratio and elevation.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Front-to-back ratio $\leq 0$\,dB.
+    \item Azimuth beamwidth $\geq 360^\circ$.
+\end{itemize}
+
+% ── Dish ─────────────────────────────────────────────────────────
+\subsection{Dish (Parabolic Reflector)}
+\label{sec:dish}
+
+\textbf{Registry name:} \texttt{Dish} \quad\textbar\quad \textbf{Has azimuth pattern:} Yes
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{dish\_efficiency} & 0.60 & Aperture efficiency (0 to 1) \\
+\texttt{feed\_edge\_taper\_db} & $-12.0$ & Feed illumination taper at dish edge (dB) \\
+\texttt{ftb\_ratio\_db} & 30.0 & Front-to-back ratio in dB \\
+\texttt{max\_gain\_dbi} & 30.0 & Peak gain in dBi \\
+\texttt{az\_beamwidth\_deg} & 5.0 & Azimuth 3\,dB beamwidth \\
+\texttt{el\_beamwidth\_deg} & 5.0 & Elevation 3\,dB beamwidth \\
+\texttt{f\_min\_mhz} & 3000.0 & Lower band edge in MHz \\
+\texttt{f\_max\_mhz} & 6000.0 & Upper band edge in MHz \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Mathematical Model}
+The Dish antenna uses the Airy pattern (Jinc-squared) with an optional feed taper envelope:
+\begin{equation}
+G(\theta) = G_{\text{peak}} \cdot \eta \cdot \left[\frac{2\,J_1(u)}{u}\right]^2 \cdot T(r)
+\end{equation}
+where:
+\begin{equation}
+u = 1.6163 \cdot \frac{\sin(\theta)}{\sin(\theta_{3\text{dB}}/2)}
+\end{equation}
+$\eta$ is the aperture efficiency, $J_1$ is the Bessel function of the first kind (from SciPy when available; otherwise a polynomial approximation is used), and $T(r) = \exp(-r^2 / 2\sigma^2)$ is a Gaussian taper envelope derived from \texttt{feed\_edge\_taper\_db}. The taper sigma is chosen so that the taper amplitude equals $10^{(\text{taper\_dB}/20)}$ at the dish edge ($r = 1$). When \texttt{feed\_edge\_taper\_db} is $0$\,dB, $T(r) = 1$ (uniform illumination). The back lobe is weighted by the front-to-back ratio and elevation.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Aperture efficiency outside the range $0.3$--$0.85$.
+    \item Azimuth beamwidth $\geq 90^\circ$.
+    \item Gain $< 15$\,dBi.
+\end{itemize}
+
+% ── Horn ─────────────────────────────────────────────────────────
+\subsection{Horn (Pyramidal)}
+\label{sec:horn}
+
+\textbf{Registry name:} \texttt{Horn} \quad\textbar\quad \textbf{Has azimuth pattern:} Yes
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{ftb\_ratio\_db} & 25.0 & Front-to-back ratio in dB \\
+\texttt{horn\_aperture\_wavelengths} & \texttt{None} & Physical aperture width in wavelengths (optional) \\
+\texttt{max\_gain\_dbi} & 15.0 & Peak gain in dBi \\
+\texttt{az\_beamwidth\_deg} & 30.0 & Azimuth 3\,dB beamwidth \\
+\texttt{el\_beamwidth\_deg} & 30.0 & Elevation 3\,dB beamwidth \\
+\texttt{f\_min\_mhz} & 4000.0 & Lower band edge in MHz \\
+\texttt{f\_max\_mhz} & 8000.0 & Upper band edge in MHz \\
+\bottomrule
+\end{tabular}
+
+When \texttt{horn\_aperture\_wavelengths} is set, beamwidths are derived from the aperture size and scale with frequency: $BW_H = 67^\circ / (a \cdot f/f_{ref})$, $BW_E = 51^\circ / (a \cdot f/f_{ref})$. When \texttt{None}, beamwidths are set manually.
+
+\subsubsection{Mathematical Model}
+The Horn antenna uses a standard gain horn model with separate E-plane and H-plane formulations:
+
+\textbf{E-plane (elevation):}
+\begin{equation}
+G_E = \operatorname{sinc}^2(u_{\text{el}}) \quad\text{where}\quad u_{\text{el}} = 1.3916 \cdot \frac{\sin(\theta_{\text{el}})}{\sin(\theta_{\text{el},3\text{dB}}/2)}
+\end{equation}
+
+\textbf{H-plane (azimuth):}
+\begin{equation}
+G_H = \left[\frac{\cos(v)}{1 - (2v/\pi)^2}\right]^2 \quad\text{where}\quad v = 1.1891 \cdot \frac{\sin(\theta_{\text{az}})}{\sin(\theta_{\text{az},3\text{dB}}/2)}
+\end{equation}
+
+The back lobe is weighted by the front-to-back ratio and elevation.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Azimuth beamwidth $\geq 180^\circ$.
+    \item Gain $< 5$\,dBi.
+\end{itemize}
+
+% ── Monopole ─────────────────────────────────────────────────────
+\subsection{Monopole / Dipole}
+\label{sec:monopole}
+
+\textbf{Registry name:} \texttt{Monopole} \quad\textbar\quad \textbf{Has azimuth pattern:} No (omnidirectional in azimuth)
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{element\_length\_wavelengths} & 0.25 & Element length in wavelengths \\
+\texttt{monopole\_physical\_length\_m} & \texttt{None} & Physical element length in metres (optional) \\
+\texttt{max\_gain\_dbi} & 2.15 & Peak gain in dBi \\
+\texttt{f\_min\_mhz} & 100.0 & Lower band edge in MHz \\
+\texttt{f\_max\_mhz} & 500.0 & Upper band edge in MHz \\
+\bottomrule
+\end{tabular}
+
+When \texttt{monopole\_physical\_length\_m} is set, the electrical length scales with frequency: $L(f) = \text{physical\_length} / (c/f)$. This models a fixed physical element whose pattern evolves across the band. When \texttt{None}, every frequency slice uses the same \texttt{element\_length\_wavelengths}.
+
+\subsubsection{Mathematical Model}
+For a quarter-wave monopole ($L = 0.25\lambda$):
+\begin{equation}
+G(\theta_{\text{el}}) = G_{\text{peak}} \cdot \left[\frac{\cos\!\bigl(\frac{\pi}{2} \sin(\theta_{\text{el}})\bigr)}{\cos(\theta_{\text{el}})}\right]^2
+\end{equation}
+
+For a general dipole of length $L$ wavelengths:
+\begin{equation}
+G(\theta_{\text{el}}) = G_{\text{peak}} \cdot \frac{\bigl[\cos\!\bigl(\frac{kL}{2}\sin(\theta_{\text{el}})\bigr) - \cos\!\bigl(\frac{kL}{2}\bigr)\bigr]^2}{\bigl[1 - \cos\!\bigl(\frac{kL}{2}\bigr)\bigr]^2 \cdot \cos^2(\theta_{\text{el}})}
+\end{equation}
+where $kL = 2\pi L$.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Element length $> 1.5\lambda$ (multi-lobe patterns expected).
+    \item Azimuth beamwidth $\neq 360^\circ$.
+\end{itemize}
+
+% ── Array ────────────────────────────────────────────────────────
+\newpage
+\subsection{Phased Array}
+\label{sec:array}
+
+\textbf{Registry name:} \texttt{Array} \quad\textbar\quad \textbf{Has azimuth pattern:} Yes
+
+\subsubsection{Default Parameters}
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{array\_geometry} & \texttt{linear} & Array layout: linear, planar, or circular \\
+\texttt{array\_n\_elements\_x} & 8 & Number of elements along the X axis \\
+\texttt{array\_n\_elements\_y} & 1 & Number of elements along the Y axis (planar) \\
+\texttt{array\_spacing\_x\_lambda} & 0.5 & X-axis element spacing in wavelengths \\
+\texttt{array\_spacing\_y\_lambda} & 0.5 & Y-axis element spacing in wavelengths \\
+\texttt{array\_steer\_az\_deg} & 0.0 & Beam steering azimuth angle \\
+\texttt{array\_steer\_el\_deg} & 0.0 & Beam steering elevation angle \\
+\texttt{array\_weighting} & \texttt{uniform} & Amplitude taper: uniform or Taylor \\
+\texttt{array\_taper\_sll\_db} & $-25.0$ & Taylor taper sidelobe level in dB \\
+\texttt{array\_mutual\_coupling} & \texttt{False} & Enable mutual coupling model \\
+\texttt{array\_element\_pattern} & \texttt{gaussian} & Element pattern type: gaussian, cosine, or patch \\
+\texttt{array\_rms\_phase\_error\_deg} & 0.0 & RMS phase error per element (degrees) \\
+\texttt{array\_rms\_amplitude\_error\_db} & 0.0 & RMS amplitude error per element (dB) \\
+\texttt{array\_circular\_orientation} & \texttt{parallel} & Circular array element pointing: parallel or radial \\
+\texttt{ftb\_ratio\_db} & 20.0 & Front-to-back ratio in dB \\
+\texttt{max\_gain\_dbi} & 18.0 & Peak gain in dBi \\
+\texttt{az\_beamwidth\_deg} & 30.0 & Azimuth 3\,dB beamwidth \\
+\texttt{el\_beamwidth\_deg} & 30.0 & Elevation 3\,dB beamwidth \\
+\texttt{f\_min\_mhz} & 2000.0 & Lower band edge in MHz \\
+\texttt{f\_max\_mhz} & 4000.0 & Upper band edge in MHz \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Mathematical Model}
+The Phased Array uses the Pattern Multiplication Theorem:
+\begin{equation}
+G(\theta, \phi) = G_{\text{element}}(\theta, \phi) \cdot |AF(\theta, \phi)|^2
+\end{equation}
+
+\textbf{Element Pattern:} Three models are available via \texttt{array\_element\_pattern}:
+\begin{itemize}
+    \item \texttt{gaussian} (default): $G_{elem} = 0.5^{r^2}$ where $r^2 = (\theta_{az}/\theta_{hw})^2 + (\theta_{el}/\theta_{hw})^2$
+    \item \texttt{cosine}: $G_{elem} = [\cos(\pi/2 \cdot \theta/\theta_{3dB})]^2$ per plane
+    \item \texttt{patch}: $G_{elem} = \cos^{1.5}(\theta_{az}) \cdot \cos^{1.5}(\theta_{el})$ (empirical microstrip patch model)
+\end{itemize}
+
+\textbf{Linear Array Factor:}
+\begin{equation}
+AF(\theta) = \sum_{n=0}^{N-1} w_n \cdot e^{\,j\,n\,(k\,d\,\sin\theta + \beta)}
+\end{equation}
+where $w_n$ are the element weights (uniform or Taylor taper), $k = 2\pi/\lambda$, $d$ is the element spacing, and $\beta$ is the progressive phase shift for beam steering.
+
+\textbf{Planar Array:} Formed as the product of two orthogonal linear array factors (X and Y axes).
+
+\textbf{Circular Array:} Elements distributed uniformly on a circle; the array factor accounts for each element's position in polar coordinates. Element orientation is controlled by \texttt{array\_circular\_orientation}: \texttt{parallel} (all elements point broadside) or \texttt{radial} (each element points outward from centre, with gain weighted by $\cos(\phi - \phi_n)$).
+
+\textbf{Mutual Coupling:} When enabled, a complex $N \times N$ impedance matrix is constructed using an exponential-decay model: $Z_{mn} = c_0 \cdot \exp(-\alpha \cdot |m-n| \cdot d/\lambda)$ for $m \neq n$, $Z_{mm} = 1$. The coupled weights are obtained by solving $Z \cdot w_{coupled} = w_{ideal}$ via Gaussian elimination with partial pivoting.
+
+\textbf{Element Errors:} When \texttt{array\_rms\_amplitude\_error\_db} or \texttt{array\_rms\_phase\_error\_deg} are non-zero, Gaussian-distributed random perturbations are applied to each element's weight and phase offset using a deterministic seed for repeatability.
+
+\subsubsection{Validation Warnings}
+\begin{itemize}
+    \item Element spacing $> 0.5\lambda$ in either axis (grating lobes may appear).
+\end{itemize}
+
+% ===================================================================
+%  PART IV — PHYSICS FEATURES
+% ===================================================================
+\newpage
+\section{Physics Features}
+\label{sec:features}
+
+AntennaForge provides nine configurable physics features that can be independently enabled or disabled. Each feature is controlled by a sub-dictionary within the \texttt{features} key of the configuration.
+
+\subsection{Frequency-Dependent Beamwidth (Azimuth)}
+\label{sec:feat_bw_az}
+
+\textbf{Config key:} \texttt{features.freq\_dependent\_bw\_az}\\
+\textbf{Default:} Enabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Causes the azimuth beamwidth to narrow as frequency increases, modelling the physical behaviour of real antennas. Three decay modes are available:
+
+\subsubsection{Exponent Mode}
+\begin{equation}
+\mathrm{BW}(f) = \mathrm{BW}_{\text{base}} \cdot \left(\frac{f_{\text{ref}}}{f}\right)^{\alpha}
+\end{equation}
+where $\alpha$ is the scaling exponent (default: 0.8). For LPDA antennas, an additional damping factor (LPDA variation factor, default: 0.4) is applied to moderate the frequency dependence, reflecting the LPDA's broadband nature.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{scaling\_exponent} & 0.8 & Power-law exponent $\alpha$ \\
+\texttt{lpda\_variation\_factor} & 0.4 & LPDA damping factor \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Percentage Mode}
+\begin{equation}
+\mathrm{BW}(f) = \mathrm{BW}_{\text{base}} \cdot \left(1 - \frac{P}{100}\right)^{\log_2(f/f_{\text{ref}})}
+\end{equation}
+where $P$ is the percentage reduction per octave (default: 15\%).
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{decay\_pct\_per\_octave} & 15.0 & Percent BW reduction per octave \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Three-Point Mode}
+A quadratic (Lagrange) interpolation through three user-specified beamwidth values at the start, middle, and end of the frequency band.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{three\_point\_start\_deg} & None & BW at $f_{\min}$ \\
+\texttt{three\_point\_mid\_deg} & None & BW at $f_{\text{mid}}$ \\
+\texttt{three\_point\_end\_deg} & None & BW at $f_{\max}$ \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Beamwidth Clamps}
+Regardless of the decay mode, the computed beamwidth is clamped between configurable minimum and maximum values:
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{min\_bw\_deg} & 10.0 & Floor for azimuth beamwidth \\
+\texttt{max\_bw\_deg} & 180.0 & Ceiling for azimuth beamwidth \\
+\bottomrule
+\end{tabular}
+
+\subsection{Frequency-Dependent Beamwidth (Elevation)}
+\label{sec:feat_bw_el}
+
+\textbf{Config key:} \texttt{features.freq\_dependent\_bw\_el}\\
+\textbf{Default:} Enabled
+
+Identical to the azimuth version (Section~\ref{sec:feat_bw_az}) but applied independently to the elevation plane. Default elevation clamps are $10^\circ$--$90^\circ$.
+
+\subsection{Sidelobes (Taylor)}
+\label{sec:feat_sidelobes}
+
+\textbf{Config key:} \texttt{features.sidelobes}\\
+\textbf{Default:} Enabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Adds a realistic Taylor sidelobe structure to the pattern. The sidelobe envelope is computed as a function of off-axis angle, with configurable first sidelobe level, decay rate, and number of sidelobe pairs.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{type} & \texttt{taylor} & Sidelobe model type \\
+\texttt{first\_sidelobe\_db} & $-13.2$ & First sidelobe level relative to peak (dB) \\
+\texttt{decay\_rate\_db} & 2.0 & Sidelobe rolloff rate (dB per lobe) \\
+\texttt{n\_sidelobes} & 5 & Number of sidelobe pairs per cut \\
+\bottomrule
+\end{tabular}
+
+\subsection{Pattern Breakup}
+\label{sec:feat_breakup}
+
+\textbf{Config key:} \texttt{features.pattern\_breakup}\\
+\textbf{Default:} Enabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Adds deterministic ripple at high off-axis angles to simulate the pattern irregularities observed in real antenna measurements.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{onset\_angle\_deg} & 90.0 & Angle from boresight where breakup begins \\
+\texttt{ripple\_amplitude\_db} & 4.0 & Peak-to-peak ripple amplitude in dB \\
+\texttt{ripple\_density} & 3.0 & Spatial frequency of the ripple \\
+\bottomrule
+\end{tabular}
+
+\newpage
+\subsection{Ground Reflection}
+\label{sec:feat_ground}
+
+\textbf{Config key:} \texttt{features.ground\_reflection}\\
+\textbf{Default:} Disabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Models the 2-ray ground plane reflection interference pattern that occurs when an antenna is mounted above a reflective surface.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{height\_wavelengths} & 1.0 & Antenna height above ground in wavelengths \\
+\texttt{reflection\_coeff} & 0.7 & Ground reflection coefficient (0 to 1) \\
+\texttt{ground\_type} & \texttt{good\_soil} & Ground material type \\
+\bottomrule
+\end{tabular}
+
+\subsection{Cross-Polarisation}
+\label{sec:feat_xpol}
+
+\textbf{Config key:} \texttt{features.cross\_pol}\\
+\textbf{Default:} Disabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+When enabled, generates additional cross-polarisation pattern CSV files alongside co-polarisation files. The cross-pol gain is modelled as a function of angular offset from boresight.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{boresight\_isolation\_db} & $-25.0$ & Cross-pol isolation at boresight \\
+\texttt{peak\_angle\_deg} & 45.0 & Angle of peak cross-pol \\
+\texttt{max\_cross\_pol\_db} & $-15.0$ & Maximum cross-pol level \\
+\bottomrule
+\end{tabular}
+
+\subsection{VSWR Rolloff}
+\label{sec:feat_vswr}
+
+\textbf{Config key:} \texttt{features.vswr\_rolloff}\\
+\textbf{Default:} Enabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Applies gain reduction at the band edges to model the impedance mismatch that occurs near the frequency limits of an antenna's operational bandwidth.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{rolloff\_band\_fraction} & 0.1 & Fraction of band affected at each edge \\
+\texttt{max\_rolloff\_db} & 3.0 & Maximum gain reduction at band edge \\
+\texttt{rolloff\_shape} & \texttt{cosine} & Rolloff curve shape \\
+\bottomrule
+\end{tabular}
+
+\newpage
+\subsection{Asymmetry / Squint}
+\label{sec:feat_asymmetry}
+
+\textbf{Config key:} \texttt{features.asymmetry}\\
+\textbf{Default:} Disabled\\
+\textbf{GUI control:} Switch (toggle on/off)
+
+Introduces pointing error and deterministic left/right asymmetry to simulate real-world manufacturing tolerances and mounting imperfections.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{az\_squint\_deg} & 0.0 & Azimuth pointing offset in degrees \\
+\texttt{el\_tilt\_deg} & 0.0 & Elevation tilt offset in degrees \\
+\texttt{random\_asymmetry\_db} & 1.0 & Peak random perturbation in dB \\
+\bottomrule
+\end{tabular}
+
+\subsection{Gain-Beamwidth Coupling}
+\label{sec:feat_gbw}
+
+\textbf{Config key:} \texttt{features.gain\_bw\_coupling}\\
+\textbf{Default:} Disabled\\
+\textbf{GUI control:} Switch (toggle on/off) with mode radio buttons
+
+Links frequency-dependent gain and beamwidth behaviour so that both vary consistently across the band. Three coupling modes are available:
+
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Gain drives beamwidth}] The gain rolloff with frequency drives a corresponding beamwidth change via the directivity-beamwidth relationship.
+    \item[\textbf{Beamwidth drives gain}] The beamwidth scaling with frequency determines the gain variation.
+    \item[\textbf{Independent curves}] Both gain and beamwidth vary with frequency according to their own independent parameters (default).
+\end{description}
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{mode} & \texttt{independent} & Coupling mode \\
+\texttt{gain\_rolloff\_db\_per\_octave} & 1.5 & Gain decrease per octave below $f_{\max}$ \\
+\bottomrule
+\end{tabular}
+
+In the GUI, the Gain-Beamwidth Coupling card appears for all directional antenna types (LPDA, Panel, Dish, Horn, Array). It is automatically enabled when LPDA is selected.
+
+\subsection{Front-Fade Steepness (Sigmoid $k$)}
+\label{sec:sigmoid}
+
+\textbf{Config key:} \texttt{sigmoid\_k} (top-level)\\
+\textbf{Default:} 40.0\\
+\textbf{GUI control:} Slider + Entry (range: 2--60, step: 1)
+
+Controls the sharpness of the smooth sigmoid transition between the front hemisphere and back lobe. A higher $k$ value produces a sharper transition; a lower value creates a more gradual blend. The sigmoid function is:
+\begin{equation}
+w(\cos\theta_{\text{az}}) = \frac{1}{1 + e^{-k \cdot \cos\theta_{\text{az}}}}
+\end{equation}
+
+% ===================================================================
+%  PART V — GUI REFERENCE
+% ===================================================================
+\newpage
+\section{Graphical User Interface (GUI)}
+\label{sec:gui}
+
+The AntennaForge GUI is built with \textbf{customtkinter} (CTk). The title bar reads ``AntennaForge v1.0''.
+
+\subsection{Layout}
+The application uses a \textbf{sidebar + stacked content area} layout:
+\begin{itemize}
+    \item \textbf{Left sidebar} — Navigation buttons for all nine pages. Each button displays an icon and label. The active page is highlighted in blue.
+    \item \textbf{Main content area} — Displays the currently selected page. Pages are lazy-loaded on first visit and cached for performance.
+    \item \textbf{Status bar} — A bottom bar spanning both columns, showing messages and a progress bar.
+\end{itemize}
+
+\subsection{Sidebar Navigation}
+\begin{longtable}{cllL{6cm}}
+\toprule
+\textbf{Icon} & \textbf{Label} & \textbf{Page Key} & \textbf{Description} \\
+\midrule
+\endhead
+Home & Home & \texttt{home} & Dashboard with quick-start actions \\
+Antenna & Generate & \texttt{generate} & Pattern generation (single \& batch) \\
+Chart & Visualize & \texttt{visualize} & Plot patterns (heatmap, cuts, polar, 3D) \\
+Magnify & Analysis & \texttt{analysis} & Pattern analysis and comparison \\
+Gear & Operations & \texttt{operations} & Arithmetic, rotation, interpolation \\
+Ruler & RF Calcs & \texttt{rf\_calc} & EIRP, FSPL, link budget \\
+Document & Reports & \texttt{reports} & PDF and \LaTeX\ reports \\
+Help & How To & \texttt{howto} & Built-in user guide \\
+Wrench & Settings & \texttt{settings} & Theme, fonts, colours, config I/O \\
+\bottomrule
+\end{longtable}
+
+\subsection{Theme System}
+\label{sec:theme}
+
+The theme engine (\texttt{gui/theme.py}) defines a 27-colour palette, each stored as a (light mode, dark mode) tuple. Colours are grouped into six categories: \textbf{Sidebar} (background, hover, active, text), \textbf{Main} (background, surface, card), \textbf{Text} (primary, secondary, muted), \textbf{Accent} (blue highlights), \textbf{Status} (success, warning, error, info), and \textbf{Inputs} (entry background, border, focus). All colours can be customised per-channel via the Settings page (see Section~\ref{sec:colour_custom}).
+
+\subsubsection{Font Definitions}
+Fonts are built from three base parameters: \texttt{family} (default: \texttt{Segoe UI}), \texttt{mono} (default: \texttt{Consolas}), and \texttt{base} size (default: 12\,pt). All other font sizes (headings, subheadings, small text, etc.) are derived from the base size. Fonts can be changed via the Settings page.
+
+
+\subsection{User Preferences}
+\label{sec:prefs}
+
+User preferences are persisted in \texttt{antennaforge\_prefs.json} at the project root. The file stores:
+\begin{lstlisting}[language={},caption={Preferences file structure}]
+{
+    "theme": "dark",
+    "colors": { "<key>": ["#light", "#dark"], ... },
+    "fonts": { "family": "Segoe UI", "mono": "Consolas", "base": 12 }
+}
+\end{lstlisting}
+
+% ===================================================================
+%  PART VI — GUI PAGES IN DETAIL
+% ===================================================================
+\newpage
+\section{GUI Pages — Complete Field Reference}
+\label{sec:pages}
+
+\subsection{Home Page}
+\label{sec:page_home}
+
+The Home page serves as the dashboard landing screen with quick-start navigation cards.
+
+\subsubsection{Quick-Action Cards}
+Four cards in a row, each with an icon, title, description, and an ``Open $\rightarrow$'' button:
+
+\begin{tabular}{clll}
+\toprule
+\textbf{Icon} & \textbf{Title} & \textbf{Target} & \textbf{Description} \\
+\midrule
+"Antenna" & Generate Patterns & Generate & Create antenna pattern CSVs \\
+"Chart" & Visualize Patterns & Visualize & Heatmaps, cuts, polar \& 3D \\
+"Magnify" & Analyze Patterns & Analysis & Beamwidth, sidelobes, symmetry \\
+"Document" & Generate Reports & Reports & PDF and \LaTeX\ reports \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Tools Row}
+Three secondary cards for Pattern Ops, RF Calculations, and Settings.
+
+\subsubsection{Capabilities Card}
+Lists eight bullet-point capabilities of the application.
+
+\subsubsection{Dependency Status Card}
+Dynamically checks installed packages and displays a status indicator ($\checkmark$ or $\times$) for each optional dependency. Shows the pip install command for any missing packages.
+
+% ── GENERATE PAGE ────────────────────────────────────────────────
+\newpage
+\subsection{Generate Page}
+\label{sec:page_generate}
+
+The Generate page is the primary antenna pattern creation interface. It contains multiple collapsible cards with context-sensitive widget visibility based on the selected antenna type.
+
+\subsubsection{Dynamic Visibility Rules}
+\label{sec:visibility}
+
+Not all controls are visible for all antenna types. The following table shows which widget groups appear for each type:
+
+\begin{longtable}{L{4cm} C{0.7cm} C{0.7cm} C{0.7cm} C{0.7cm} C{0.7cm} C{1.0cm} C{0.7cm}}
+\toprule
+\textbf{Widget Group} & \rotatebox{90}{\textbf{LPDA}} & \rotatebox{90}{\textbf{Omni}} & \rotatebox{90}{\textbf{Panel}} & \rotatebox{90}{\textbf{Dish}} & \rotatebox{90}{\textbf{Horn}} & \rotatebox{90}{\textbf{Monopole}} & \rotatebox{90}{\textbf{Array}} \\
+\midrule
+\endhead
+Front-to-Back Ratio & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Azimuth Beamwidth & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Elevation Beamwidth & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Downtilt & & & $\checkmark$ & & & & \\
+Aperture Efficiency & & & & $\checkmark$ & & & \\
+Element Length & & & & & & $\checkmark$ & \\
+Sidelobe Parameters & $\checkmark$ & $\checkmark$ & & & & & \\
+Front-Fade Steepness & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & \\
+Array Parameters & & & & & & & $\checkmark$ \\
+Freq-dep BW (Az) & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Freq-dep BW (El) & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Pattern Breakup & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Ground Reflection & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Cross-Polarisation & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+VSWR Rolloff & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+Asymmetry / Squint & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+Gain-BW Coupling & $\checkmark$ & & $\checkmark$ & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Core Parameters}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{1.5cm} L{6cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Antenna Type & Dropdown & LPDA & Selects the antenna model. Options: LPDA, Omni, Panel, Dish, Horn, Monopole, Array. Changing this triggers dynamic visibility updates for all other fields. \\
+Max Gain (dBi) & Text Entry & 7.0 & Peak boresight gain of the antenna in dBi. Valid range: $-30$ to $60$\,dBi. \\
+Front-to-Back (dB) & Text Entry & 15.0 & Front-to-back ratio in dB. Controls the gain difference between the front and rear of the antenna. Valid range: $0$ to $80$\,dB. Hidden for Omni and Monopole. \\
+Downtilt ($^\circ$) & Text Entry & 0.0 & Electrical downtilt angle in degrees. Positive values tilt the beam downward. Panel type only. \\
+Aperture Efficiency & Text Entry & 0.60 & Ratio of effective to physical aperture area (0 to 1). Typical values: 0.55--0.65. Dish type only. \\
+Element Length ($\lambda$) & Text Entry & 0.25 & Monopole/dipole element length in wavelengths. Common values: 0.25 (quarter-wave), 0.5 (half-wave). Monopole type only. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Beamwidth}
+
+\begin{longtable}{L{3.2cm} L{3cm} L{1.5cm} L{1.5cm} L{4cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Range} & \textbf{Description} \\
+\midrule
+\endhead
+Azimuth BW ($^\circ$) & Slider + Entry & 65 & 1--360 & The 3\,dB azimuth beamwidth at the reference frequency. The slider and entry field are bidirectionally synchronised — moving the slider updates the entry and typing in the entry moves the slider. \\
+Elevation BW ($^\circ$) & Slider + Entry & 70 & 1--360 & The 3\,dB elevation beamwidth at the reference frequency. Bidirectionally synchronised slider and entry. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Array Parameters}
+\label{sec:array_params}
+\textit{Visible only when Antenna Type is set to Array.}
+
+\begin{longtable}{L{3.2cm} L{2.2cm} L{1.5cm} L{6.3cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Geometry & Dropdown & linear & Array layout geometry. Options: \textbf{linear} (1D), \textbf{planar} (2D rectangular grid), \textbf{circular} (elements on a ring). \\
+Elements X & Text Entry & 8 & Number of elements along the X axis. For circular arrays, this is the total number of elements. \\
+Elements Y & Text Entry & 1 & Number of elements along the Y axis. Only meaningful for planar geometry. \\
+Spacing X ($\lambda$) & Text Entry & 0.5 & Inter-element spacing along X in wavelengths. Values $> 0.5$ may produce grating lobes. \\
+Spacing Y ($\lambda$) & Text Entry & 0.5 & Inter-element spacing along Y in wavelengths. Only meaningful for planar geometry. \\
+Steer Az ($^\circ$) & Text Entry & 0.0 & Beam steering angle in azimuth. The array factor's progressive phase shift is computed from this angle. \\
+Steer El ($^\circ$) & Text Entry & 0.0 & Beam steering angle in elevation. \\
+Weighting & Dropdown & uniform & Element amplitude tapering. \textbf{uniform}: equal weights. \textbf{taylor}: Taylor taper for reduced sidelobes. \\
+Taper SLL (dB) & Text Entry & $-25.0$ & Desired sidelobe level for Taylor taper weighting. Only meaningful when Weighting is set to ``taylor''. \\
+Mutual Coupling & Switch (toggle) & OFF & When enabled, a complex impedance matrix is computed based on inter-element distances and applied as weight corrections. Increases computation time. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Frequency}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{1.5cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+F min (MHz) & Text Entry & 30.0 & Lower edge of the frequency band in MHz. Valid range: 0.001 to $10^6$\,MHz. \\
+F max (MHz) & Text Entry & 300.0 & Upper edge of the frequency band in MHz. Must be $\geq$ F min. \\
+Number of Slices & Text Entry & 10 & Number of frequency points to generate. Each slice produces one CSV file. Valid range: 1 to 10{,}000. \\
+Freq Slice Spacing & Dropdown & linear & Distribution of frequency points across the band. \textbf{linear}: equally spaced. \textbf{log}: logarithmically spaced (more points at lower frequencies). \\
+Ref Frequency (MHz) & Text Entry & (blank) & Reference frequency for beamwidth scaling. If left blank, the geometric mean $\sqrt{f_{\min} \cdot f_{\max}}$ is used automatically. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+\subsubsection{Card: Angular Resolution}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{1.5cm} L{6cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Azimuth Step ($^\circ$) & Dropdown & 1.0 & Angular step size for the azimuth grid. Options: 0.1, 0.5, 1.0, 2.0, 5.0. Smaller steps produce higher-resolution patterns but increase file size and computation time. \\
+Elevation Step ($^\circ$) & Dropdown & 1.0 & Angular step size for the elevation grid. Same options as azimuth. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Polarization}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{1.5cm} L{6cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Polarization & Dropdown & vertical & Polarisation plane of the antenna. Options: \textbf{vertical}, \textbf{horizontal}, \textbf{custom}. Selecting ``custom'' reveals the Pol Angle field. \\
+Pol Angle ($^\circ$) & Text Entry & 0.0 & Custom polarisation angle in degrees. Only visible when Polarization is set to ``custom''. $0^\circ$ = vertical, $90^\circ$ = horizontal. \\
+Noise Mode & Radio Buttons & uniform & Noise distribution type: \textbf{uniform} ($\pm$ range), \textbf{gaussian} ($\sigma$ in dB), or \textbf{quantization} (step size in dB). \\
+Noise Value (dB) & Slider + Entry & 0 & Noise amplitude applied to the pattern. Interpretation depends on mode: range for uniform, sigma for Gaussian, step size for quantization. Range: 0--5\,dB, step: 0.1\,dB. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Physics Features}
+\label{sec:gui_features}
+
+This card contains boolean toggle switches for each physics feature. When toggled on, the corresponding feature is applied during pattern generation.
+
+\begin{longtable}{L{4cm} L{1.5cm} L{7.7cm}}
+\toprule
+\textbf{Switch Label} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Freq-dependent BW (Az) & ON & Scales the azimuth beamwidth with frequency. See Section~\ref{sec:feat_bw_az}. \\
+Freq-dependent BW (El) & ON & Scales the elevation beamwidth with frequency. See Section~\ref{sec:feat_bw_el}. \\
+Sidelobes (Taylor) & ON & Adds Taylor sidelobe structure. See Section~\ref{sec:feat_sidelobes}. \\
+Pattern Breakup & OFF & Adds deterministic ripple at high off-axis angles. See Section~\ref{sec:feat_breakup}. \\
+Ground Reflection & OFF & Enables 2-ray ground reflection model. See Section~\ref{sec:feat_ground}. \\
+Cross-Polarization & OFF & Generates cross-pol CSV files. See Section~\ref{sec:feat_xpol}. \\
+VSWR Rolloff & ON & Applies band-edge gain reduction. See Section~\ref{sec:feat_vswr}. \\
+Asymmetry / Squint & OFF & Introduces pointing error and asymmetry. See Section~\ref{sec:feat_asymmetry}. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Gain-Beamwidth Coupling}
+\textit{Visible for all directional types (LPDA, Panel, Dish, Horn, Array). Automatically enabled for LPDA.}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{1.5cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Enable Coupling & Switch (toggle) & OFF & When enabled, gain and beamwidth vary together across frequency. Auto-enabled for LPDA. \\
+Mode & Radio Buttons & Independent & Three modes: \textbf{Gain drives beamwidth}, \textbf{Beamwidth drives gain}, \textbf{Independent curves}. Visible only when coupling is enabled. \\
+Gain Rolloff (dB/octave) & Text Entry & 1.5 & How much peak gain decreases per octave below $f_{\max}$. Visible when mode is ``Gain drives beamwidth'' or ``Independent curves''. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Sidelobe Parameters}
+\textit{Visible for LPDA and Omni types only.}
+
+\begin{longtable}{L{3.5cm} L{2cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+First SLL (dB) & Text Entry & $-20.0$ & First sidelobe level relative to the main beam peak, in dB. More negative values mean deeper sidelobes. \\
+Decay Rate (dB/lobe) & Text Entry & 5.0 & Rate at which successive sidelobes decrease in amplitude, in dB per lobe. \\
+Number of Sidelobes & Text Entry & 5 & Number of sidelobe pairs to generate on each side of the main beam in each principal plane. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Front-Fade Steepness}
+
+\begin{longtable}{L{3.5cm} L{3cm} L{1cm} L{1.5cm} L{4cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Def.} & \textbf{Range} & \textbf{Description} \\
+\midrule
+\endhead
+Front-Fade Steepness ($k$) & Slider + Entry & 40 & 2--60 & Controls the sigmoid transition sharpness between front hemisphere and back lobe. Higher values = sharper transition. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+\subsubsection{Card: Beamwidth vs Frequency}
+\label{sec:bw_vs_freq_card}
+
+This card configures how beamwidth changes across frequency for both azimuth and elevation planes independently.
+
+\paragraph{Decay Mode Selection}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{1.5cm} L{6cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Az Decay Mode & Dropdown & Exponent & Beamwidth scaling mode for azimuth. Options: Exponent, Percentage, Three-Point. \\
+El Decay Mode & Dropdown & Exponent & Beamwidth scaling mode for elevation. Same options. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Exponent Sub-Parameters}
+\textit{Visible when the corresponding decay mode is ``Exponent''.}
+
+\begin{longtable}{L{3.8cm} L{2cm} L{1cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Def.} & \textbf{Description} \\
+\midrule
+\endhead
+Az Scaling Exponent & Text Entry & 0.8 & Power-law exponent for azimuth BW scaling: $\mathrm{BW} = \mathrm{BW}_0 \cdot (f_{\text{ref}}/f)^\alpha$. \\
+El Scaling Exponent & Text Entry & 0.8 & Same for elevation. \\
+Az LPDA Variation Factor & Text Entry & 0.3 & Damping factor for LPDA-type antennas (visible only when LPDA + Exponent). \\
+El LPDA Variation Factor & Text Entry & 0.3 & Same for elevation. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Percentage Sub-Parameters}
+\textit{Visible when the corresponding decay mode is ``Percentage''.}
+
+\begin{longtable}{L{3.8cm} L{2cm} L{1cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Def.} & \textbf{Description} \\
+\midrule
+\endhead
+Az \% per Octave & Text Entry & 15.0 & Percentage beamwidth reduction per frequency doubling. \\
+El \% per Octave & Text Entry & 15.0 & Same for elevation. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Three-Point Sub-Parameters}
+\textit{Visible when the corresponding decay mode is ``Three-Point''.}
+
+\begin{longtable}{L{3.8cm} L{2cm} L{1cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Def.} & \textbf{Description} \\
+\midrule
+\endhead
+Az BW @ $f_{\text{start}}$ (deg) & Text Entry & 90 & Azimuth beamwidth at the lowest frequency. \\
+Az BW @ $f_{\text{mid}}$ (deg) & Text Entry & 65 & Azimuth beamwidth at band centre. \\
+Az BW @ $f_{\text{end}}$ (deg) & Text Entry & 45 & Azimuth beamwidth at the highest frequency. \\
+El BW @ $f_{\text{start}}$ (deg) & Text Entry & 90 & Elevation beamwidth at $f_{\min}$. \\
+El BW @ $f_{\text{mid}}$ (deg) & Text Entry & 70 & Elevation beamwidth at $f_{\text{mid}}$. \\
+El BW @ $f_{\text{end}}$ (deg) & Text Entry & 50 & Elevation beamwidth at $f_{\max}$. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Beamwidth Clamps}
+\textit{Always visible regardless of decay mode.}
+
+\begin{longtable}{L{3.2cm} L{2cm} L{1.2cm} L{6.8cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Az Min BW (deg) & Text Entry & 10 & Minimum allowed azimuth beamwidth after frequency scaling. \\
+Az Max BW (deg) & Text Entry & 180 & Maximum allowed azimuth beamwidth. \\
+El Min BW (deg) & Text Entry & 10 & Minimum allowed elevation beamwidth. \\
+El Max BW (deg) & Text Entry & 90 & Maximum allowed elevation beamwidth. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Output}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{3.5cm} L{4cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Output Directory & FilePicker (directory) & \texttt{../antenna\_patterns} & The directory where generated CSV files will be saved. Every run creates a timestamped subdirectory (\texttt{yyyymmddhhmm}), including the first run. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Action Buttons}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{7.2cm}}
+\toprule
+\textbf{Button} & \textbf{Style} & \textbf{Action} \\
+\midrule
+\endhead
+Generate Patterns & Success (green) & Builds a configuration dictionary from all fields, validates it, and runs pattern generation in a background thread. Progress is displayed in the result box and status bar. \\
+Reset Defaults & Secondary (grey) & Resets all fields on the Generate page to their factory default values. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Result Box}
+A read-only text area that displays the generation progress log, including each frequency slice as it is computed, the output file path, and any errors or warnings.
+
+\subsubsection{Card: Batch Processing}
+\label{sec:batch}
+
+Below the single-generation controls, the Generate page includes a Batch Processing card for running multiple antenna configurations from a JSON recipe.
+
+\begin{longtable}{L{3cm} L{3cm} L{7.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+Recipe JSON & FilePicker & Select a batch recipe JSON file. \\
+Output Folder & FilePicker (directory) & Base output directory \textemdash\ each job creates a subfolder here. Leave blank to use each job's own \texttt{output\_dir}. \\
+Generate Images & Toggle Switch & When enabled, plot images (heatmaps, polar, 3D surface, cuts, trend plots) are generated for every batch job output. A note warns that image generation is slow for large recipes. \\
+Generate Report & Toggle Switch & Enabled only when Generate Images is on. When active, a PDF report is generated for each completed job using the selected preset. \\
+Report Preset & Radio Buttons & Visible when Generate Report is on. Selects the report section preset: Default, Full, Minimal, or Quick (see Section~\ref{sec:report-config}). \\
+\bottomrule
+\end{longtable}
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Run Batch'' (success/green) \textemdash\ Loads and executes the batch recipe, generating patterns for each configuration entry. Runs in a background thread.
+    \item ``Cancel'' (danger/red) \textemdash\ Requests cooperative cancellation of the running batch. The current job finishes, then the loop stops. Disabled when no batch is running.
+    \item ``Dry Run'' (secondary) \textemdash\ Validates the recipe without generating any files. Reports whether all configurations are valid and what would be generated.
+    \item ``Sample Recipe'' (secondary) \textemdash\ Opens a save-as dialog and writes a starter template recipe JSON file.
+\end{itemize}
+
+Cancellation is cooperative: the current job runs to completion, then the batch stops.
+
+A batch recipe JSON file is an array of configuration dictionaries. Each entry inherits from \texttt{DEFAULT\_CONFIG} and antenna-specific defaults, with user overrides merged on top. Example structure:
+
+\begin{lstlisting}[language={},caption={Batch recipe example}]
+[
+    {
+        "antenna_type": "LPDA",
+        "max_gain_dbi": 10.0,
+        "f_min_mhz": 30.0,
+        "f_max_mhz": 300.0,
+        "n_slices": 10,
+        "output_dir": "./batch_output/lpda"
+    },
+    {
+        "antenna_type": "Dish",
+        "max_gain_dbi": 35.0,
+        "dish_efficiency": 0.65,
+        "f_min_mhz": 4000.0,
+        "f_max_mhz": 6000.0,
+        "n_slices": 20,
+        "output_dir": "./batch_output/dish"
+    }
+]
+\end{lstlisting}
+
+% ── VISUALIZE PAGE ───────────────────────────────────────────────
+\subsection{Visualize Page}
+\label{sec:page_visualize}
+
+The Visualize page renders antenna patterns using embedded Matplotlib. It supports caching of generated plot images, navigation between multiple plots, and cooperative cancellation of long-running render tasks.
+
+\subsubsection{Card: Input}
+
+\begin{longtable}{L{3.2cm} L{3cm} L{7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern CSV & FilePicker (file) & Select a single CSV file for Heatmap, Cuts, Polar, or 3D Surface plots. \\
+Pattern Directory & FilePicker (directory) & Select a folder of CSVs for multi-file plots (Gain vs Freq, BW vs Freq, Overlay Cuts) or for iterating single-file plots across all files. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Plot Type}
+
+\begin{longtable}{L{3.2cm} L{2.5cm} L{1.5cm} L{6cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Type & Dropdown & Heatmap & The type of plot to generate. Options described below. \\
+GIF Style & Dropdown & heatmap & Style for animated GIF. Options: \textbf{heatmap}, \textbf{polar}. Only visible when Type is ``Freq Sweep (GIF)''. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Plot Type Options}
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Heatmap}] A 2D colour-mapped plot of gain (dBi) across azimuth (x-axis) and elevation (y-axis). Requires a single CSV file. Colour scale uses the matplotlib \texttt{jet} colourmap.
+    \item[\textbf{Cuts (Az+El)}] Two sub-plots showing the azimuth cut at $\mathrm{el}=0^\circ$ and the elevation cut at $\mathrm{az}=0^\circ$. Annotates the 3\,dB beamwidth. Requires a single CSV.
+    \item[\textbf{Polar}] Polar-coordinate plots of the azimuth and elevation principal-plane cuts. Requires a single CSV.
+    \item[\textbf{3D Surface}] A three-dimensional surface rendering of the full gain pattern. Requires a single CSV. Uses perspective projection with interactive viewpoint.
+    \item[\textbf{Gain vs Freq}] Plots peak gain (dBi) versus frequency across all CSVs in the selected directory. Requires a directory.
+    \item[\textbf{BW vs Freq}] Plots measured azimuth and elevation beamwidths versus frequency. Requires a directory.
+    \item[\textbf{Overlay Cuts}] Overlays the azimuth cuts from multiple frequency slices on a single plot for comparison. Requires a directory.
+    \item[\textbf{Freq Sweep (GIF)}] Generates an animated GIF cycling through all frequency slices. Requires a directory. The GIF Style dropdown selects between heatmap and polar frame styles.
+\end{description}
+
+\subsubsection{Action Buttons}
+
+\begin{longtable}{L{3cm} L{2cm} L{8.2cm}}
+\toprule
+\textbf{Button} & \textbf{Style} & \textbf{Action} \\
+\midrule
+\endhead
+Plot & Primary & Dispatches to the appropriate single-file, multi-file, directory, or animation handler based on the selected plot type and input source. \\
+Cancel & Secondary & Sets a cooperative cancellation flag. Long-running batch plot operations check this flag between iterations. \\
+Open Folder & Secondary & Opens the plot output directory in Windows Explorer. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Plot Display Area}
+\begin{itemize}
+    \item \textbf{Navigation bar:} ``$\triangleleft$ Prev'' and ``Next $\triangleright$'' buttons with a counter label (e.g., ``1 / 5 --- filename.png'').
+    \item \textbf{Image frame:} Displays the rendered plot as an embedded image, auto-scaled to fit the frame.
+    \item \textbf{Placeholder:} Shows ``Select a file or directory and click Plot'' before any plot is generated.
+\end{itemize}
+
+\subsubsection{Result Box}
+A read-only text area showing plot generation status and any errors.
+
+% ── ANALYSIS PAGE ────────────────────────────────────────────────
+\subsection{Analysis Page}
+\label{sec:page_analysis}
+
+The Analysis page provides six analysis modes. The \textbf{Parameter Fit} card is presented first (primary workflow), followed by \textbf{Batch Fitting}, single-pattern analysis, multi-pattern comparison, pattern-set comparison (percentage differences), and sidelobe mask compliance testing.
+
+\subsubsection{Card: Single Pattern Analysis}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{7.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern CSV & FilePicker (file) & The pattern CSV to analyse. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Button:} ``Analyze'' (primary) — Loads the CSV and computes:
+\begin{itemize}
+    \item Peak gain (maximum value in the entire pattern).
+    \item Boresight gain (gain at $\mathrm{az}=0^\circ$, $\mathrm{el}=0^\circ$).
+    \item Azimuth 3\,dB beamwidth (measured from the $\mathrm{el}=0^\circ$ cut).
+    \item Elevation 3\,dB beamwidth (measured from the $\mathrm{az}=0^\circ$ cut).
+    \item Minimum gain across the entire pattern.
+    \item Average gain (power-averaged).
+    \item Front-to-back ratio.
+    \item First sidelobe levels (azimuth and elevation).
+    \item Azimuth and elevation symmetry (RMS deviation).
+    \item Angular coverage above threshold.
+\end{itemize}
+
+The result box displays the full analysis report.
+
+\subsubsection{Card: Compare Multiple Patterns}
+
+\begin{longtable}{L{3cm} L{3cm} L{7.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+CSV Files & FilePicker (multi) & Multi-select CSV files for comparison. \\
+Or Pattern Dir & FilePicker (directory) & Directory fallback — all CSVs in the directory are compared. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Button:} ``Compare'' (primary) — Runs \texttt{analyze\_single()} on each file, then \texttt{compare\_patterns()} to produce a side-by-side comparison table.
+
+The result box displays the comparison table.
+
+\subsubsection{Card: Pattern Set Comparison}
+
+This card compares two sets of pattern files frequency-by-frequency, producing a percentage-difference table for each metric. It is modelled after the \texttt{scripts/append\_diff\_table.py} utility but integrated directly into the GUI.
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{7.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern Set A (files) & FilePicker (multi) & Pattern files for the first set (e.g.\ measured data). \\
+Or Set A Dir & FilePicker (dir) & Directory fallback for Set A. \\
+Pattern Set B (files) & FilePicker (multi) & Pattern files for the second set (e.g.\ fitted/generated data). \\
+Or Set B Dir & FilePicker (dir) & Directory fallback for Set B. \\
+\bottomrule
+\end{longtable}
+
+Both sets must contain the \textbf{same number of files}. Files are matched in sorted order, so ensure both sets use consistent naming.
+
+\textbf{Button:} ``Compare Sets'' (primary) --- Analyses each file pair and computes percentage differences:
+\[ \Delta\% = \frac{B - A}{|A|} \times 100 \]
+for each of: peak gain, boresight gain, azimuth beamwidth, elevation beamwidth, and minimum gain.
+
+The result box shows a formatted table with per-file differences plus summary statistics (average and maximum absolute differences across all frequency slices).
+
+\subsubsection{Card: Sidelobe Mask Compliance}
+
+This card tests a pattern against industry-standard sidelobe envelope masks. The card includes a documentation block explaining the three supported standards.
+
+\paragraph{Supported Standards}
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{ITU-R S.580-6}] International Telecommunication Union recommendation for earth station antennas. The mask envelope is derived from the peak gain. Formula: $G(\theta) = 32 - 25\log_{10}(\theta)$ for the principal region (varies by angular range).
+    \item[\textbf{ITU-R S.465-6}] ITU recommendation for small earth station antennas. The mask is parameterised by $D/\lambda$ (diameter-to-wavelength ratio).
+    \item[\textbf{MIL-STD}] Military standard sidelobe envelope. Parameterised by peak gain and first sidelobe level.
+\end{description}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{2cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern CSV & FilePicker & --- & The pattern file to test. \\
+Mask Standard & Dropdown & ITU-R S.580-6 & The sidelobe mask standard. \\
+Test Plane & Dropdown & az & The principal plane to test: \textbf{az} (azimuth at $\mathrm{el}=0^\circ$) or \textbf{el} (elevation at $\mathrm{az}=0^\circ$). \\
+Peak Gain (dBi) & Text Entry & 35.0 & The peak gain value used in the mask formula. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Button:} ``Test Compliance'' (primary) — Evaluates the selected cut against the mask and reports:
+\begin{itemize}
+    \item Overall PASS/FAIL status.
+    \item Number and location of violations.
+    \item Minimum margin (dB below the mask).
+    \item Worst-case violation angle and magnitude.
+\end{itemize}
+
+\subsubsection{Card: Parameter Fit}
+
+This card enables reverse parameter fitting: given pre-existing antenna pattern files (CSV, DAT, or ODESSA \texttt{.tbl}), it derives the AntennaForge configuration parameters that best reproduce them. The fitted config can be saved as JSON or sent directly to the Generate page.
+
+The fitter uses a multi-strategy approach: each run tries a different combination of physics features (sidelobes, ground reflection, etc.) and perturbed initial parameters. The optimizer employs a coarse-to-fine grid strategy (15\textdegree{} stride for global search, 3\textdegree{} for refinement), differential evolution for high-dimensional types (Dish, Array), cross-correlation cost functions with adaptive noise-floor weighting, and principal-plane-first fitting. A warm-start cache (\texttt{\~{}/.antennaforge/fit\_cache.json}) stores successful fits to seed future runs.
+
+\begin{longtable}{L{3cm} L{2.5cm} L{2cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Antenna Type & Dropdown & LPDA & Antenna model to fit against. Changing this auto-updates the recommended runs and target RMS to per-type defaults. \\
+F Min (MHz) & Text Entry & 30.0 & Lower band edge of the reference antenna. \\
+F Max (MHz) & Text Entry & 300.0 & Upper band edge of the reference antenna. \\
+Pattern Files & FilePicker (multi) & --- & CSV, DAT, or ODESSA .tbl files. \\
+Or Pattern Dir & FilePicker (dir) & --- & Directory of pattern files. \\
+Optimize (SciPy) & Switch (toggle) & ON & When enabled and SciPy is installed, refines parameters via numerical optimisation. \\
+Runs & Text Entry & (per-type) & Number of fitting strategy runs. Set to \textbf{0} for unlimited runs (use Stop button to halt). Recommended values: Monopole/Omni 2, LPDA/Horn/Panel 4, Dish 8, Array 10. \\
+Target RMS & Text Entry & (per-type) & Target RMS error in dB to stop optimisation early. Per-type defaults: Monopole 0.5, Omni 1.0, LPDA/Horn/Panel 1.5, Dish 2.0, Array 2.5. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Fit Parameters'' (primary) --- Runs the fitting algorithm in a background thread. Disabled while a fit is running.
+    \item ``Stop'' (secondary) --- Appears while a fit is running. Signals the fitter to stop after the current run completes and return the best result found so far.
+    \item ``Save Config JSON'' (secondary) --- Saves the fitted configuration to a JSON file. Enabled after a successful fit.
+    \item ``Send to Generate'' (primary) --- Loads the fitted config onto the Generate page and navigates to it. Enabled after a successful fit.
+\end{itemize}
+
+The result box displays the fitting report with per-file RMS errors, the derived configuration, and which strategy produced the best result.
+
+\subsubsection{Card: Batch Fitting}
+
+Fit many pattern sets at once from a parent directory.
+
+\begin{longtable}{L{3cm} L{2.5cm} L{2cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Parent Dir & FilePicker (directory) & --- & Folder whose subfolders each contain one pattern set. \\
+Output Dir & FilePicker (directory) & --- & Where fitted configs, generated patterns, and reports are saved. \\
+Runs per set & Text Entry & 0 & Number of fitting runs per pattern set. \textbf{0} = auto (2\texttimes{} the recommended runs for the detected antenna type). \\
+Target RMS & Text Entry & 0 & Target RMS error in dB. \textbf{0} = use per-type default. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Run Batch Fit'' (primary) --- Launches the batch fitting pipeline in a background thread.
+    \item ``Stop'' (secondary) --- Signals the batch pipeline to stop after the current set completes.
+\end{itemize}
+
+\textbf{Pipeline:}
+\begin{enumerate}
+    \item Discover subfolders under \emph{Parent Dir}.
+    \item For each subfolder, auto-detect the antenna type and frequency range from \texttt{generation\_config.json} (if present) or by parsing filenames.
+    \item Run the parameter fitter with the configured \emph{Runs per set} and \emph{Target RMS}.
+    \item Save the resulting \texttt{fitted\_config.json} into the subfolder under \emph{Output Dir}.
+    \item Generate patterns from the fitted configuration.
+    \item Compare the original patterns against the generated patterns (percentage difference analysis).
+    \item Produce a detailed per-set report section and append it to the grand summary.
+\end{enumerate}
+
+\textbf{Output:} A file \texttt{batch\_fit\_report.txt} is written to \emph{Output Dir} containing a grand summary table (one row per pattern set with type, frequency range, best RMS, and pass/fail status) followed by detailed per-set sections with individual file RMS values and fitted parameter summaries.
+
+% ── OPERATIONS PAGE ──────────────────────────────────────────────
+\subsection{Operations Page}
+\label{sec:page_operations}
+
+The Operations page provides pattern arithmetic, three-axis rotation, and interpolation/resampling.
+
+\subsubsection{Card: Pattern Arithmetic}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{2cm} L{5.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Operation & Dropdown & Add (power) & The arithmetic operation to perform. Options described below. \\
+Pattern A & FilePicker & --- & First input CSV. \\
+Pattern B & FilePicker & --- & Second input CSV (not used for Scale, Max Envelope, or Average). \\
+Multi Files & FilePicker (multi) & --- & Multi-select for Max Envelope and Average operations. \\
+Scale Amount (dB) & Text Entry & 0.0 & Constant dB offset for the Scale operation. \\
+Output CSV & FilePicker (save) & --- & Output file path. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Arithmetic Operations}
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Add (power)}] Converts both patterns to linear power, sums element-wise, converts back to dB. Models coherent power combination.
+    \item[\textbf{Subtract (dB)}] Computes the dB difference: $A_{\text{dB}} - B_{\text{dB}}$ at each (az, el) point. Useful for isolation or interference analysis.
+    \item[\textbf{Multiply (dB+dB)}] Adds the two patterns in dB (multiplication in linear). Implements the pattern multiplication theorem for array analysis.
+    \item[\textbf{Scale (dB offset)}] Adds a constant offset to all gain values: $G_{\text{out}} = G_{\text{in}} + \Delta_{\text{dB}}$. Useful for modelling cable loss or amplifier gain.
+    \item[\textbf{Max Envelope}] Computes the point-by-point maximum across multiple patterns. Useful for worst-case interference analysis.
+    \item[\textbf{Average (power)}] Converts to linear, averages across all files, converts back to dB. Useful for statistical pattern analysis.
+\end{description}
+
+\textbf{Button:} ``Run Arithmetic'' (primary).
+
+\subsubsection{Card: Pattern Rotation}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{1.5cm} L{2cm} L{3.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Range} & \textbf{Description} \\
+\midrule
+\endhead
+Input CSV & FilePicker & --- & --- & Single CSV to rotate. \\
+Or Input Dir & FilePicker (dir) & --- & --- & Directory of CSVs. \\
+Yaw / Az Rotate ($^\circ$) & Slider & 0 & $-180$ to $180$ & Azimuth rotation. \\
+Pitch / El Tilt ($^\circ$) & Slider & 0 & $-90$ to $90$ & Elevation tilt. \\
+Roll ($^\circ$) & Slider & 0 & $-180$ to $180$ & Roll rotation. \\
+Output CSV / Dir & FilePicker (save) & --- & --- & Output path. \\
+\bottomrule
+\end{longtable}
+
+The rotation algorithm:
+\begin{enumerate}
+    \item Constructs a $3 \times 3$ rotation matrix from the three Euler angles (yaw, pitch, roll).
+    \item Converts each output (az, el) grid point to Cartesian coordinates.
+    \item Applies the inverse rotation matrix to find the source direction.
+    \item Converts back to (az, el) and interpolates the gain from the original pattern using bilinear interpolation (or bicubic via SciPy's \texttt{RegularGridInterpolator} when available).
+\end{enumerate}
+
+\textbf{Button:} ``Rotate'' (primary).
+
+\subsubsection{Card: Interpolation \& Resampling}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{2cm} L{5.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Mode & Dropdown & Freq Interpolate (2 files) & Interpolation mode. Options described below. \\
+Low-Freq CSV & FilePicker & --- & Lower frequency pattern (2-file mode). \\
+High-Freq CSV & FilePicker & --- & Higher frequency pattern (2-file mode). \\
+Target Freq (MHz) & Text Entry & (blank) & Target frequency or comma-separated list. \\
+Multi Files & FilePicker (multi) & --- & Multi-select for multi-freq interpolation. \\
+New Az Step ($^\circ$) & Text Entry & 1.0 & New azimuth resolution (resample mode). \\
+New El Step ($^\circ$) & Text Entry & 1.0 & New elevation resolution (resample mode). \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Interpolation Modes}
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Freq Interpolate (2 files)}] Linear interpolation between two patterns at different frequencies to estimate the pattern at an intermediate frequency. The frequency is extracted from each filename.
+    \item[\textbf{Multi-Freq Interpolate}] Given multiple frequency-stamped pattern files, interpolates to one or more target frequencies using piecewise linear interpolation between the nearest bracketing files.
+    \item[\textbf{Resample Grid}] Resamples a pattern to a new angular grid resolution using SciPy's \texttt{RectBivariateSpline} (bicubic) when available, or bilinear interpolation as fallback.
+\end{description}
+
+\textbf{Button:} ``Interpolate'' (primary).
+
+% ── RF CALCS PAGE ────────────────────────────────────────────────
+\subsection{RF Calcs Page}
+\label{sec:page_rfcalc}
+
+The RF Calcs page provides EIRP calculation, power density computation, free-space path loss, and link budget analysis.
+
+\subsubsection{Card: EIRP Calculator}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern CSV & FilePicker & --- & The antenna gain pattern. \\
+Tx Power (dBm) & Text Entry & 30.0 & Transmitter output power (30\,dBm = 1\,W). \\
+Cable Loss (dB) & Text Entry & 2.0 & Feedline/connector attenuation. \\
+Distance (m) & Text Entry & 1000.0 & Distance for power density calculation. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{EIRP Formula}
+\begin{equation}
+\mathrm{EIRP}(\mathrm{az}, \mathrm{el}) = P_{\text{tx,dBm}} - L_{\text{cable,dB}} + G(\mathrm{az}, \mathrm{el})_{\text{dBi}}
+\end{equation}
+
+\paragraph{Power Density Formula}
+\begin{equation}
+\mathrm{PD}(\mathrm{az}, \mathrm{el}) = \frac{\mathrm{EIRP}_{\text{linear}}(\mathrm{az}, \mathrm{el})}{4\pi d^2} \quad [\text{W/m}^2]
+\end{equation}
+
+\textbf{Buttons:} ``Calculate EIRP'' (primary), ``Calculate Power Density'' (secondary).
+
+\subsubsection{Card: Free-Space Path Loss}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Distance (km) & Text Entry & 100.0 & Link distance in kilometres. \\
+Frequency (MHz) & Text Entry & 1000.0 & Operating frequency in MHz. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{FSPL Formula}
+\begin{equation}
+\mathrm{FSPL}_{\text{dB}} = 20\log_{10}(d_{\text{km}}) + 20\log_{10}(f_{\text{MHz}}) + 32.44
+\end{equation}
+
+\textbf{Button:} ``Calculate FSPL'' (primary).
+
+\subsubsection{Card: Link Budget Analysis}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{1.5cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Mode & Dropdown & Boresight Link Margin & Calculation mode: \textbf{Boresight Link Margin} or \textbf{Full Angular Map}. \\
+Tx Pattern CSV & FilePicker & --- & Transmit antenna pattern. \\
+Rx Pattern CSV & FilePicker & --- & Receive antenna pattern. \\
+Distance (km) & Text Entry & 100.0 & Link distance. \\
+Frequency (MHz) & Text Entry & 1000.0 & Operating frequency. \\
+Tx Power (dBm) & Text Entry & 30.0 & Transmitter power. \\
+Tx Cable Loss (dB) & Text Entry & 2.0 & Tx-side cable/connector loss. \\
+Rx Cable Loss (dB) & Text Entry & 1.0 & Rx-side cable/connector loss. \\
+Rx Sensitivity (dBm) & Text Entry & $-90.0$ & Receiver sensitivity threshold. Only used in Boresight Link Margin mode. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Link Budget Formula}
+\begin{equation}
+P_{\text{rx}} = P_{\text{tx}} - L_{\text{tx}} + G_{\text{tx}}(\mathrm{az}_{\text{tx}}) - \mathrm{FSPL} + G_{\text{rx}}(\mathrm{az}_{\text{rx}}) - L_{\text{rx}}
+\end{equation}
+
+\paragraph{Link Margin}
+\begin{equation}
+\text{Margin} = P_{\text{rx,boresight}} - P_{\text{sensitivity}}
+\end{equation}
+
+\paragraph{Modes}
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Boresight Link Margin}] Computes received power using boresight (peak) gains of both antennas and reports the margin above receiver sensitivity.
+    \item[\textbf{Full Angular Map}] Computes received power for every combination of Tx and Rx orientations. Outputs a 2D CSV of received power indexed by transmit azimuth and receive azimuth.
+\end{description}
+
+\textbf{Button:} ``Calculate Link Budget'' (primary).
+
+% ── REPORTS PAGE ─────────────────────────────────────────────────
+\subsection{Reports Page}
+\label{sec:page_reports}
+
+The Reports page generates comprehensive PDF or \LaTeX\ reports from a directory of pattern CSVs.
+
+\subsubsection{Card: Input}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Pattern Directory & FilePicker (dir) & --- & Source directory containing pattern CSVs. \\
+Output Format & Dropdown & PDF & Report format: \textbf{PDF} or \textbf{LaTeX (.tex)}. \\
+Report Title & Text Entry & (blank) & Custom report title. If blank, an automatic title is generated from the antenna type and frequency band. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Presets}
+
+\begin{longtable}{L{2.5cm} L{10.7cm}}
+\toprule
+\textbf{Preset} & \textbf{Sections Enabled} \\
+\midrule
+\endhead
+\texttt{default} & Cover, TOC, Summary Table, Gain vs Freq, BW vs Freq, Overlay Cuts, Per-freq Heatmap, Polar, Stats, Detailed, Sidelobe. \\
+\texttt{full} & All 13 sections enabled (including 3D Surface and Cross-Pol). \\
+\texttt{minimal} & Cover, TOC, Summary Table, plus per-freq Heatmap and per-freq Statistics. \\
+\texttt{quick} & Global pages only (Cover, TOC, Summary Table, trend plots, overlay cuts). No per-frequency detail. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Report Sections}
+Thirteen toggle switches arranged in two columns:
+
+\begin{longtable}{L{3.5cm} L{2cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Section} & \textbf{Group} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Cover Page & global & ON & Title page with project metadata, author, classification. \\
+Table of Contents & global & ON & Auto-generated TOC. \\
+Summary Table & global & ON & Frequency, peak gain, beamwidths, and front-to-back ratio for all slices. \\
+Gain vs Freq & global & ON & Line plot of peak gain across frequency. \\
+BW vs Freq & global & ON & Line plot of azimuth and elevation beamwidth across frequency. \\
+Overlay Cuts & global & ON & Overlaid azimuth cuts from all frequency slices. \\
+Per-freq Heatmap & per\_freq & ON & Full 2D heatmap for each frequency slice. \\
+Per-freq Polar & per\_freq & ON & Polar plot for each frequency slice. \\
+Per-freq 3D Surface & per\_freq & OFF & 3D surface for each frequency (computationally expensive). \\
+Per-freq Statistics & per\_freq & ON & Detailed statistics table for each slice. \\
+Per-freq Detailed & per\_freq & ON & Comprehensive per-slice analysis (beamwidth, sidelobes, symmetry). \\
+Per-freq Sidelobe & per\_freq & ON & Sidelobe analysis for each frequency slice. \\
+Include Cross-Pol & option & OFF & Include cross-polarisation patterns in the report (if \texttt{\_xpol.csv} files exist). \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Report Options}
+
+\begin{longtable}{L{3.5cm} L{2cm} L{1.5cm} L{6.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Dynamic Range (dB) & Text Entry & 60 & The dB range of the heatmap colour scale. Gain values below peak $-$ dynamic range are plotted at the minimum colour. \\
+Polar Range (dB) & Text Entry & 40 & The dB range displayed in polar plots. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Cover Page Fields}
+
+\begin{longtable}{L{2.5cm} L{2cm} L{3.5cm} L{5.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Subtitle & Text Entry & Antenna Pattern Report & Cover page subtitle. \\
+Author & Text Entry & (blank) & Author name. \\
+Organisation & Text Entry & (blank) & Organisation or company name. \\
+Project & Text Entry & (blank) & Project identifier. \\
+Document ID & Text Entry & (blank) & Document tracking number. \\
+Revision & Text Entry & (blank) & Document revision string. \\
+Date & Text Entry & (blank) & Cover date. Blank = today's date. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Card: Classification Markings}
+
+\begin{longtable}{L{3.5cm} L{2.5cm} L{2cm} L{5.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Classification Level & Dropdown & UNCLASSIFIED & Security classification applied to every page header and footer. Options: UNCLASSIFIED, CUI, CONFIDENTIAL, SECRET, TOP~SECRET, TOP~SECRET//SCI. \\
+Caveats / Releasability & Text Entry & (blank) & Additional handling caveats (e.g., \texttt{//NOFORN}, \texttt{//REL TO USA, GBR}). \\
+\bottomrule
+\end{longtable}
+
+\textbf{Button:} ``Generate Report'' (success/green).
+
+% ── HOW TO PAGE ──────────────────────────────────────────────────
+\subsection{How To Page}
+\label{sec:page_howto}
+
+The How To page is a built-in reference guide consisting of nine read-only information cards. It contains no interactive widgets. The topics covered are:
+
+\begin{enumerate}
+    \item \textbf{Quick Start} — A six-step workflow from generation to reporting.
+    \item \textbf{Generate \textemdash\ Creating Patterns} \textemdash\ Core parameters, beamwidth, frequency, polarisation, physics features, sidelobes, output, and batch processing.
+    \item \textbf{Visualize \textemdash\ Plotting Patterns} \textemdash\ Input sources, plot types, caching, and navigation.
+    \item \textbf{Analysis \textemdash\ Inspecting Patterns} \textemdash\ Single analysis, comparison, and mask compliance with ITU/MIL references.
+    \item \textbf{Operations \textemdash\ Pattern Math} \textemdash\ Arithmetic (six operations), rotation (yaw/pitch/roll), and interpolation (three modes).
+    \item \textbf{RF Calcs \textemdash\ Link Budget \& EIRP} \textemdash\ EIRP, power density, FSPL, and link budget.
+    \item \textbf{Reports \textemdash\ PDF \& LaTeX} \textemdash\ Presets, section toggles, and cover page.
+    \item \textbf{Settings \textemdash\ Appearance \& Config} \textemdash\ Theme, fonts, colours, and config I/O.
+    \item \textbf{Tips \& Tricks} — Tooltip hints, slider/entry sync, caching, and shortcuts.
+\end{enumerate}
+
+% ── SETTINGS PAGE ────────────────────────────────────────────────
+\subsection{Settings Page}
+\label{sec:page_settings}
+
+The Settings page provides theme customisation, configuration file management, and defaults review.
+
+\subsubsection{Card: Appearance}
+
+\begin{longtable}{L{3cm} L{2.5cm} L{2cm} L{5.7cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\endhead
+Colour Theme & Dropdown & dark & Global appearance mode: \textbf{dark}, \textbf{light}, or \textbf{system} (follows OS setting). \\
+UI Font Family & Dropdown & Segoe UI & Main UI typeface. Curated list of approximately 100+ system sans-serif, decorative, and display fonts. \\
+Mono Font Family & Dropdown & Consolas & Monospace typeface for code and result boxes. Curated list of approximately 22 monospace fonts. \\
+Base Font Size & Dropdown & 12 & Base font size in points. Options: 9, 10, 11, 12, 13, 14, 15, 16. All other font sizes are derived from this base. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Apply Fonts'' (primary) — Persists the font settings and rebuilds the entire UI.
+    \item ``Reset Fonts'' (secondary) — Restores font settings to defaults and rebuilds.
+\end{itemize}
+
+\subsubsection{Card: Colour Customization}
+\label{sec:colour_custom}
+
+All 27 colours in the theme palette can be individually customised. Each colour is displayed as a row with a label, light-mode and dark-mode hex entries, and a live colour swatch that updates on each keystroke. The colours are organised in six groups matching the theme system (Section~\ref{sec:theme}): Sidebar (5), Main (5), Text (3), Accent (3), Status (4), Inputs (3).
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Apply Colours'' (primary) — Applies colour overrides, persists to preferences file, and rebuilds the UI.
+    \item ``Reset to Defaults'' (secondary) — Restores the factory colour palette.
+    \item ``Export Theme JSON'' (secondary) — Opens a save-as dialog to export the current colour theme as a JSON file.
+    \item ``Import Theme JSON'' (secondary) — Opens a file dialog to import a colour theme JSON and populate the entry fields.
+\end{itemize}
+
+\subsubsection{Card: Configuration Files}
+
+\begin{longtable}{L{3cm} L{3cm} L{7.2cm}}
+\toprule
+\textbf{Field} & \textbf{Widget Type} & \textbf{Description} \\
+\midrule
+\endhead
+Load Config JSON & FilePicker & Select a previously saved configuration JSON file. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Buttons:}
+\begin{itemize}
+    \item ``Load Config'' (primary) — Loads the selected JSON file and displays its contents in the result box.
+    \item ``Save Current Config'' (secondary) — Saves the current Generate page configuration to a JSON file via a save-as dialog.
+\end{itemize}
+
+\subsubsection{Card: Current Default Configuration}
+
+\textbf{Button:} ``Show Defaults'' (secondary) — Displays the complete \texttt{DEFAULT\_CONFIG} dictionary as formatted JSON in the result box.
+
+% ===================================================================
+%  PART VII — CLI REFERENCE
+% ===================================================================
+\newpage
+\section{Command-Line Interface}
+\label{sec:cli}
+
+\subsection{Interactive CLI Menu}
+The interactive CLI mode provides a state-machine-driven menu with GoBack support. Launch with:
+\begin{lstlisting}[language=bash]
+python -m antenna_tool
+\end{lstlisting}
+
+\subsubsection{Main Menu Options}
+
+\begin{longtable}{cl L{8cm}}
+\toprule
+\textbf{Key} & \textbf{Option} & \textbf{Description} \\
+\midrule
+\endhead
+1 & Generate & Launches the 8-step generation wizard. \\
+2 & Graph & Plot patterns (heatmap, cuts, polar, 3D, gain/BW vs freq, overlay, animation). \\
+3 & Report & Generate PDF or \LaTeX\ reports. \\
+4 & Analyze & Single analysis, comparison, or batch analysis. \\
+5 & Arithmetic & Pattern arithmetic operations. \\
+6 & Rotate & Three-axis pattern rotation. \\
+7 & Mask Test & Sidelobe mask compliance testing. \\
+8 & EIRP & EIRP and power density calculation. \\
+9 & Link Budget & Link budget analysis. \\
+A & Interpolate & Frequency interpolation and angular resampling. \\
+B & Batch & Batch processing from recipe files. \\
+Q & Quit & Exit the application. \\
+\bottomrule
+\end{longtable}
+
+\subsubsection{Generation Wizard (8 Steps)}
+The generation wizard uses a state machine with breadcrumb navigation:
+
+\begin{enumerate}
+    \item \textbf{Core} — Antenna type, gain, F/B ratio, antenna-specific prompts.
+    \item \textbf{Beamwidth} — Azimuth and elevation beamwidths.
+    \item \textbf{Frequency} — Band limits, number of slices, spacing, reference frequency.
+    \item \textbf{Angular} — Azimuth and elevation step sizes.
+    \item \textbf{Polarization} — Polarisation mode and custom angle.
+    \item \textbf{Features} — Physics feature toggles and configuration.
+    \item \textbf{Output} — Output directory selection.
+    \item \textbf{Summary} — Review all settings, confirm or go back.
+\end{enumerate}
+
+Each step supports ``b'' or ``back'' to return to the previous step.
+
+\subsection{Direct CLI Arguments}
+For scriptable operation, pass arguments directly:
+\begin{lstlisting}[language=bash,caption={CLI argument examples}]
+# Basic generation
+python -m antenna_tool --type LPDA --max-gain 10 --az-bw 65 --el-bw 70 \
+    --f-min 30 --f-max 300 --slices 10 --output ./patterns
+
+# With features
+python -m antenna_tool --type Panel --max-gain 15 --az-bw 65 --el-bw 30 \
+    --f-min 800 --f-max 2500 --slices 20 --ftb 25 \
+    --xpol --ground --no-breakup
+
+# Batch mode
+python -m antenna_tool --batch recipe.json
+
+# Batch with image generation and custom output folder
+python -m antenna_tool --batch recipe.json --batch-images \
+    --batch-output ./batch_results
+
+# Batch with images and PDF reports (minimal preset)
+python -m antenna_tool --batch recipe.json --batch-images \
+    --batch-report --batch-report-preset minimal \
+    --batch-output ./batch_results
+
+# Report generation
+python -m antenna_tool --report ./patterns
+
+# LaTeX report
+python -m antenna_tool --latex-report ./patterns
+\end{lstlisting}
+
+% ===================================================================
+%  PART VIII — CORE ENGINE DETAILS
+% ===================================================================
+\newpage
+\section{Core Engine Architecture}
+\label{sec:engine}
+
+\subsection{Pattern Computation Pipeline}
+The \texttt{core/engine.py} module drives pattern generation. The computation pipeline for each frequency slice is:
+
+\begin{enumerate}
+    \item \textbf{Frequency-dependent beamwidth:} Compute the effective azimuth and elevation beamwidths at the current frequency using the selected decay mode (exponent, percentage, or three-point).
+    \item \textbf{VSWR rolloff:} Compute the gain reduction at this frequency based on its position within the band. The VSWR rolloff feature applies a steep gain drop at the last frequency slice to model realistic impedance mismatch effects. This is visible in generated patterns and trend plots.
+    \item \textbf{Asymmetry (optional):} Compute azimuth squint and elevation tilt offsets.
+    \item \textbf{Grid computation:} For each (azimuth, elevation) point:
+    \begin{enumerate}[label=\alph*.]
+        \item Apply asymmetry offsets.
+        \item Compute the antenna model's point gain (linear).
+        \item Apply the sigmoid front-fade function.
+        \item Add the sidelobe envelope (radial or per-plane).
+        \item Apply pattern breakup ripple (if enabled).
+        \item Apply ground reflection interference (if enabled).
+        \item Apply polarisation weighting.
+        \item Add noise.
+    \end{enumerate}
+    \item \textbf{Cross-polarisation (optional):} Compute the cross-pol gain at each point.
+    \item \textbf{Output:} Convert to dBi and write to CSV.
+\end{enumerate}
+
+\subsection{Vectorised vs Scalar Paths}
+When NumPy is available, the engine uses fully vectorised 2D array operations (\texttt{\_compute\_pattern\_numpy}), processing the entire azimuth$\times$elevation grid at once. This is 10--100$\times$ faster than the pure-Python scalar fallback. SciPy enables additional optimisations such as Bessel function evaluation for the Dish model.
+
+Each antenna type has a dedicated vectorised gain function. The Array type uses \texttt{\_vectorized\_array\_gain()}, which computes element patterns, array factors (linear, planar, or circular), mutual coupling, and element errors entirely via NumPy broadcasting --- weights, coupling corrections, and error perturbations are computed once per call and the array factor is evaluated across the full angle grid in a single vectorised pass. Without this path, Array patterns fall through to the per-point scalar loop, which is prohibitively slow for large element counts (e.g., 16-element arrays with mutual coupling).
+
+\subsection{Pattern Math Library}
+The \texttt{core/pattern\_math.py} module provides all mathematical building blocks:
+
+\begin{longtable}{L{4.5cm} L{8.7cm}}
+\toprule
+\textbf{Function} & \textbf{Purpose} \\
+\midrule
+\endhead
+\texttt{front\_fade\_scalar} & Smooth sigmoid front-hemisphere weighting. \\
+\texttt{bw\_to\_exponent} & Converts 3\,dB beamwidth to $\cos^n$ exponent. \\
+\texttt{compute\_freq\_dependent\_bw} & Beamwidth at a given frequency (3 modes). \\
+\texttt{compute\_sidelobe\_envelope} & Sidelobe gain at a given off-axis angle. \\
+\texttt{compute\_sidelobe\_radial} & 2D radial sidelobe envelope. \\
+\texttt{apply\_pattern\_breakup} & Deterministic ripple at high angles. \\
+\texttt{apply\_ground\_reflection} & 2-ray ground interference model. \\
+\texttt{compute\_cross\_pol} & Cross-pol gain computation. \\
+\texttt{apply\_vswr\_rolloff} & Band-edge gain reduction. \\
+\texttt{apply\_asymmetry} & Pointing offset and perturbation. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Parameter Fitting Module}
+The \texttt{core/fitting.py} module provides reverse parameter fitting --- deriving AntennaForge configuration parameters from reference (measured or legacy) patterns.
+
+\begin{longtable}{L{4.5cm} L{8.7cm}}
+\toprule
+\textbf{Function} & \textbf{Purpose} \\
+\midrule
+\endhead
+\texttt{fit\_parameters} & Analyses reference pattern files to extract gain, beamwidth, F/B ratio, and sidelobe levels; seeds an AntennaForge config; optionally refines via SciPy optimisation. \\
+\texttt{fit\_parameters\_multirun} & Runs multiple fitting strategies with perturbed initial conditions and returns the best result. Supports unlimited runs (\texttt{n\_runs=0}) with a \texttt{stop\_event} for cancellation. \\
+\texttt{recommended\_runs} & Returns the recommended number of runs and a reason string for a given antenna type. \\
+\texttt{type\_target\_rms} & Returns the per-type auto-stop RMS threshold (dB). \\
+\texttt{batch\_fit} & Fits many pattern sets from subfolders of a parent directory. For each set: auto-detects type and frequency range (from \texttt{generation\_config.json} or filename parsing), runs \texttt{fit\_parameters\_multirun}, saves \texttt{fitted\_config.json}, generates patterns from the fitted config, compares against originals, and produces a detailed report. Supports progress callbacks and a stop event for cancellation. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Optimization Pipeline}
+The fitting process uses a multi-stage pipeline:
+\begin{enumerate}
+    \item \textbf{Measurement Seed:} Extract gain, beamwidth, F/B ratio, and sidelobe levels from the reference patterns to build an initial configuration.
+    \item \textbf{Strategy Generation:} For each run, generate a strategy with a different combination of physics features (sidelobes on/off, ground reflection on/off, etc.) and perturbed parameters.
+    \item \textbf{Principal-Plane Fitting (Stage 0):} Fit azimuth and elevation cuts before the full 2-D pattern optimisation.
+    \item \textbf{Coarse Optimisation (Stage 1):} Evaluate the cost function on a 15\textdegree{} grid stride for fast global search. Uses differential evolution for high-dimensional types (Dish, Array) or sensitivity-screened Nelder-Mead for simpler types.
+    \item \textbf{Fine Optimisation (Stage 2):} Polish on a 3\textdegree{} grid stride via Nelder-Mead.
+    \item \textbf{Ensemble Averaging:} Top-3 results are weighted-averaged (by $1/\text{score}$) and accepted if better than the single best.
+    \item \textbf{Cache:} Successful fits are saved to \texttt{\~{}/.antennaforge/fit\_cache.json} (50 entries per type) to seed future runs.
+\end{enumerate}
+
+\paragraph{Cost Function}
+The cost function blends normalised cross-correlation (60\%) with weighted percentage error (40\%), using per-type cost profiles that emphasise the beam core or far-out regions differently. Adaptive noise-floor weighting estimates the measurement noise from low-gain regions and adjusts the weighting of far-out angles accordingly.
+
+The fitter supports CSV, DAT, and ODESSA \texttt{.tbl} input formats. ODESSA tables are read via \texttt{core/io.read\_odessa\_tbl()}, which parses multi-frequency slice data from a single file.
+
+\subsection{I/O Utilities}
+The \texttt{core/io.py} module provides additional I/O beyond basic CSV read/write:
+\begin{itemize}
+    \item \texttt{read\_odessa\_tbl(filepath)} --- Reads an ODESSA \texttt{.tbl} file containing multiple frequency slices. Returns a dictionary with keys: \texttt{az\_deg}, \texttt{el\_deg}, \texttt{freqs\_mhz}, and \texttt{slices} (a list of 2-D gain patterns).
+    \item \texttt{make\_timestamped\_dir(base\_path)} --- Creates a timestamped output directory.
+    \item \texttt{make\_graph\_output\_dir(source\_path)} --- Creates a timestamped graphs directory alongside the source data.
+\end{itemize}
+
+% ===================================================================
+%  PART IX — ANALYSIS MODULE
+% ===================================================================
+\newpage
+\section{Analysis Module}
+\label{sec:analysis}
+
+The analysis module (\texttt{analysis/analyzer.py}) provides comprehensive pattern characterisation.
+
+\subsection{Single Pattern Analysis}
+The \texttt{analyze\_single()} function computes:
+\begin{itemize}
+    \item \textbf{Peak gain:} Maximum gain value anywhere in the pattern.
+    \item \textbf{Boresight gain:} Gain at $(\mathrm{az}=0^\circ, \mathrm{el}=0^\circ)$.
+    \item \textbf{Azimuth 3\,dB beamwidth:} Measured from the elevation=$0^\circ$ cut by finding the $-3$\,dB points on either side of the peak.
+    \item \textbf{Elevation 3\,dB beamwidth:} Measured from the azimuth=$0^\circ$ cut.
+    \item \textbf{Minimum gain:} Lowest gain in the entire pattern.
+    \item \textbf{Average gain:} Power-averaged gain across all angles.
+    \item \textbf{Front-to-back ratio:} Difference between boresight gain and the gain at $180^\circ$ azimuth.
+    \item \textbf{First sidelobe levels:} Detected in both azimuth and elevation cuts.
+    \item \textbf{Symmetry:} RMS deviation between left/right (azimuth) and upper/lower (elevation) pattern halves.
+    \item \textbf{Angular coverage:} Solid angle above a gain threshold.
+\end{itemize}
+
+\subsection{Pattern Comparison}
+The \texttt{compare\_patterns()} function tabulates side-by-side statistics for multiple patterns, enabling rapid comparison across frequency slices or antenna configurations.
+
+\subsection{In-Memory Analysis}
+The \texttt{analyze\_from\_data(az\_angles, el\_angles, data\_2d)} function performs the same analysis as \texttt{analyze\_single()} but operates on in-memory data arrays rather than loading from a file. This is used by the parameter fitting module to evaluate generated patterns without intermediate disk I/O.
+
+\subsection{Beamwidth Measurement Algorithm}
+The \texttt{measure\_beamwidth()} function:
+\begin{enumerate}
+    \item Finds the peak gain in the 1D cut.
+    \item Computes the $-3$\,dB threshold.
+    \item Scans outward from the peak in both directions to find the crossing points.
+    \item Uses linear interpolation between adjacent samples for sub-degree accuracy.
+    \item Returns the angular width between the two crossing points.
+\end{enumerate}
+
+% ===================================================================
+%  PART X — PATTERN OPERATIONS
+% ===================================================================
+\newpage
+\section{Pattern Operations}
+\label{sec:operations}
+
+\subsection{Arithmetic Operations}
+Six arithmetic operations are provided in \texttt{core/pattern\_ops.py}:
+
+\begin{longtable}{L{3cm} L{10.2cm}}
+\toprule
+\textbf{Operation} & \textbf{Algorithm} \\
+\midrule
+\endhead
+Add (power) & $G_{\text{out}} = 10\log_{10}\bigl(10^{G_A/10} + 10^{G_B/10}\bigr)$ \\
+Subtract (dB) & $G_{\text{out}} = G_A - G_B$ (element-wise in dB) \\
+Multiply (dB+dB) & $G_{\text{out}} = G_A + G_B$ (dB addition = linear multiplication) \\
+Scale (offset) & $G_{\text{out}} = G_{\text{in}} + \Delta_{\text{dB}}$ \\
+Max Envelope & $G_{\text{out}}(i,j) = \max\bigl(G_1(i,j), G_2(i,j), \ldots, G_N(i,j)\bigr)$ \\
+Average (power) & $G_{\text{out}} = 10\log_{10}\!\left(\frac{1}{N}\sum_{k=1}^{N} 10^{G_k/10}\right)$ \\
+\bottomrule
+\end{longtable}
+
+All operations validate that input patterns share the same angular grid before proceeding.
+
+\subsection{Pattern Rotation}
+The rotation system (\texttt{core/rotation.py}) applies three-axis Euler rotation:
+\begin{enumerate}
+    \item Constructs a $3\times3$ rotation matrix $\mathbf{R}$ from yaw ($\psi$), pitch ($\theta$), and roll ($\phi$).
+    \item For each output grid point $(\mathrm{az}_o, \mathrm{el}_o)$:
+    \begin{enumerate}[label=\alph*.]
+        \item Convert to Cartesian: $(x, y, z) = (\cos\mathrm{el}\cos\mathrm{az},\;\cos\mathrm{el}\sin\mathrm{az},\;\sin\mathrm{el})$.
+        \item Apply the inverse rotation: $(x', y', z') = \mathbf{R}^{-1}(x, y, z)$.
+        \item Convert back to spherical: $(\mathrm{az}_s, \mathrm{el}_s) = (\arctan2(y', x'),\;\arcsin(z'))$.
+        \item Interpolate the gain at $(\mathrm{az}_s, \mathrm{el}_s)$ from the original pattern.
+    \end{enumerate}
+\end{enumerate}
+
+Interpolation uses bilinear interpolation in the pure-Python path, or SciPy's \texttt{RegularGridInterpolator} (bicubic) when available.
+
+\subsection{Interpolation \& Resampling}
+Three interpolation modes are provided in \texttt{core/interpolation.py}:
+
+\begin{description}[style=nextline, leftmargin=2em]
+    \item[\textbf{Frequency Interpolation (2 files)}] Linear interpolation in dB between two patterns at different frequencies: $G(f) = G_{\text{lo}} + (G_{\text{hi}} - G_{\text{lo}}) \cdot \frac{f - f_{\text{lo}}}{f_{\text{hi}} - f_{\text{lo}}}$.
+    \item[\textbf{Multi-Frequency Interpolation}] Given $N$ patterns at known frequencies, interpolates to arbitrary target frequencies using piecewise linear interpolation between the nearest available files.
+    \item[\textbf{Angular Resampling}] Resamples a pattern to a new azimuth/elevation grid resolution. Uses SciPy's \texttt{RectBivariateSpline} for bicubic interpolation when available.
+\end{description}
+
+% ===================================================================
+%  PART XI — REPORTING
+% ===================================================================
+\newpage
+\section{Reporting}
+\label{sec:reporting}
+
+AntennaForge generates three types of reports from a directory of pattern CSVs.
+
+\subsection{PDF Reports}
+The PDF report generator (\texttt{reporting/report.py}) uses Matplotlib's \texttt{PdfPages} backend to produce a multi-page document. The report structure follows the 13 configurable sections described in Section~\ref{sec:page_reports}.
+
+Key features:
+\begin{itemize}
+    \item Cover page with project metadata and classification banner.
+    \item Auto-generated table of contents.
+    \item Summary table with peak gain, beamwidths, and F/B ratio for every frequency slice.
+    \item Trend plots (gain vs frequency, beamwidth vs frequency).
+    \item Overlay cuts for cross-frequency comparison.
+    \item Per-frequency heatmaps, polar plots, 3D surfaces, statistics, and sidelobe analysis.
+    \item Optional cross-polarisation sections.
+    \item Classification markings on every page (header and footer).
+\end{itemize}
+
+\subsection{\LaTeX\ Reports}
+The \LaTeX\ report generator (\texttt{reporting/latex\_report.py}) produces a standalone \texttt{.tex} file that mirrors the PDF report structure. It:
+\begin{itemize}
+    \item Generates PNG plot images alongside the \texttt{.tex} file in an \texttt{images/} directory tree.
+    \item Global trend plots (\texttt{gain\_vs\_freq.png}, \texttt{bw\_vs\_freq.png}, \texttt{overlay\_cuts.png}) are saved directly in \texttt{images/}.
+    \item Per-frequency plots are organised into subfolders: \texttt{images/heatmaps/}, \texttt{images/polar/}, \texttt{images/3d\_surface/}, and \texttt{images/xpol/}.
+    \item Uses a well-structured \LaTeX\ document with \texttt{booktabs}, \texttt{longtable}, \texttt{graphicx}, and \texttt{hyperref} packages.
+    \item Supports all 13 sections and classification markings.
+    \item The generated \texttt{.tex} file can be compiled separately with any standard \LaTeX\ distribution.
+\end{itemize}
+
+\subsection{PowerPoint Reports}
+The PowerPoint report generator (\texttt{reporting/pptx\_report.py}) produces a \texttt{.pptx} slide deck. It requires the \texttt{python-pptx} package (optional dependency). Key features:
+\begin{itemize}
+    \item Title slide with project metadata and classification.
+    \item Summary table slide with per-frequency statistics.
+    \item Trend plot slides (gain vs frequency, beamwidth vs frequency).
+    \item Per-frequency heatmap and polar pattern slides.
+    \item Configurable via the same 13-section report configuration and 4 presets.
+\end{itemize}
+
+\begin{lstlisting}[language=Python,caption={PowerPoint report generation}]
+from reporting.pptx_report import generate_pptx_report
+
+generate_pptx_report('./pattern_dir', report_cfg=cfg)
+\end{lstlisting}
+
+% ===================================================================
+%  PART XII — SIDELOBE MASK STANDARDS
+% ===================================================================
+\newpage
+\section{Sidelobe Mask Standards}
+\label{sec:masks}
+
+The sidelobe mask module (\texttt{core/sidelobe\_masks.py}) implements three industry-standard sidelobe envelopes and a custom mask loader.
+
+\subsection{ITU-R S.580-6}
+The ITU-R Recommendation S.580-6 defines the reference radiation pattern for earth station antennas used in coordination and interference assessment. The mask is a function of peak gain $G_{\max}$:
+\begin{equation}
+G(\theta) = \begin{cases}
+G_{\max} - 2.5 \times 10^{-3}\left(\frac{D}{\lambda}\theta\right)^2 & \text{for } 0 \leq \theta < \theta_m \\
+G_1 & \text{for } \theta_m \leq \theta < \theta_r \\
+32 - 25\log_{10}(\theta) & \text{for } \theta_r \leq \theta < 48^\circ \\
+-10 & \text{for } 48^\circ \leq \theta \leq 180^\circ
+\end{cases}
+\end{equation}
+
+\subsection{ITU-R S.465-6}
+ITU-R Recommendation S.465-6 is used for coordination of small earth station antennas and is parameterised by $D/\lambda$ (the ratio of antenna diameter to wavelength).
+
+\subsection{MIL-STD}
+A military standard sidelobe envelope parameterised by the peak gain and first sidelobe level. Suitable for defence and government applications.
+
+\subsection{Custom Masks}
+Custom masks can be loaded from JSON files using \texttt{load\_mask\_from\_json()}. The JSON format defines angle-gain pairs that are linearly interpolated.
+
+\subsection{Compliance Testing}
+The \texttt{test\_pattern\_against\_mask()} function:
+\begin{enumerate}
+    \item Loads the pattern CSV and extracts the selected principal-plane cut.
+    \item Evaluates the mask function at each angle.
+    \item Compares the pattern gain to the mask limit.
+    \item Reports: overall PASS/FAIL, number of violations, violation angles and magnitudes, and minimum margin.
+\end{enumerate}
+
+% ===================================================================
+%  PART XIII — BATCH PROCESSING
+% ===================================================================
+\newpage
+\section{Batch Processing}
+\label{sec:batch_detail}
+
+The batch system (\texttt{core/batch.py}) enables automated generation of multiple antenna configurations from a single JSON recipe file.
+
+\subsection{Recipe Format}
+A recipe file is a JSON array of configuration dictionaries. Each entry may contain any subset of \texttt{DEFAULT\_CONFIG} keys — missing keys inherit from defaults. Antenna-specific defaults are automatically merged based on the \texttt{antenna\_type} field.
+
+\subsection{Execution}
+\begin{itemize}
+    \item \texttt{load\_recipe(filepath)} — Loads and validates the recipe, merging each entry with defaults.
+    \item \texttt{run\_batch(recipe\_path, dry\_run, generate\_images, output\_base, writer)} — Iterates over all entries, running \texttt{run\_generation()} for each. Supports dry-run mode for validation without file output. When \texttt{generate\_images=True}, plot images are generated for each job. When \texttt{output\_base} is set, all job output directories are rebased as subfolders under the specified path.
+    \item \texttt{generate\_batch\_images(output\_dir, writer)} — Scans a batch output directory for CSV files and generates the full set of plot images (heatmaps, polar, 3D surface, cuts, and multi-frequency trend plots) in a \texttt{graphs/} subfolder tree.
+    \item \texttt{create\_sample\_recipe(output\_path)} — Generates a starter template with two example configurations (LPDA and Dish).
+\end{itemize}
+
+\subsection{CLI Batch Flags}
+\begin{itemize}
+    \item \texttt{-{}-batch <recipe.json>} — Run a batch recipe.
+    \item \texttt{-{}-batch-dry-run} — Validate the recipe without generating files.
+    \item \texttt{-{}-batch-images} — Generate plot images for each batch job.
+    \item \texttt{-{}-batch-output <dir>} — Base output directory for all batch jobs.
+    \item \texttt{-{}-batch-report} — Generate a PDF report for each batch job (requires \texttt{-{}-batch-images}).
+    \item \texttt{-{}-batch-report-preset <name>} — Report section preset: \texttt{default}, \texttt{full}, \texttt{minimal}, or \texttt{quick}.
+\end{itemize}
+
+\subsection{Dataset Batch Generator}
+
+The utility script \texttt{scripts/generate\_dataset\_batch.py} generates large-scale randomised dataset recipes for ML training, validation, and benchmarking. It creates batch JSON files with per-type parameter ranges and feature probabilities.
+
+\begin{verbatim}
+# Interactive mode
+python scripts/generate_dataset_batch.py
+
+# Non-interactive mode
+python scripts/generate_dataset_batch.py --count 50000 --types LPDA Panel Horn --seed 42
+
+# All types, random slices, custom output
+python scripts/generate_dataset_batch.py --count 10000 --n-slices random --out ./batch_scripts
+\end{verbatim}
+
+Features:
+\begin{itemize}
+    \item Covers all 7 antenna types with physically realistic parameter ranges.
+    \item Per-type feature enable probabilities (e.g., 70\% frequency-dependent BW for LPDA, 0\% az BW scaling for Omni).
+    \item Log-uniform frequency distribution for even decade coverage.
+    \item Automatic Testing/Validation split (default 80/20).
+    \item Noise disabled by default (\texttt{noise\_range\_db=0.0}) to produce clean datasets suitable for fitting validation.
+    \item Input validation with retry loops: prompts re-ask on invalid input rather than crashing, with sensible defaults (count=100, split=80\%, seed=random).
+    \item Reproducible via \texttt{-{}-seed}.
+    \item Output: a single \texttt{dataset\_batch.json} in the output directory, consumable by the standard batch processing pipeline.
+\end{itemize}
+
+% ===================================================================
+%  PART XIV — DEPENDENCY MANAGEMENT
+% ===================================================================
+\newpage
+\section{Dependency Management}
+\label{sec:deps}
+
+AntennaForge is designed to run with the Python standard library alone, with optional dependencies for enhanced functionality.
+
+\subsection{Optional Dependencies}
+
+\begin{longtable}{L{3cm} L{10.2cm}}
+\toprule
+\textbf{Package} & \textbf{Features Enabled} \\
+\midrule
+\endhead
+\texttt{numpy} & Vectorised pattern computation (10--100$\times$ speedup), efficient array operations. \\
+\texttt{scipy} & Bicubic interpolation, Bessel functions (Dish model), advanced resampling, RegularGridInterpolator. \\
+\texttt{matplotlib} & All plotting, PDF report generation, animation. \\
+\texttt{Pillow} & Image loading/display in the GUI plot viewer. \\
+\texttt{customtkinter} & The entire GUI framework. Required only for GUI mode. \\
+\texttt{python-pptx} & PowerPoint (\texttt{.pptx}) report generation. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Dependency Checking}
+The \texttt{core/deps.py} module provides:
+\begin{itemize}
+    \item \texttt{check\_all()} — Returns a dictionary of package availability.
+    \item \texttt{missing\_packages()} — Lists missing optional packages.
+    \item \texttt{install\_command()} — Returns the pip command to install all optional packages.
+    \item \texttt{print\_status()} — Prints a human-readable status table.
+\end{itemize}
+
+The Home page's Dependency Status card uses these functions to display real-time status.
+
+% ===================================================================
+%  PART XV — CONFIGURATION FILE REFERENCE
+% ===================================================================
+\newpage
+\section{Complete Configuration Reference}
+\label{sec:config_ref}
+
+The following table documents every key in the \texttt{DEFAULT\_CONFIG} dictionary with its type, default value, valid range, and description.
+
+\subsection{Top-Level Parameters}
+
+\begin{longtable}{L{3.5cm} l l l L{4.7cm}}
+\toprule
+\textbf{Key} & \textbf{Type} & \textbf{Default} & \textbf{Range} & \textbf{Description} \\
+\midrule
+\endhead
+\texttt{antenna\_type} & str & LPDA & * & Antenna model name \\
+\texttt{max\_gain\_dbi} & float & 7.0 & $-30$--$60$ & Peak gain (dBi) \\
+\texttt{az\_beamwidth\_deg} & float & 65.0 & $1$--$360$ & Az 3\,dB BW ($^\circ$) \\
+\texttt{el\_beamwidth\_deg} & float & 70.0 & $1$--$360$ & El 3\,dB BW ($^\circ$) \\
+\texttt{ref\_frequency\_mhz} & float & None & $>0$ & Ref frequency (MHz) \\
+\texttt{f\_min\_mhz} & float & 30.0 & $0.001$--$10^6$ & Band lower edge (MHz) \\
+\texttt{f\_max\_mhz} & float & 300.0 & $0.001$--$10^6$ & Band upper edge (MHz) \\
+\texttt{n\_slices} & int & 10 & $1$--$10000$ & Frequency points \\
+\texttt{freq\_spacing} & str & linear & linear, log & Freq distribution \\
+\texttt{az\_step\_deg} & float & 1.0 & $0.01$--$45$ & Az angular step ($^\circ$) \\
+\texttt{el\_step\_deg} & float & 1.0 & $0.01$--$45$ & El angular step ($^\circ$) \\
+\texttt{ftb\_ratio\_db} & float & 15.0 & $0$--$80$ & Front-to-back (dB) \\
+\texttt{polarization} & str & vertical & v, h, custom & Polarisation mode \\
+\texttt{pol\_angle\_deg} & float & 0.0 & --- & Custom pol angle ($^\circ$) \\
+\texttt{noise\_range\_db} & float & 0.0 & $0$--$30$ & Noise amplitude (dB) \\
+\texttt{noise\_type} & str & uniform & * & Noise mode: uniform, gaussian, quantization \\
+\texttt{sigmoid\_k} & float & 40.0 & $1$--$100$ & Front-fade steepness \\
+\texttt{output\_dir} & str & ./antenna\_patterns & --- & Output directory \\
+\bottomrule
+\end{longtable}
+
+\subsection{Feature Sub-Dictionaries}
+
+Each feature follows the pattern:
+\begin{lstlisting}[language={},caption={Feature sub-dictionary structure}]
+"feature_name": {
+    "enabled": true/false,
+    "description": "Human-readable description",
+    ...feature-specific parameters...
+}
+\end{lstlisting}
+
+Refer to Section~\ref{sec:features} for complete documentation of each feature's parameters.
+
+% ===================================================================
+%  PART XVI — TIPS AND BEST PRACTICES
+% ===================================================================
+\newpage
+\section{Tips and Best Practices}
+\label{sec:tips}
+
+\subsection{Slider and Entry Synchronization}
+The \texttt{LabeledSliderEntry} widget maintains bidirectional synchronization between its slider and text entry. Moving the slider updates the entry in real-time; typing in the entry and pressing Enter or clicking elsewhere updates the slider. This allows both coarse adjustment via the slider and precise numeric entry.
+
+\subsection{Tooltips}
+Many fields have tooltips that appear on hover after a 400\,ms delay. Tooltips provide concise descriptions and valid ranges for each parameter.
+
+\subsection{Plot Caching}
+The Visualize page caches generated plot images. When navigating between plots using the Prev/Next buttons, cached images are displayed instantly without regeneration. The cache is cleared when new plots are generated.
+
+\subsection{Cooperative Cancellation}
+Long-running operations (batch plotting, report generation) check a cancellation flag between iterations. Clicking the Cancel button sets this flag, and the operation will stop at the next safe checkpoint.
+
+\subsection{Performance Optimization}
+\begin{itemize}
+    \item Install NumPy and SciPy for 10--100$\times$ faster pattern generation.
+    \item Use coarser angular steps ($2^\circ$ or $5^\circ$) for quick previews; use $1^\circ$ or $0.5^\circ$ for final output.
+    \item Reduce the number of frequency slices for initial exploration.
+    \item Disable unnecessary physics features (ground reflection, cross-pol) during early design iterations.
+\end{itemize}
+
+\subsection{Frequency Spacing}
+\begin{itemize}
+    \item \textbf{Linear spacing} distributes frequency points evenly across the band. Best for narrowband antennas or when uniform frequency coverage is needed.
+    \item \textbf{Logarithmic spacing} places more points at lower frequencies. Ideal for wideband antennas (e.g., LPDAs) where relative bandwidth is more meaningful than absolute bandwidth.
+\end{itemize}
+
+\subsection{Reference Frequency}
+If left blank, the reference frequency defaults to the geometric mean of the band: $f_{\text{ref}} = \sqrt{f_{\min} \cdot f_{\max}}$. The reference frequency is the frequency at which the specified beamwidth values apply. At other frequencies, the beamwidth is scaled according to the selected decay mode.
+
+\subsection{Output Organisation}
+Every generation run\textemdash{}including the very first\textemdash{}creates a timestamped subdirectory (format \texttt{yyyymmddhhmm}) within the output directory. This ensures that no run ever overwrites previous results. The subdirectory name includes the antenna type and the timestamp.
+
+\subsection{Configuration Portability}
+Save your generation settings to a JSON file via the Settings page for reproducibility. These configuration files can be:
+\begin{itemize}
+    \item Shared with colleagues.
+    \item Version-controlled alongside your project.
+    \item Used as entries in batch recipe files.
+    \item Loaded back into the GUI or CLI at any time.
+\end{itemize}
+
+% ===================================================================
+%  APPENDIX
+% ===================================================================
+\appendix
+
+\newpage
+\section{Default Configuration (JSON)}
+\label{app:config}
+
+\begin{lstlisting}[language={},caption={DEFAULT\_CONFIG top-level keys (features omitted for brevity)}]
+{
+    "antenna_type": "LPDA",
+    "max_gain_dbi": 7.0,
+    "az_beamwidth_deg": 65.0,
+    "el_beamwidth_deg": 70.0,
+    "ref_frequency_mhz": null,
+    "f_min_mhz": 30.0,
+    "f_max_mhz": 300.0,
+    "n_slices": 10,
+    "freq_spacing": "linear",
+    "az_step_deg": 1.0,
+    "el_step_deg": 1.0,
+    "ftb_ratio_db": 15.0,
+    "polarization": "vertical",
+    "pol_angle_deg": 0.0,
+    "noise_range_db": 0.0,
+    "noise_type": "uniform",
+    "sigmoid_k": 40.0,
+    "output_dir": "./antenna_patterns",
+    "features": { ... }
+}
+\end{lstlisting}
+
+Each feature sub-dictionary follows the structure documented in Section~\ref{sec:features}. Use the ``Show Defaults'' button on the Settings page to view the full configuration at any time.
+
+\newpage
+\section{Glossary}
+\label{app:glossary}
+
+\begin{longtable}{L{4cm} L{9.2cm}}
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+\endhead
+\textbf{Azimuth (Az)} & Horizontal angle measured from boresight (front of antenna), $0^\circ$--$360^\circ$. \\
+\textbf{Elevation (El)} & Vertical angle measured from the horizon, $-90^\circ$ (nadir) to $+90^\circ$ (zenith). \\
+\textbf{Boresight} & The direction of maximum gain, typically $(\mathrm{az}=0^\circ, \mathrm{el}=0^\circ)$. \\
+\textbf{Beamwidth (BW)} & The angular width between the $-3$\,dB points of the main beam. \\
+\textbf{dBi} & Decibels relative to an isotropic radiator. \\
+\textbf{dBm} & Decibels relative to 1 milliwatt. \\
+\textbf{EIRP} & Effective Isotropic Radiated Power — the power that would need to be radiated by an isotropic antenna to produce the same power density. \\
+\textbf{FSPL} & Free-Space Path Loss — the attenuation of radio waves as they propagate through free space. \\
+\textbf{FTB} & Front-to-Back ratio — the gain difference between the front ($0^\circ$) and back ($180^\circ$) of the antenna. \\
+\textbf{Sidelobe} & A radiation lobe other than the main beam. \\
+\textbf{SLL} & Sidelobe Level — the gain of a sidelobe relative to the main beam peak. \\
+\textbf{VSWR} & Voltage Standing Wave Ratio — a measure of impedance mismatch. \\
+\textbf{Taylor taper} & An amplitude weighting applied to array elements or used as a sidelobe model, designed to achieve a specified sidelobe level. \\
+\textbf{Cross-pol} & Cross-polarisation — the component of radiation in the orthogonal polarisation plane. \\
+\textbf{Jinc function} & $\operatorname{jinc}(u) = 2J_1(u)/u$, the Airy pattern for circular apertures. \\
+\textbf{Array Factor} & The radiation pattern contribution from the spatial arrangement of array elements. \\
+\textbf{Pattern Multiplication} & Total array pattern = element pattern $\times$ array factor. \\
+\textbf{Grating Lobe} & Unwanted secondary main beam that appears when element spacing exceeds $\lambda/2$. \\
+\bottomrule
+\end{longtable}
+
+% ===================================================================
+\end{document}
