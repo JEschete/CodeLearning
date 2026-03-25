@@ -1,0 +1,478 @@
+\section{Controlling Program Flow}
+
+\subsection{Section Overview}
+In this section, we'll learn how to control the flow of execution in our C++ programs. By default, code runs sequentially. Control flow statements allow us to execute code conditionally (\texttt{if} statements, \texttt{switch} statements) and to repeat code (loops). Mastering these structures is essential for writing non-trivial programs.
+
+\subsection{\texttt{if} Statement}
+The \texttt{if} statement allows us to execute a block of code only if a certain condition is true.
+\begin{lstlisting}
+	int age {20};
+	if (age >= 18) {
+		std::cout << "You are an adult." << std::endl;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 10: If Statement --- Can you Drive?}
+Write a program that asks the user for their age. If the user is 16 or older, print ``You can drive.''
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int age;
+		std::cout << "Enter your age: ";
+		std::cin >> age;
+		if (age >= 16) {
+			std::cout << "You can drive." << std::endl;
+		}
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{\texttt{if-else} Statement}
+The \texttt{if-else} statement allows us to choose between two blocks of code. If the condition is true, the \texttt{if} block is executed. Otherwise, the \texttt{else} block is executed.
+\begin{lstlisting}
+	int age {15};
+	if (age >= 18) {
+		std::cout << "You are an adult." << std::endl;
+	} else {
+		std::cout << "You are a minor." << std::endl;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 11: If-Else Statement --- Can you Drive?}
+Write a program that asks for the user's age. If they are 16 or older, print ``You can drive.'' Otherwise, print ``You cannot drive.''
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int age;
+		std::cout << "Enter your age: ";
+		std::cin >> age;
+		if (age >= 16) {
+			std::cout << "You can drive." << std::endl;
+		} else {
+			std::cout << "You cannot drive." << std::endl;
+		}
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Nested \texttt{if} Statements}
+You can place \texttt{if} statements inside other \texttt{if} statements. This is called nesting.
+\begin{lstlisting}
+	int age {20};
+	bool has_license {true};
+	if (age >= 16) {
+		if (has_license) {
+			std::cout << "You can legally drive." << std::endl;
+		} else {
+			std::cout << "You are old enough, but need a license."
+				<< std::endl;
+		}
+	} else {
+		std::cout << "You are too young to drive." << std::endl;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 12: Nested If Statements --- Can you Drive?}
+Ask the user for their age and if they have a driver's license (1 for yes, 0 for no). Print a message indicating if they can legally drive.
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int age;
+		bool has_license;
+		std::cout << "Enter your age: ";
+		std::cin >> age;
+		std::cout << "Do you have a license? (1 for yes, 0 for no): ";
+		std::cin >> has_license;
+		if (age >= 16) {
+			if (has_license) {
+				std::cout << "You can legally drive." << std::endl;
+			} else {
+				std::cout << "You can apply for a license." << std::endl;
+			}
+		} else {
+			std::cout << "You are too young to drive." << std::endl;
+		}
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{\texttt{switch-case} Statement}
+The \texttt{switch} statement is a multi-way selection statement. It's a good alternative to a long chain of \texttt{if-else if} statements when you are checking a variable against a set of constant integer or character values.
+\begin{lstlisting}
+	int day_code {3};
+	switch (day_code) {
+		case 1:
+			std::cout << "Monday" << std::endl;
+			break;
+		case 2:
+			std::cout << "Tuesday" << std::endl;
+			break;
+		case 3:
+			std::cout << "Wednesday" << std::endl;
+			break;
+		default:
+			std::cout << "Invalid day code" << std::endl;
+	}
+\end{lstlisting}
+\begin{remark}
+	The \texttt{break} statement is crucial. Without it, execution ``falls through'' to the next case.
+\end{remark}
+
+\subsection{Coding Exercise 13: Switch Statement --- Day of the Week}
+Write a program that takes a number from 1--7 and prints the corresponding day of the week.
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int day;
+		std::cout << "Enter day of week (1-7): ";
+		std::cin >> day;
+		switch(day) {
+			case 1: std::cout << "Sunday" << std::endl; break;
+			case 2: std::cout << "Monday" << std::endl; break;
+			case 3: std::cout << "Tuesday" << std::endl; break;
+			case 4: std::cout << "Wednesday" << std::endl; break;
+			case 5: std::cout << "Thursday" << std::endl; break;
+			case 6: std::cout << "Friday" << std::endl; break;
+			case 7: std::cout << "Saturday" << std::endl; break;
+			default: std::cout << "Invalid day" << std::endl;
+		}
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Conditional Operator}
+The conditional operator (\texttt{?:}) is a ternary operator (takes three operands). It's a compact way to write a simple \texttt{if-else} statement: \texttt{condition ? expr1 : expr2}. If \texttt{condition} is true, \texttt{expr1} is evaluated; otherwise, \texttt{expr2} is evaluated.
+\begin{lstlisting}
+	int a = 10, b = 20;
+	int max = (a > b) ? a : b; // max will be 20
+	std::cout << "The maximum is " << max << std::endl;
+\end{lstlisting}
+
+\subsection{Looping}
+Loops allow us to execute a block of code repeatedly.
+
+\subsection{\texttt{for} Loop}
+The \texttt{for} loop is ideal when you know how many times you want to loop. It has three parts: initialization, condition, and increment/decrement.
+\begin{lstlisting}
+	for (int i = 1; i <= 5; ++i) {
+		std::cout << "i is " << i << std::endl;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 14: For loop --- Sum of Odd Integers}
+Write a program that calculates the sum of all odd integers from 1 to 100.
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int sum = 0;
+		for (int i = 1; i <= 100; i += 2) {
+			sum += i;
+		}
+		std::cout << "Sum of odd integers from 1 to 100 is: "
+			<< sum << std::endl;
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Range-based \texttt{for} Loop}
+C++11 introduced the range-based \texttt{for} loop, which is a simpler way to iterate over the elements of a collection (like an array or a vector).
+\begin{lstlisting}
+	int scores[] {100, 90, 80};
+	for (int score : scores) {
+		std::cout << score << " "; // 100 90 80
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 15: Using the range-based for loop}
+Given a vector of doubles \texttt{temps \{80.0, 78.5, 75.3, 82.1\}}, use a range-based \texttt{for} loop to print each temperature.
+\begin{lstlisting}
+	#include <iostream>
+	#include <vector>
+
+	int main() {
+		std::vector<double> temps {80.0, 78.5, 75.3, 82.1};
+		for (double temp : temps) {
+			std::cout << temp << std::endl;
+		}
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{\texttt{while} Loop}
+The \texttt{while} loop repeats a block of code as long as a condition is true. The condition is checked at the beginning of each iteration.
+\begin{lstlisting}
+	int i = 1;
+	while (i <= 5) {
+		std::cout << i << " "; // 1 2 3 4 5
+		++i;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 16: While loop exercise}
+Write a program that uses a \texttt{while} loop to count down from 10 to 1 and then prints ``Blastoff!''
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int i = 10;
+		while (i > 0) {
+			std::cout << i << std::endl;
+			--i;
+		}
+		std::cout << "Blastoff!" << std::endl;
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{\texttt{do-while} Loop}
+The \texttt{do-while} loop is similar to the \texttt{while} loop, but the condition is checked at the end of the iteration. This means the loop body will always execute at least once.
+\begin{lstlisting}
+	int selection;
+	do {
+		std::cout << "Enter 1, 2, or 3 (0 to quit): ";
+		std::cin >> selection;
+	} while (selection != 0);
+\end{lstlisting}
+
+\subsection{Coding Exercise 17: Do-while loop exercise}
+Write a program that uses a \texttt{do-while} loop to ask the user to enter a number between 1 and 10. Keep asking until they enter a valid number.
+\begin{lstlisting}
+	#include <iostream>
+
+	int main() {
+		int num;
+		do {
+			std::cout << "Enter a number between 1 and 10: ";
+			std::cin >> num;
+		} while (num < 1 || num > 10);
+		std::cout << "Thanks! You entered " << num << std::endl;
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{\texttt{continue} and \texttt{break}}
+\texttt{break} exits a loop immediately. \texttt{continue} skips the current iteration and proceeds to the next one.
+\begin{lstlisting}
+	for (int i = 1; i <= 10; ++i) {
+		if (i == 5) {
+			continue; // skip 5
+		}
+		if (i == 8) {
+			break; // exit loop
+		}
+		std::cout << i << " "; // 1 2 3 4 6 7
+	}
+\end{lstlisting}
+
+\subsection{Infinite Loops}
+An infinite loop is a loop that never terminates. This usually happens when the loop's condition never becomes false.
+\begin{lstlisting}
+	// This loop will run forever
+	// while (true) {
+	//     std::cout << "Looping... ";
+	// }
+\end{lstlisting}
+You can exit an infinite loop with \texttt{break} or by terminating the program (\texttt{Ctrl+C}).
+
+\subsection{Nested Loops}
+You can have loops inside other loops. This is common for working with 2D data structures.
+\begin{lstlisting}
+	for (int i = 1; i <= 3; ++i) {
+		for (int j = 1; j <= 3; ++j) {
+			std::cout << "(" << i << "," << j << ") ";
+		}
+		std::cout << std::endl;
+	}
+\end{lstlisting}
+
+\subsection{Coding Exercise 18: Nested Loops --- Sum of the Product of all Pairs}
+Given a vector \texttt{\{1, 2, 3\}}, calculate the sum of the products of all pairs of elements. For this vector, the result would be \texttt{(1*2) + (1*3) + (2*3) = 2 + 3 + 6 = 11}.
+\begin{lstlisting}
+	#include <iostream>
+	#include <vector>
+
+	int main() {
+		std::vector<int> vec {1, 2, 3};
+		int sum = 0;
+		for (size_t i = 0; i < vec.size(); ++i) {
+			for (size_t j = i + 1; j < vec.size(); ++j) {
+				sum += vec[i] * vec[j];
+			}
+		}
+		std::cout << "Sum of products: " << sum << std::endl;
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Section Challenge}
+Write a menu-driven program that provides the following options to the user:
+\begin{enumerate}
+	\item Print numbers
+	\item Add a number
+	\item Display mean of the numbers
+	\item Display the smallest number
+	\item Display the largest number
+	\item Quit
+\end{enumerate}
+
+The program should use a vector to store the integers.
+
+\subsection{Section Challenge --- Solution Part 1}
+Here is the basic structure of the program using a \texttt{do-while} loop and a \texttt{switch} statement to handle menu choices.
+\begin{lstlisting}
+	#include <iostream>
+	#include <vector>
+
+	int main() {
+		std::vector<int> numbers;
+		char choice;
+
+		do {
+			std::cout << "\nP - Print numbers" << std::endl;
+			std::cout << "A - Add a number" << std::endl;
+			std::cout << "M - Display mean of the numbers" << std::endl;
+			std::cout << "S - Display the smallest number" << std::endl;
+			std::cout << "L - Display the largest number" << std::endl;
+			std::cout << "Q - Quit" << std::endl;
+			std::cout << "\nEnter your choice: ";
+			std::cin >> choice;
+
+			// Handling choices will go here
+
+		} while (choice != 'q' && choice != 'Q');
+
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Section Challenge --- Solution Part 2}
+Here is the complete solution with all menu options implemented.
+\begin{lstlisting}
+	#include <iostream>
+	#include <vector>
+
+	int main() {
+		std::vector<int> numbers;
+		char choice;
+
+		do {
+			std::cout << "\nP - Print numbers" << std::endl;
+			std::cout << "A - Add a number" << std::endl;
+			std::cout << "M - Display mean" << std::endl;
+			std::cout << "S - Display smallest" << std::endl;
+			std::cout << "L - Display largest" << std::endl;
+			std::cout << "Q - Quit" << std::endl;
+			std::cout << "\nEnter your choice: ";
+			std::cin >> choice;
+
+			switch (toupper(choice)) {
+				case 'P':
+					if (numbers.empty()) {
+						std::cout << "[] - the list is empty"
+							<< std::endl;
+					} else {
+						std::cout << "[ ";
+						for (int num : numbers) {
+							std::cout << num << " ";
+						}
+						std::cout << "]" << std::endl;
+					}
+					break;
+				case 'A': {
+					int num_to_add;
+					std::cout << "Enter an integer to add: ";
+					std::cin >> num_to_add;
+					numbers.push_back(num_to_add);
+					std::cout << num_to_add << " added." << std::endl;
+					break;
+				}
+				case 'M':
+					if (numbers.empty()) {
+						std::cout << "Unable to calculate mean"
+							<< std::endl;
+					} else {
+						int sum = 0;
+						for (int num : numbers) {
+							sum += num;
+						}
+						std::cout << "Mean: "
+							<< static_cast<double>(sum)
+								/ numbers.size() << std::endl;
+					}
+					break;
+				case 'S':
+					if (numbers.empty()) {
+						std::cout << "Unable to determine smallest"
+							<< std::endl;
+					} else {
+						int smallest = numbers[0];
+						for (int num : numbers) {
+							if (num < smallest) {
+								smallest = num;
+							}
+						}
+						std::cout << "Smallest number: "
+							<< smallest << std::endl;
+					}
+					break;
+				case 'L':
+					if (numbers.empty()) {
+						std::cout << "Unable to determine largest"
+							<< std::endl;
+					} else {
+						int largest = numbers[0];
+						for (int num : numbers) {
+							if (num > largest) {
+								largest = num;
+							}
+						}
+						std::cout << "Largest number: "
+							<< largest << std::endl;
+					}
+					break;
+				case 'Q':
+					std::cout << "Goodbye!" << std::endl;
+					break;
+				default:
+					std::cout << "Unknown selection, try again"
+						<< std::endl;
+			}
+		} while (toupper(choice) != 'Q');
+
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Quiz 6: Section 09 Quiz}
+\begin{enumerate}
+	\item Which loop structure is guaranteed to execute at least once?
+	\begin{enumerate}
+		\item[a)] \texttt{for}
+		\item[b)] \texttt{while}
+		\item[c)] \texttt{do-while}
+		\item[d)] range-based \texttt{for}
+	\end{enumerate}
+
+	\item What is the purpose of the \texttt{break} statement?
+	\begin{enumerate}
+		\item[a)] To exit a loop or \texttt{switch} statement immediately.
+		\item[b)] To skip the current iteration of a loop.
+		\item[c)] To end the program.
+		\item[d)] To indicate a pause.
+	\end{enumerate}
+
+	\item In a \texttt{switch} statement, what happens if you omit the \texttt{break}?
+	\begin{enumerate}
+		\item[a)] The program will not compile.
+		\item[b)] Execution ``falls through'' to the next case.
+		\item[c)] It's a syntax error.
+		\item[d)] The \texttt{switch} statement terminates.
+	\end{enumerate}
+\end{enumerate}
+
+\textbf{Answers:} 1.\ (c), 2.\ (a), 3.\ (b)

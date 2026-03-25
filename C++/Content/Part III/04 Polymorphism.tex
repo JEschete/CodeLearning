@@ -1,0 +1,182 @@
+\section{Polymorphism}
+
+\subsection{Section Overview}
+Polymorphism is the final pillar of Object-Oriented Programming that we will cover. The word means ``many forms,'' and in C++, it refers to the ability to call a member function on an object without knowing its exact type at compile time. This is a powerful concept that allows for flexible and extensible code. We will achieve polymorphism through base class pointers, virtual functions, and abstract classes.
+
+\subsection{What is Polymorphism?}
+Polymorphism in C++ allows a base class pointer or reference to refer to a derived class object. When a member function is called through this pointer or reference, the decision on which version of the function to call (the base class version or the derived class version) is made at runtime. This is known as \textbf{dynamic binding} or \textbf{late binding}.
+
+\subsection{Using Base Class Pointers}
+A pointer to a base class can also point to any object of a class derived from it. This is a key enabler of polymorphism.
+\begin{lstlisting}
+	class Animal { /* ... */ };
+	class Dog : public Animal { /* ... */ };
+	class Cat : public Animal { /* ... */ };
+
+	Animal *p_animal = new Dog(); // A base class pointer points to a derived object
+	p_animal->speak(); // What happens here?
+	delete p_animal;
+\end{lstlisting}
+Without virtual functions, \texttt{p\_animal->speak()} would call the \texttt{Animal} version, regardless of the actual object type. This is static binding.
+
+\subsection{Virtual Functions}
+To achieve dynamic binding, we use the \texttt{virtual} keyword. When a member function is declared as \texttt{virtual} in a base class, C++ will ensure that the correct version of the function is called at runtime, based on the actual type of the object being pointed to.
+\begin{lstlisting}
+	class Animal {
+	public:
+		virtual void speak() { std::cout << "Animal speaks" << std::endl; }
+	};
+	class Dog : public Animal {
+	public:
+		void speak() override { std::cout << "Woof!" << std::endl; }
+	};
+
+	int main() {
+		Animal *p_dog = new Dog();
+		p_dog->speak(); // at runtime, this calls the Dog::speak() method. Output: Woof!
+		delete p_dog;
+	}
+\end{lstlisting}
+
+\subsection{Virtual Destructors}
+If you have a class hierarchy and you plan to delete derived objects through a base class pointer, the base class destructor \textbf{must} be declared as \texttt{virtual}. This ensures that the correct sequence of destructors (derived then base) is called, preventing memory leaks.
+\begin{lstlisting}
+	class Base {
+	public:
+		virtual ~Base() { std::cout << "Base destructor" << std::endl; }
+	};
+	class Derived : public Base {
+	public:
+		~Derived() override { std::cout << "Derived destructor" << std::endl; }
+	};
+	// Deleting a Derived object through a Base pointer will now correctly call
+	// ~Derived() then ~Base().
+\end{lstlisting}
+
+\subsection{The override Specifier}
+C++11 introduced the \texttt{override} specifier. When you are overriding a virtual function in a derived class, you should use \texttt{override} to indicate your intent. This allows the compiler to check if you are actually overriding a function, catching errors like typos in the function name or parameter list.
+\begin{lstlisting}
+	class Dog : public Animal {
+	public:
+		void speak() override { std::cout << "Woof!" << std::endl; } // Good practice
+	};
+\end{lstlisting}
+
+\subsection{The final Specifier}
+The \texttt{final} specifier can be used to prevent a class from being inherited from, or to prevent a virtual method from being overridden any further down the hierarchy.
+\begin{lstlisting}
+	class SuperDog final : public Dog { // No class can derive from SuperDog
+		// ...
+	};
+
+	class Animal {
+	public:
+		virtual void eat() final { /* ... */ } // No derived class can override eat()
+	};
+\end{lstlisting}
+
+\subsection{Using Base Class References}
+Polymorphism works with references in the same way it works with pointers. A base class reference can refer to a derived class object, and virtual function calls will be dispatched dynamically.
+\begin{lstlisting}
+	void do_speak(const Animal &animal) {
+		animal.speak(); // Calls the correct speak() at runtime
+	}
+
+	Dog my_dog;
+	do_speak(my_dog); // Passes a Dog object, Dog::speak() is called.
+\end{lstlisting}
+
+\subsection{Pure Virtual Functions and Abstract Classes}
+A \textbf{pure virtual function} is a virtual function that has no implementation in the base class. It is declared by appending \texttt{= 0} to its declaration. A class that has at least one pure virtual function is called an \textbf{abstract class}. You cannot create objects of an abstract class.
+\begin{lstlisting}
+	class Shape { // Abstract Base Class
+	public:
+		virtual void draw() = 0; // pure virtual function
+	};
+\end{lstlisting}
+Any class that derives from \texttt{Shape} must provide an implementation for \texttt{draw()} or it will also be an abstract class.
+
+\subsection{Abstract Classes as Interfaces}
+Abstract classes are often used to define interfaces. An interface is a contract that specifies a set of methods that a derived class must implement. This is a powerful way to enforce a common set of behaviors across different classes.
+
+\subsection{Section Challenge}
+Create a small class hierarchy for shapes. Create an abstract base class \texttt{Shape} with a pure virtual function \texttt{area()}. Then, create two derived classes, \texttt{Circle} and \texttt{Rectangle}, that implement the \texttt{area()} function. In \texttt{main}, create a \texttt{std::vector} of \texttt{Shape} pointers and use it to store \texttt{Circle} and \texttt{Rectangle} objects, then loop through the vector and print the area of each shape.
+
+\subsection{Section Challenge --- Solution}
+\begin{lstlisting}
+	#include <iostream>
+	#include <vector>
+
+	// Abstract Base Class
+	class Shape {
+	public:
+		virtual double area() const = 0;
+		virtual ~Shape() = default;
+	};
+
+	class Circle : public Shape {
+	private:
+		double radius;
+	public:
+		Circle(double r) : radius(r) {}
+		double area() const override {
+			return 3.14159 * radius * radius;
+		}
+	};
+
+	class Rectangle : public Shape {
+	private:
+		double width, height;
+	public:
+		Rectangle(double w, double h) : width(w), height(h) {}
+		double area() const override {
+			return width * height;
+		}
+	};
+
+	int main() {
+		std::vector<Shape*> shapes;
+		shapes.push_back(new Circle(10.0));
+		shapes.push_back(new Rectangle(10.0, 20.0));
+
+		for (const auto &shape : shapes) {
+			std::cout << "Area: " << shape->area() << std::endl;
+		}
+
+		// Clean up memory
+		for (auto &shape : shapes) {
+			delete shape;
+		}
+
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Quiz 13: Section 16 Quiz}
+\begin{enumerate}
+	\item What is the key mechanism to achieve runtime polymorphism in C++?
+	\begin{enumerate}
+		\item[a)] Function overloading.
+		\item[b)] Template metaprogramming.
+		\item[c)] Virtual functions and base class pointers/references.
+		\item[d)] The \texttt{static} keyword.
+	\end{enumerate}
+
+	\item Why should a base class destructor almost always be \texttt{virtual}?
+	\begin{enumerate}
+		\item[a)] To make the class abstract.
+		\item[b)] To ensure the correct derived class destructor is called when deleting through a base class pointer.
+		\item[c)] It's a syntax requirement.
+		\item[d)] To prevent the class from being inherited.
+	\end{enumerate}
+
+	\item What is an abstract class?
+	\begin{enumerate}
+		\item[a)] A class that cannot be instantiated because it has at least one pure virtual function.
+		\item[b)] A class with no member variables.
+		\item[c)] A class with no member functions.
+		\item[d)] Any class used as a base class.
+	\end{enumerate}
+\end{enumerate}
+
+\textbf{Answers:} 1. (c), 2. (b), 3. (a)

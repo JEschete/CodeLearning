@@ -316,9 +316,9 @@ Floating-point types store numbers with decimal points:
 		\hline
 		\textbf{Type} & \textbf{Size} & \textbf{Precision} & \textbf{Range} \\
 		\hline
-		\texttt{float} & 4 bytes & ~7 digits & $\pm 3.4 \times 10^{38}$ \\
-		\texttt{double} & 8 bytes & ~15 digits & $\pm 1.7 \times 10^{308}$ \\
-		\texttt{long double} & 8-16 bytes & ~18+ digits & Even larger \\
+		\texttt{float} & 4 bytes & \textasciitilde{}7 digits & $\pm 3.4 \times 10^{38}$ \\
+		\texttt{double} & 8 bytes & \textasciitilde{}15 digits & $\pm 1.7 \times 10^{308}$ \\
+		\texttt{long double} & 8--16 bytes & \textasciitilde{}18+ digits & Even larger \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -420,12 +420,12 @@ Special characters use escape sequences:
 		\hline
 		\textbf{Escape Sequence} & \textbf{Meaning} \\
 		\hline
-		\texttt{\textbackslash n} & Newline \\
-		\texttt{\textbackslash t} & Tab \\
-		\texttt{\textbackslash \textbackslash} & Backslash \\
-		\texttt{\textbackslash '} & Single quote \\
-		\texttt{\textbackslash "} & Double quote \\
-		\texttt{\textbackslash 0} & Null character \\
+		\texttt{\textbackslash{}n} & Newline \\
+		\texttt{\textbackslash{}t} & Tab \\
+		\texttt{\textbackslash{}\textbackslash{}} & Backslash \\
+		\texttt{\textbackslash{}'} & Single quote \\
+		\texttt{\textbackslash{}\textquotedbl} & Double quote \\
+		\texttt{\textbackslash{}0} & Null character \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -672,7 +672,7 @@ Functions can be \texttt{constexpr} too, allowing compile-time computation:
 	
 	// Physical constants
 	constexpr double SPEED_OF_LIGHT{299792458.0};  // m/s
-	constexpr double GRAVITATIONAL_CONSTANT{6.67430e-11};  // N⋅m²/kg²
+	constexpr double GRAVITATIONAL_CONSTANT{6.67430e-11};  // N*m^2/kg^2
 	
 	// Application constants
 	constexpr int MAX_PLAYERS{4};

@@ -1,0 +1,311 @@
+\section{The Standard Template Library (STL)}
+
+\subsection{Section Overview}
+The Standard Template Library (STL) is a powerful set of C++ template classes that provide general-purpose data structures and algorithms. It is a cornerstone of modern C++ programming, offering pre-built, efficient, and well-tested components. In this section, we'll explore the core components of the STL: containers, iterators, and algorithms, and learn how to use them effectively.
+
+\subsection{What is the STL?}
+The STL is a software library for the C++ programming language that influenced many parts of the C++ Standard Library. It provides three main components:
+\begin{itemize}
+    \item \textbf{Containers}: Data structures that store collections of objects (e.g., \texttt{vector}, \texttt{list}, \texttt{map}).
+    \item \textbf{Algorithms}: Functions that perform operations on data in containers (e.g., \texttt{sort}, \texttt{find}, \texttt{for\_each}).
+    \item \textbf{Iterators}: Objects that act like pointers, used to traverse and access elements in containers.
+\end{itemize}
+
+\subsection{Generic Programming with Macros}
+Before templates, C-style macros were sometimes used for generic programming, but they are not type-safe and can lead to unexpected behavior due to simple text substitution. They should be avoided in modern C++.
+
+\subsection{Generic Programming with Function Templates}
+A function template is a blueprint for creating a family of functions. It allows you to write a single function that can work with different data types.
+\begin{lstlisting}
+template <typename T>
+T max_val(T a, T b) {
+	return (a > b) ? a : b;
+}
+
+int main() {
+	std::cout << max_val(10, 20) << std::endl;      // int version
+	std::cout << max_val(10.5, 5.5) << std::endl; // double version
+}
+\end{lstlisting}
+
+\subsection{Coding Exercise 38: Function Templates --- Find the max of two elements}
+Create a function template \texttt{min\_val} that finds the minimum of two elements.
+\begin{lstlisting}
+#include <iostream>
+
+template <typename T>
+T min_val(T a, T b) {
+	return (a < b) ? a : b;
+}
+
+int main() {
+	std::cout << "Min of 10, 20 is " << min_val(10, 20) << std::endl;
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{Generic Programming with Class Templates}
+Similar to function templates, class templates are blueprints for creating a family of classes. Most STL containers are class templates.
+\begin{lstlisting}
+template <typename T>
+class Box {
+private:
+	T item;
+public:
+	void set(T val) { item = val; }
+	T get() { return item; }
+};
+
+int main() {
+	Box<int> int_box;
+	int_box.set(100);
+
+	Box<std::string> str_box;
+	str_box.set("Hello");
+}
+\end{lstlisting}
+
+\subsection{Coding Exercise 39: Class Templates --- A Simple Stack Class}
+Create a simple \texttt{Stack} class template that has \texttt{push}, \texttt{pop}, and \texttt{top} methods.
+\begin{lstlisting}
+#include <vector>
+template <typename T>
+class Stack {
+private:
+	std::vector<T> elems;
+public:
+	void push(T const&);
+	void pop();
+	T top() const;
+};
+// implementation would go here...
+\end{lstlisting}
+
+\subsection{Introduction to STL Containers}
+Containers are objects that hold other objects. They are classified into three categories:
+\begin{itemize}
+    \item \textbf{Sequence containers}: \texttt{array}, \texttt{vector}, \texttt{deque}, \texttt{list}, \texttt{forward\_list}. Maintain the order of elements.
+    \item \textbf{Associative containers}: \texttt{set}, \texttt{multiset}, \texttt{map}, \texttt{multimap}. Elements are sorted by key.
+    \item \textbf{Container adaptors}: \texttt{stack}, \texttt{queue}, \texttt{priority\_queue}. Provide a specific interface on top of other containers.
+\end{itemize}
+
+\subsection{Introduction to STL Iterators}
+Iterators are objects that act like pointers and are used to ``iterate'' over the elements of a container. Common operations include dereferencing (\texttt{*it}) and incrementing (\texttt{it++}).
+
+\subsection{Introduction to STL Algorithms}
+The \texttt{<algorithm>} header provides a large number of functions that operate on ranges of elements, typically defined by two iterators.
+\begin{lstlisting}
+#include <algorithm>
+#include <vector>
+
+std::vector<int> vec {1, 5, 2, 4, 3};
+std::sort(vec.begin(), vec.end()); // sort the vector
+auto it = std::find(vec.begin(), vec.end(), 3); // find the element 3
+\end{lstlisting}
+
+\subsection{The std::array Container}
+\texttt{std::array} (from \texttt{<array>}) is a fixed-size sequence container. It behaves like a C-style array but with the benefits of a standard container, such as knowing its own size and supporting iterators.
+
+\subsection{Coding Exercise 40: STL array Container --- Using std::array}
+Create a \texttt{std::array} of 5 integers, fill it with values, and then use \texttt{std::sort} to sort it.
+\begin{lstlisting}
+#include <iostream>
+#include <array>
+#include <algorithm>
+
+int main() {
+	std::array<int, 5> arr {5, 3, 1, 4, 2};
+	std::sort(arr.begin(), arr.end());
+	for (int i : arr) std::cout << i << " ";
+	std::cout << std::endl;
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{The std::vector Container}
+\texttt{std::vector} (from \texttt{<vector>}) is a dynamic array that can grow and shrink in size. It's one of the most commonly used STL containers.
+
+\subsection{The std::deque Container}
+\texttt{std::deque} (from \texttt{<deque>}) is a ``double-ended queue''. It is similar to a vector but allows for efficient insertion and deletion at both the beginning and the end.
+
+\subsection{The std::list and std::forward\_list Containers}
+\texttt{std::list} (from \texttt{<list>}) is a doubly-linked list. It allows for constant time insertion and deletion anywhere in the list, but does not support random access. \texttt{std::forward\_list} is a singly-linked list.
+
+\subsection{Coding Exercise 41: STL List Container --- Using std::list}
+Create a \texttt{std::list} of characters. Add \texttt{'a'}, \texttt{'b'}, and \texttt{'c'} to it. Then, print the elements.
+\begin{lstlisting}
+#include <iostream>
+#include <list>
+
+int main() {
+	std::list<char> l {'a', 'b', 'c'};
+	for (char c : l) std::cout << c << " ";
+	std::cout << std::endl;
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{The std::set Containers}
+\texttt{std::set} and \texttt{std::multiset} (from \texttt{<set>}) are associative containers that store a sorted collection of unique elements (\texttt{multiset} allows duplicates).
+
+\subsection{The std::map Containers}
+\texttt{std::map} and \texttt{std::multimap} (from \texttt{<map>}) are associative containers that store key-value pairs, sorted by key. \texttt{map} keys must be unique.
+
+\subsection{Coding Exercise 42: STL Map Container --- Using std::map}
+Create a \texttt{std::map} to store the ages of people. Add entries for ``Alice'' (25) and ``Bob'' (30), then print Alice's age.
+\begin{lstlisting}
+#include <iostream>
+#include <map>
+#include <string>
+
+int main() {
+	std::map<std::string, int> ages;
+	ages["Alice"] = 25;
+	ages["Bob"] = 30;
+	std::cout << "Alice's age: " << ages["Alice"] << std::endl;
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{The STL Stack Container}
+\texttt{std::stack} (from \texttt{<stack>}) is a container adaptor that provides LIFO (Last-In, First-Out) semantics. It is built on top of other containers like \texttt{vector} or \texttt{deque}.
+
+\subsection{The STL Queue Container}
+\texttt{std::queue} (from \texttt{<queue>}) is a container adaptor providing FIFO (First-In, First-Out) semantics.
+
+\subsection{The STL Priority Queue Container}
+\texttt{std::priority\_queue} (from \texttt{<queue>}) is a container adaptor where the element with the highest ``priority'' (by default, the largest value) is always at the front.
+
+\subsection{Section Challenge 1}
+Write a program that uses a \texttt{std::map} to count the frequency of each word in a text file.
+
+\subsection{Section Challenge 1 --- Solution}
+\begin{lstlisting}
+#include <iostream>
+#include <fstream>
+#include <map>
+#include <string>
+
+int main() {
+	std::ifstream in_file("text.txt");
+	std::map<std::string, int> word_counts;
+	std::string word;
+	while (in_file >> word) {
+		word_counts[word]++;
+	}
+	for (const auto &pair : word_counts) {
+		std::cout << pair.first << ": " << pair.second << std::endl;
+	}
+	in_file.close();
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{Section Challenge 2}
+Write a palindrome checker that works with any sequence container that provides bidirectional iterators (like \texttt{vector}, \texttt{list}, \texttt{string}). Use a function template.
+
+\subsection{Section Challenge 2 --- Solution}
+\begin{lstlisting}
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+template <typename T>
+bool is_palindrome(const T& container) {
+	std::string temp;
+	for(auto c : container) {
+		if(std::isalnum(c)) {
+			temp += std::tolower(c);
+		}
+	}
+	std::string reversed = temp;
+	std::reverse(reversed.begin(), reversed.end());
+	return temp == reversed;
+}
+
+int main() {
+	std::string s = "A man, a plan, a canal, Panama";
+	std::cout << std::boolalpha << is_palindrome(s) << std::endl; // true
+}
+\end{lstlisting}
+
+\subsection{Section Challenge 3}
+Implement a program that simulates a simple music playlist using \texttt{std::list}. The program should allow the user to add a song, go to the next song, go to the previous song, and display the current song.
+
+\subsection{Section Challenge 3 --- Solution}
+\begin{lstlisting}
+#include <iostream>
+#include <list>
+#include <string>
+
+// See full implementation in source files - this is a simplified view
+void display_playlist(const std::list<std::string>& playlist,
+                      std::list<std::string>::const_iterator current) {
+	for (const auto& song : playlist) {
+		std::cout << (song == *current ? ">> " : "   ") << song << std::endl;
+	}
+}
+
+int main() {
+	std::list<std::string> playlist {"Song A", "Song B", "Song C"};
+	auto current_song = playlist.begin();
+	display_playlist(playlist, current_song);
+}
+\end{lstlisting}
+
+\subsection{Section Challenge 4}
+Create a program that displays a menu of options to a user for a music playlist and allows the user to select from the options.
+
+\subsection{Section Challenge 4 --- Solution}
+\begin{lstlisting}
+#include <iostream>
+#include <list>
+#include <string>
+#include <limits>
+
+void display_menu() {
+	std::cout << "\nF - Play First Song\n";
+	std::cout << "N - Play Next song\n";
+	std::cout << "P - Play Previous song\n";
+	std::cout << "A - Add and play a new Song at current location\n";
+	std::cout << "L - List the current playlist\n";
+	std::cout << "===============================================\n";
+	std::cout << "Enter a selection (Q to quit): ";
+}
+// See full implementation in source files
+int main() {
+	// ...
+	display_menu();
+	// ...
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{Quiz 17: Section 20 Quiz}
+\begin{enumerate}
+    \item What are the three main components of the STL?
+    \begin{enumerate}
+        \item[a)] Variables, Functions, and Classes.
+        \item[b)] Headers, Source files, and Executables.
+        \item[c)] Containers, Iterators, and Algorithms.
+        \item[d)] \texttt{cin}, \texttt{cout}, and \texttt{cerr}.
+    \end{enumerate}
+
+    \item Which container provides a dynamic array that can grow and shrink?
+    \begin{enumerate}
+        \item[a)] \texttt{std::array}
+        \item[b)] \texttt{std::vector}
+        \item[c)] \texttt{std::map}
+        \item[d)] \texttt{std::set}
+    \end{enumerate}
+
+    \item What is the purpose of an iterator?
+    \begin{enumerate}
+        \item[a)] To store a collection of elements.
+        \item[b)] To perform an operation on a range of elements.
+        \item[c)] To act like a pointer to traverse and access elements in a container.
+        \item[d)] To define a new data type.
+    \end{enumerate}
+\end{enumerate}
+
+\textbf{Answers:} 1. (c), 2. (b), 3. (c)

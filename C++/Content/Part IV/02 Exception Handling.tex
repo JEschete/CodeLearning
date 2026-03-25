@@ -1,0 +1,152 @@
+\section{Exception Handling}
+
+\subsection{Section Overview}
+Even in the best-written programs, errors can occur at runtime. These errors, or ``exceptions,'' can be caused by invalid user input, hardware failures, network issues, or logic errors. C++ provides a formal mechanism for handling these exceptional circumstances, allowing us to write more robust and fault-tolerant code. In this section, we'll explore the \texttt{try}, \texttt{catch}, and \texttt{throw} keywords.
+
+\subsection{What is Exception Handling?}
+Exception handling is a mechanism that allows you to detect and respond to runtime errors in a structured way. Instead of crashing the program, you can ``throw'' an exception when an error occurs and ``catch'' it in a part of the program that is equipped to handle it.
+
+\subsection{Basic Concepts}
+\begin{itemize}
+    \item \textbf{\texttt{throw}}: The \texttt{throw} keyword is used to signal that an exceptional event has occurred. You can throw values of any type, including integers, strings, or custom objects.
+    \item \textbf{\texttt{try}}: The \texttt{try} keyword marks a block of code that may throw an exception.
+    \item \textbf{\texttt{catch}}: The \texttt{catch} keyword marks a block of code that handles an exception. The \texttt{catch} block is executed only if an exception of the specified type is thrown from within the corresponding \texttt{try} block.
+\end{itemize}
+
+\subsection{Terminating the Program with std::terminate}
+If an exception is thrown but not caught anywhere in the program, the program will call \texttt{std::terminate}, which by default aborts the program.
+
+\subsection{Throwing an Exception from a Function}
+It is common to throw exceptions from functions when an error condition is met, such as invalid arguments or an inability to perform a task.
+\begin{lstlisting}
+double divide(int a, int b) {
+	if (b == 0) {
+		throw std::string("Division by zero error!");
+	}
+	return static_cast<double>(a) / b;
+}
+\end{lstlisting}
+
+\subsection{Handling Exceptions --- Syntax}
+You use a \texttt{try...catch} block to handle potential exceptions.
+\begin{lstlisting}
+int main() {
+	try {
+		double result = divide(10, 0);
+		std::cout << "Result: " << result << std::endl;
+	} catch (const std::string &ex) {
+		std::cerr << "Error: " << ex << std::endl;
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{Catching Multiple Exceptions}
+You can have multiple \texttt{catch} blocks to handle different types of exceptions. The order of the \texttt{catch} blocks matters; they are checked in sequence. You can use \texttt{catch(...)} to catch any type of exception (a ``catch-all'' handler).
+\begin{lstlisting}
+try {
+	// ... code that might throw
+} catch (int e) {
+	std::cerr << "Caught an integer exception: " << e << std::endl;
+} catch (const std::string &e) {
+	std::cerr << "Caught a string exception: " << e << std::endl;
+} catch (...) {
+	std::cerr << "Caught an unknown exception." << std::endl;
+}
+\end{lstlisting}
+
+\subsection{Stack Unwinding}
+When an exception is thrown, the function call stack is ``unwound.'' The program looks for a \texttt{catch} handler in the current function. If one isn't found, the function exits, its local variables are destroyed, and the program looks for a handler in the calling function. This process continues up the stack until a handler is found or the program terminates. This process ensures that destructors of stack-based objects (like smart pointers) are called, which is key to RAII.
+
+\subsection{User-defined Exception Classes}
+It is good practice to define your own exception classes, typically inheriting from \texttt{std::exception}. This allows you to convey more detailed information about the error.
+\begin{lstlisting}
+#include <exception>
+
+class DivideByZeroException : public std::exception {
+public:
+	const char* what() const noexcept override {
+		return "Attempted to divide by zero";
+	}
+};
+
+double divide(int a, int b) {
+	if (b == 0) {
+		throw DivideByZeroException();
+	}
+	return static_cast<double>(a) / b;
+}
+\end{lstlisting}
+
+\subsection{The Standard Library Exception Hierarchy}
+The C++ standard library provides a hierarchy of exception classes in \texttt{<stdexcept>}, all derived from \texttt{std::exception}. Examples include \texttt{std::runtime\_error}, \texttt{std::logic\_error}, \texttt{std::invalid\_argument}, and \texttt{std::out\_of\_range}. Using these standard exceptions can make your code more understandable to other developers.
+
+\subsection{Section Challenge}
+Create a simple \texttt{Account} class with a balance. Implement a \texttt{withdraw} method that throws an \texttt{InsufficientFundsException} (a custom exception class you create) if the withdrawal amount is greater than the balance. In \texttt{main}, create an account and wrap a withdrawal attempt in a \texttt{try...catch} block to handle the exception gracefully.
+
+\subsection{Section Challenge --- Solution}
+\begin{lstlisting}
+#include <iostream>
+#include <exception>
+
+class InsufficientFundsException : public std::exception {
+public:
+	const char* what() const noexcept override {
+		return "Insufficient funds for withdrawal.";
+	}
+};
+
+class Account {
+private:
+	double balance;
+public:
+	Account(double bal) : balance(bal) {}
+	void withdraw(double amount) {
+		if (amount > balance) {
+			throw InsufficientFundsException();
+		}
+		balance -= amount;
+		std::cout << "Withdrawal successful. Remaining balance: " << balance << std::endl;
+	}
+};
+
+int main() {
+	Account my_account(100.0);
+	try {
+		my_account.withdraw(50.0);  // This should succeed
+		my_account.withdraw(70.0);  // This should fail and throw
+	} catch (const InsufficientFundsException &ex) {
+		std::cerr << "Error: " << ex.what() << std::endl;
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{Quiz 15: Section 18 Quiz}
+\begin{enumerate}
+    \item What happens if an exception is thrown but never caught?
+    \begin{enumerate}
+        \item[a)] The program continues as if nothing happened.
+        \item[b)] The exception is ignored.
+        \item[c)] The program calls \texttt{std::terminate}, which usually aborts the program.
+        \item[d)] The compiler issues a warning.
+    \end{enumerate}
+
+    \item What is the purpose of a \texttt{try} block?
+    \begin{enumerate}
+        \item[a)] To declare a new type of exception.
+        \item[b)] To handle an exception.
+        \item[c)] To enclose code that might throw an exception.
+        \item[d)] To throw an exception.
+    \end{enumerate}
+
+    \item Why is it beneficial to create custom exception classes that inherit from \texttt{std::exception}?
+    \begin{enumerate}
+        \item[a)] It's the only way to throw an exception.
+        \item[b)] It allows your exceptions to be caught by handlers for \texttt{std::exception}, promoting a standard way of handling errors.
+        \item[c)] It makes the program run faster.
+        \item[d)] It's required for \texttt{try...catch} to work.
+    \end{enumerate}
+\end{enumerate}
+
+\textbf{Answers:} 1. (c), 2. (c), 3. (b)

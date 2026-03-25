@@ -1,0 +1,188 @@
+\section{Inheritance}
+
+\subsection{Section Overview}
+Inheritance is one of the foundational pillars of Object-Oriented Programming. It is a mechanism for creating new classes (derived classes) from existing classes (base classes). This promotes code reuse and creates a natural ``is-a'' relationship between classes. In this section, we will explore how to implement and use inheritance in C++.
+
+\subsection{What is Inheritance?}
+Inheritance allows a new class (the derived class) to inherit the attributes and methods of an existing class (the base class). The derived class can then add its own unique attributes and methods, or modify the inherited ones. This represents an ``is-a'' relationship. For example, a \texttt{Dog} is-a \texttt{Animal}, a \texttt{Car} is-a \texttt{Vehicle}.
+
+\subsection{Terminology and Notation}
+\begin{itemize}
+	\item \textbf{Base Class / Superclass / Parent Class}: The class being inherited from.
+	\item \textbf{Derived Class / Subclass / Child Class}: The class that inherits.
+	\item \textbf{``Is-A'' Relationship}: The core concept of inheritance. A \texttt{Checking\_Account} is-a type of \texttt{Account}.
+\end{itemize}
+In UML (Unified Modeling Language) diagrams, inheritance is represented by a solid line with a hollow arrow pointing from the derived class to the base class.
+
+\subsection{Inheritance vs. Composition}
+Inheritance represents an ``is-a'' relationship. Composition, on the other hand, represents a ``has-a'' relationship. A \texttt{Car} has-a \texttt{Engine}, it is not an \texttt{Engine}. In this case, the \texttt{Car} class would contain an \texttt{Engine} object as a member variable. Always favor composition over inheritance unless the ``is-a'' relationship is clear and logical.
+
+\subsection{Deriving Classes from Existing Classes}
+You use a colon \texttt{:} in the class declaration to specify the base class. The \texttt{public} keyword specifies \texttt{public} inheritance, which is the most common type. With public inheritance, public members of the base class remain public in the derived class.
+\begin{lstlisting}
+	class Animal {
+	public:
+		void eat() { std::cout << "I am eating." << std::endl; }
+	};
+
+	class Dog : public Animal { // Dog inherits from Animal
+	public:
+		void bark() { std::cout << "Woof!" << std::endl; }
+	};
+
+	int main() {
+		Dog my_dog;
+		my_dog.eat();  // Inherited from Animal
+		my_dog.bark(); // Defined in Dog
+	}
+\end{lstlisting}
+
+\subsection{Protected Members and Class Access}
+\begin{itemize}
+	\item \textbf{\texttt{public}}: Accessible from anywhere.
+	\item \textbf{\texttt{private}}: Accessible only by members of the same class.
+	\item \textbf{\texttt{protected}}: Accessible by members of the same class and by members of derived classes.
+\end{itemize}
+Protected members are used when you want to hide details from the outside world, but allow derived classes to access and modify them.
+
+\subsection{Constructing and Destructing Base and Derived Classes}
+When a derived object is created, the base class constructor is called first, followed by the derived class constructor. When the object is destroyed, the derived class destructor is called first, followed by the base class destructor.
+\begin{lstlisting}
+	Base constructor -> Derived constructor -> Derived destructor -> Base destructor
+\end{lstlisting}
+
+\subsection{Passing Arguments to Base Class Constructors}
+If the base class constructor requires arguments, the derived class constructor must call it using a member initializer list.
+\begin{lstlisting}
+	class Account {
+	public:
+		Account(double bal) : balance(bal) {}
+		double balance;
+	};
+
+	class Savings_Account : public Account {
+	public:
+		// Call the base class constructor in the initializer list
+		Savings_Account(double bal, double rate) : Account(bal), interest_rate(rate) {}
+		double interest_rate;
+	};
+\end{lstlisting}
+
+\subsection{Copy/Move Constructors and Operator= with Inheritance}
+When writing copy/move constructors or assignment operators for derived classes, you must explicitly call the corresponding base class versions.
+\begin{lstlisting}
+	// Copy constructor
+	Derived::Derived(const Derived &other)
+		: Base(other) { // Call base class copy constructor
+		// copy derived members
+	}
+
+	// Copy assignment operator
+	Derived& Derived::operator=(const Derived &rhs) {
+		if (this == &rhs) return *this;
+		Base::operator=(rhs); // Call base class assignment operator
+		// assign derived members
+		return *this;
+	}
+\end{lstlisting}
+
+\subsection{Redefining Base Class Methods}
+A derived class can provide its own specific implementation of a base class method. This is called method redefinition.
+\begin{lstlisting}
+	class Account {
+	public:
+		void deposit(double amount) { balance += amount; }
+	};
+
+	class Savings_Account : public Account {
+	public:
+		void deposit(double amount) {
+			amount += (amount * interest_rate / 100); // add interest
+			Account::deposit(amount); // Call the base class version
+		}
+		// ...
+	};
+\end{lstlisting}
+\begin{remark}
+This is not the same as polymorphism, which we will cover in the next section. With redefinition, the method called is determined at compile time (static binding).
+\end{remark}
+
+\subsection{Multiple Inheritance}
+A C++ class can inherit from more than one base class. This is called multiple inheritance and should be used with caution as it can lead to complex and ambiguous situations, like the ``Diamond Problem''.
+\begin{lstlisting}
+	class A {};
+	class B {};
+	class C : public A, public B {}; // C inherits from both A and B
+\end{lstlisting}
+
+\subsection{Section Challenge}
+Create a \texttt{Checking\_Account} class that is derived from the \texttt{Account} class. A checking account has a fee that is applied to each withdrawal. Implement the \texttt{withdraw} method in the \texttt{Checking\_Account} class that deducts the fee before withdrawing.
+
+\subsection{Section Challenge --- Solution}
+\begin{lstlisting}
+	#include <iostream>
+
+	class Account {
+	public:
+		double balance;
+		Account(double bal = 0.0) : balance(bal) {}
+		void deposit(double amount) { balance += amount; }
+		void withdraw(double amount) {
+			if (balance >= amount)
+				balance -= amount;
+			else
+				std::cout << "Insufficient funds" << std::endl;
+		}
+	};
+
+	class Checking_Account : public Account {
+	private:
+		const double withdrawal_fee = 1.50;
+	public:
+		Checking_Account(double bal) : Account(bal) {}
+		void withdraw(double amount) {
+			Account::withdraw(amount + withdrawal_fee);
+		}
+	};
+
+	int main() {
+		Account acc(100.0);
+		acc.withdraw(50.0);
+		std::cout << "Account balance: " << acc.balance << std::endl; // 50.0
+
+		Checking_Account chk_acc(100.0);
+		chk_acc.withdraw(50.0);
+		std::cout << "Checking Account balance: " << chk_acc.balance << std::endl; // 48.50
+
+		return 0;
+	}
+\end{lstlisting}
+
+\subsection{Quiz 12: Section 15 Quiz}
+\begin{enumerate}
+	\item What kind of relationship does inheritance model?
+	\begin{enumerate}
+		\item[a)] ``Has-a''
+		\item[b)] ``Is-a''
+		\item[c)] ``Knows-a''
+		\item[d)] ``Uses-a''
+	\end{enumerate}
+
+	\item What is the purpose of the \texttt{protected} access specifier?
+	\begin{enumerate}
+		\item[a)] To make members accessible from anywhere.
+		\item[b)] To make members accessible only within the same class.
+		\item[c)] To make members accessible within the same class and in derived classes.
+		\item[d)] To make members accessible only to \texttt{friend} classes.
+	\end{enumerate}
+
+	\item When a derived class object is created, in what order are the constructors called?
+	\begin{enumerate}
+		\item[a)] Derived first, then Base.
+		\item[b)] Base first, then Derived.
+		\item[c)] Only the Derived constructor is called.
+		\item[d)] The order is not guaranteed.
+	\end{enumerate}
+\end{enumerate}
+
+\textbf{Answers:} 1. (b), 2. (c), 3. (b)

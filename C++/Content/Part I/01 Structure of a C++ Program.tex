@@ -4,7 +4,7 @@ In this section, we'll explore the fundamental building blocks of C++ programs. 
 
 \subsection{Your First C++ Program}
 
-Let's begin with the classic "Hello, World!" program—the traditional first program in any language:
+Let's begin with the classic ``Hello, World!'' program---the traditional first program in any language:
 
 \begin{lstlisting}
 	#include <iostream>
@@ -24,7 +24,7 @@ Even this simple program contains several important elements. Let's walk through
 	
 	\item \texttt{std::cout << "Hello, World!" << std::endl;} — This line outputs text to the console. \texttt{std::cout} is the standard output stream, \texttt{<<} is the stream insertion operator, and \texttt{std::endl} ends the line.
 	
-	\item \texttt{return 0;} — Returns the value 0 to the operating system, indicating successful execution. By convention, returning 0 means "no errors."
+	\item \texttt{return 0;} --- Returns the value 0 to the operating system, indicating successful execution. By convention, returning 0 means ``no errors.''
 	
 	\item \texttt{\}} — Closes the main function's code block.
 \end{enumerate}
@@ -43,9 +43,9 @@ Keywords are part of the vocabulary of a programming language. In most languages
 
 C++ has approximately \textbf{90 keywords}, which is significantly more than many other languages:
 \begin{itemize}
-	\item C++: ~90 keywords
-	\item Java: ~50 keywords
-	\item C: 32 keywords
+	\item C++: \textasciitilde{}90 keywords
+	\item Java: \textasciitilde{}50 keywords
+	\item C\@: 32 keywords
 	\item Python: 33 keywords
 \end{itemize}
 
@@ -84,7 +84,7 @@ C++ has strict rules for what constitutes a valid identifier:
 		\item Invalid: \texttt{2ndPlace}, \texttt{@name}
 	\end{itemize}
 	
-	\item \textbf{Can contain letters, digits (0-9), and underscores}
+	\item \textbf{Can contain letters, digits (0--9), and underscores}
 	\begin{itemize}
 		\item Valid: \texttt{player1}, \texttt{total\_score}, \texttt{calculateArea2D}
 		\item Invalid: \texttt{my-variable}, \texttt{user name}
@@ -161,7 +161,7 @@ C++ uses various punctuation marks to structure code:
 	\item \textbf{Semicolons (;)} — terminate statements
 	\item \textbf{Curly braces (\{\})} — define code blocks
 	\item \textbf{Parentheses (())} — group expressions and function parameters
-	\item \textbf{Quotation marks ("" and '')} — define strings and characters
+	\item \textbf{Quotation marks} (\texttt{\textquotedbl\textquotedbl} and \texttt{\textquotesingle\textquotesingle}) --- define strings and characters
 	\item \textbf{Angle brackets (<>)} — used with templates and include directives
 	\item \textbf{Square brackets ([])} — array subscript and lambda captures
 	\item \textbf{Comma (,)} — separates items in lists
@@ -307,7 +307,7 @@ Avoid comments that simply restate what the code already clearly expresses:
 	int index = binarySearch(sortedArray, target);
 \end{lstlisting}
 
-\paragraph{Explain the "Why", Not Just the "What"}
+\paragraph{Explain the ``Why'', Not Just the ``What''}
 
 Comments are most valuable when they explain \textit{why} code exists or \textit{why} a particular approach was chosen:
 
@@ -556,7 +556,7 @@ There are two ways to create new lines:
 \end{lstlisting}
 
 \begin{remark}
-	\texttt{std::endl} not only inserts a newline but also \textbf{flushes the output buffer}, ensuring all output is immediately written. This can be slower than \texttt{\textbackslash n}. Use \texttt{std::endl} when you need guaranteed immediate output (like before waiting for input), and \texttt{\textbackslash n} for performance-critical code.
+	\texttt{std::endl} not only inserts a newline but also \textbf{flushes the output buffer}, ensuring all output is immediately written. This can be slower than \texttt{\textbackslash{}n}. Use \texttt{std::endl} when you need guaranteed immediate output (like before waiting for input), and \texttt{\textbackslash{}n} for performance-critical code.
 \end{remark}
 
 \subsubsection{Input with \texttt{cin}}
@@ -680,7 +680,8 @@ A common pitfall occurs when mixing \texttt{cin >>} and \texttt{getline}:
 \begin{lstlisting}
 	std::cout << "Enter your age: ";
 	std::cin >> age;
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear buffer
+	std::cin.ignore(
+		std::numeric_limits<std::streamsize>::max(), '\n');
 	
 	std::cout << "Enter your name: ";
 	std::getline(std::cin, name);  // Now works correctly
@@ -707,7 +708,8 @@ Or use a simpler approach:
 	if (std::cin.fail()) {
 		std::cout << "Invalid input! That wasn't a number." << std::endl;
 		std::cin.clear();  // Clear the error state
-		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear buffer
+		std::cin.ignore(
+			std::numeric_limits<std::streamsize>::max(), '\n');
 	}
 \end{lstlisting}
 
@@ -729,7 +731,9 @@ Or use a simpler approach:
 				
 				std::cout << "Invalid input. Please enter a valid age.\n";
 				std::cin.clear();
-				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				std::cin.ignore(
+					std::numeric_limits<std::streamsize>::max(),
+					'\n');
 			}
 			
 			std::cout << "Your age is: " << age << std::endl;
@@ -1010,7 +1014,7 @@ Source files contain definitions:
 
 \begin{example}[Exercise 1: Hello Message]{\leavevmode}
 	
-	Write a program that outputs "Hello from C++!" to the console.
+	Write a program that outputs ``Hello from C++!'' to the console.
 	
 	\textbf{Expected output:}
 	\begin{lstlisting}[numbers=none]
