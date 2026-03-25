@@ -4,12 +4,10 @@ prices = {"apple": 1.50, "milk": 3.25, "bread": 2.75}
 tax_rate = 0.07
 
 """ 
-Print header using fstrings, I'll go with width 20. 
+Print header using f-strings, I'll go with width 20. 
 Example: Welcome to Corner Market
 
-Loop though items, I'll use a for loop, set up count = 0,
-then my while will be while count < len(items). Inside the 
-do while will calulate a subtotal, and write to the reciept. 
+Loop through items, I'll use a for loop to write the line items and calculate subtotal. 
 
 Then after I will calculate the tax and total. 
 I then create a set to get unique items, then print the item names.
