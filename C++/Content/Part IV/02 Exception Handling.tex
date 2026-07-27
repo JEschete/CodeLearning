@@ -21,11 +21,15 @@ It is common to throw exceptions from functions when an error condition is met, 
 \begin{lstlisting}
 double divide(int a, int b) {
 	if (b == 0) {
-		throw std::string("Division by zero error!");
+		throw std::string("Division by zero error!"); // works, but not ideal
 	}
 	return static_cast<double>(a) / b;
 }
 \end{lstlisting}
+
+\begin{remark}
+	Throwing a raw \texttt{std::string} (or an \texttt{int}, or any primitive) is legal but non-idiomatic. It means callers can only catch it with \texttt{catch (const std::string \&)} and it cannot be caught by a \texttt{catch (const std::exception \&)} handler. Prefer throwing objects that inherit from \texttt{std::exception}, as shown later in this section.
+\end{remark}
 
 \subsection{Handling Exceptions --- Syntax}
 You use a \texttt{try...catch} block to handle potential exceptions.
@@ -43,6 +47,19 @@ int main() {
 
 \subsection{Catching Multiple Exceptions}
 You can have multiple \texttt{catch} blocks to handle different types of exceptions. The order of the \texttt{catch} blocks matters; they are checked in sequence. You can use \texttt{catch(...)} to catch any type of exception (a ``catch-all'' handler).
+
+\begin{remark}
+	Always catch \textbf{more derived} exception types \textit{before} more base types. If you catch \texttt{std::exception} first, it will swallow all derived exceptions and the specialized handlers will never be reached:
+	\begin{lstlisting}
+		// WRONG order — std::out_of_range is never caught specifically
+		} catch (const std::exception &e) { ... }
+		} catch (const std::out_of_range &e) { ... } // dead code
+
+		// CORRECT order
+		} catch (const std::out_of_range &e) { ... } // caught first
+		} catch (const std::exception &e) { ... }    // fallback
+	\end{lstlisting}
+\end{remark}
 \begin{lstlisting}
 try {
 	// ... code that might throw
@@ -65,6 +82,7 @@ It is good practice to define your own exception classes, typically inheriting f
 
 class DivideByZeroException : public std::exception {
 public:
+	// noexcept: this function promises never to throw an exception itself
 	const char* what() const noexcept override {
 		return "Attempted to divide by zero";
 	}
@@ -79,7 +97,35 @@ double divide(int a, int b) {
 \end{lstlisting}
 
 \subsection{The Standard Library Exception Hierarchy}
-The C++ standard library provides a hierarchy of exception classes in \texttt{<stdexcept>}, all derived from \texttt{std::exception}. Examples include \texttt{std::runtime\_error}, \texttt{std::logic\_error}, \texttt{std::invalid\_argument}, and \texttt{std::out\_of\_range}. Using these standard exceptions can make your code more understandable to other developers.
+The C++ standard library provides a hierarchy of exception classes in \texttt{<stdexcept>}, all derived from \texttt{std::exception}. Using these makes your code understandable to anyone familiar with C++.
+
+\begin{lstlisting}
+#include <stdexcept>
+
+// std::invalid_argument — bad parameter value
+double square_root(double x) {
+	if (x < 0)
+		throw std::invalid_argument("square_root requires non-negative input");
+	return std::sqrt(x);
+}
+
+// std::out_of_range — index or value outside valid range
+int get_element(const std::vector<int> &v, int i) {
+	if (i < 0 || i >= static_cast<int>(v.size()))
+		throw std::out_of_range("index out of bounds");
+	return v[i];
+}
+
+// std::runtime_error — errors only detectable at runtime
+void load_file(const std::string &path) {
+	// if file not found:
+	throw std::runtime_error("Cannot open file: " + path);
+}
+\end{lstlisting}
+
+\begin{remark}
+	C++ has no \texttt{finally} block (unlike Java or Python). Instead, C++ uses \textbf{RAII}: resources are tied to object lifetimes, so their destructors run automatically during stack unwinding even when an exception is thrown. Smart pointers, file stream objects, and mutex locks all use this pattern — no \texttt{finally} needed.
+\end{remark}
 
 \subsection{Section Challenge}
 Create a simple \texttt{Account} class with a balance. Implement a \texttt{withdraw} method that throws an \texttt{InsufficientFundsException} (a custom exception class you create) if the withdrawal amount is greater than the balance. In \texttt{main}, create an account and wrap a withdrawal attempt in a \texttt{try...catch} block to handle the exception gracefully.

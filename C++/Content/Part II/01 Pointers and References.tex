@@ -14,7 +14,7 @@ You declare a pointer by specifying the type of the data it will point to, follo
 	std::string *str_ptr; // points to a string
 \end{lstlisting}
 \begin{remark}
-An uninitialized pointer points to a random memory address. This is dangerous. Always initialize your pointers. A common practice is to initialize pointers to \texttt{nullptr} if they don't point to a valid address.
+	An uninitialized pointer contains a garbage address. Dereferencing it is undefined behavior and typically crashes the program. Always initialize your pointers — to \texttt{nullptr} if they don't yet point to a valid object, or directly to an address.
 \end{remark}
 
 \subsection{Storing Addresses in Pointers}
@@ -86,16 +86,24 @@ You can perform arithmetic operations on pointers. Incrementing a pointer moves 
 \subsection{const and Pointers}
 \texttt{const} can be used with pointers in three ways:
 \begin{lstlisting}
-	// 1. Pointer to a constant: The data pointed to cannot be changed.
-	const int *p1;
-	int const *p2; // same as above
+	int some_int {42};
 
-	// 2. Constant pointer: The pointer itself cannot be changed to point to something else.
-	int *const p3 = &some_int;
+	// 1. Pointer to a constant: the data pointed to cannot be changed.
+	const int *p1 {nullptr};
+	int const *p2 {&some_int}; // same as p1 — cannot modify *p2
 
-	// 3. Constant pointer to a constant: Both are constant.
-	const int *const p4 = &some_int;
+	// 2. Constant pointer: the pointer itself cannot be reassigned.
+	int *const p3 {&some_int}; // p3 always points to some_int
+	*p3 = 99; // OK — can modify the value
+	// p3 = nullptr; // ERROR — cannot reseat the pointer
+
+	// 3. Constant pointer to a constant: neither the pointer nor the data can change.
+	const int *const p4 {&some_int};
 \end{lstlisting}
+
+\begin{remark}
+	Read pointer declarations right-to-left: \texttt{int *const p3} is ``\texttt{p3} is a const pointer to int''. \texttt{const int *p1} is ``\texttt{p1} is a pointer to const int''. The position of \texttt{const} relative to the \texttt{*} is what distinguishes them.
+\end{remark}
 
 \subsection{Passing Pointers to Functions}
 Passing a pointer to a function allows the function to access and modify the original data. This is more efficient than passing large objects by value.
@@ -111,22 +119,60 @@ Passing a pointer to a function allows the function to access and modify the ori
 \end{lstlisting}
 
 \subsection{Returning a Pointer from a Function}
-You can return a pointer from a function, but you must be careful not to return a pointer to a local variable, as it will be destroyed when the function exits. It's usually for returning dynamically allocated memory.
+You can return a pointer from a function, but you must be careful not to return a pointer to a local variable, as it will be destroyed when the function exits. It's usually used for returning dynamically allocated memory.
 \begin{lstlisting}
 	int* create_array(size_t size, int init_value = 0) {
 		int *new_array = new int[size];
-		for (size_t i=0; i<size; ++i)
+		for (size_t i = 0; i < size; ++i)
 			new_array[i] = init_value;
 		return new_array;
+		// Caller is responsible for calling delete[]!
 	}
 \end{lstlisting}
 
+\begin{remark}
+	\textbf{Never} return a pointer to a local variable. The local variable is destroyed when the function returns, leaving the caller with a dangling pointer:
+	\begin{lstlisting}
+		int* bad_function() {
+			int local {42};
+			return &local; // UNDEFINED BEHAVIOR — local is gone after return
+		}
+	\end{lstlisting}
+	When a function must return dynamically allocated memory, prefer returning a \texttt{std::unique\_ptr} instead of a raw pointer — that way ownership is explicit and the caller cannot forget to free it.
+\end{remark}
+
 \subsection{Potential Pointer Pitfalls}
 \begin{itemize}
-	\item \textbf{Dangling pointers:} Pointers that point to memory that has been freed.
+	\item \textbf{Dangling pointers:} Pointers that point to memory that has already been freed.
 	\item \textbf{Null pointer dereference:} Attempting to dereference a \texttt{nullptr}.
 	\item \textbf{Memory leaks:} Forgetting to \texttt{delete} memory allocated with \texttt{new}.
 \end{itemize}
+
+\begin{example}[Common Pointer Bugs]{\leavevmode}
+\begin{lstlisting}
+	// 1. Dangling pointer
+	int *p = new int {42};
+	delete p;
+	std::cout << *p << std::endl; // UNDEFINED BEHAVIOR — p points to freed memory
+	p = nullptr;                  // Fix: null it out after deleting
+
+	// 2. Null pointer dereference
+	int *q {nullptr};
+	// std::cout << *q; // CRASH — always check before dereferencing
+	if (q != nullptr)
+		std::cout << *q << std::endl;
+
+	// 3. Memory leak
+	void leaky() {
+		int *r = new int {10};
+		// Forgot delete r; — memory is leaked every time leaky() is called
+	}
+\end{lstlisting}
+\end{example}
+
+\begin{remark}
+	All three of these pitfalls are eliminated by using smart pointers (\texttt{std::unique\_ptr}, \texttt{std::shared\_ptr}), covered in Part IV. Prefer smart pointers over raw \texttt{new}/\texttt{delete} in modern C++.
+\end{remark}
 
 \subsection{What is a Reference?}
 A reference is an alias for an already existing variable. Once a reference is initialized to a variable, it cannot be changed to refer to another variable. References are generally safer and easier to use than pointers.
@@ -138,6 +184,13 @@ A reference is an alias for an already existing variable. Once a reference is in
 	std::cout << num << std::endl; // 20
 \end{lstlisting}
 We have already used references when passing arguments to functions (pass-by-reference).
+
+\subsubsection{Pointer vs.\ Reference: When to Use Each}
+\begin{itemize}
+	\item Use a \textbf{reference} when: the parameter or return value must never be \texttt{null}, you don't need to reseat it, and you want clean, dereference-free syntax. References are the default choice for pass-by-reference parameters.
+	\item Use a \textbf{pointer} when: the value might legitimately be \texttt{null} (optional parameter), you need to reseat it to point to different objects, or you are doing pointer arithmetic / managing arrays.
+\end{itemize}
+In modern C++, raw pointers are increasingly replaced by references, smart pointers, or higher-level containers. If you find yourself choosing between a raw pointer and a reference, prefer the reference.
 
 \subsection{Coding Exercise 30: Find the maximum element in an array using pointers}
 Write a function that takes a pointer to the beginning of an integer array and its size, and returns a pointer to the maximum element.

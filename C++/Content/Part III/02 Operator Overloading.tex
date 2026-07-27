@@ -6,6 +6,10 @@ Operator overloading allows us to define how C++ operators behave with user-defi
 \subsection{What is Operator Overloading?}
 Operator overloading is a form of polymorphism where we provide a special meaning for an operator for a given user-defined type. It allows us to integrate our custom types seamlessly with the language. For example, we can overload the \texttt{+} operator to add two \texttt{Vector} objects or the \texttt{<<} operator to print a \texttt{Player} object to the console.
 
+\begin{remark}
+	Not every operator can be overloaded. The following operators \textbf{cannot} be overloaded: \texttt{::} (scope resolution), \texttt{.} (member access), \texttt{.*} (pointer-to-member), and \texttt{?:} (ternary conditional). Also, you cannot create new operators, change the arity of an operator, or change its precedence.
+\end{remark}
+
 \subsection{Overloading the Assignment Operator (copy)}
 The copy assignment operator (\texttt{operator=}) is used to copy the values from one object to another already existing object. If your class manages dynamic memory (raw pointers), you must provide a deep copy implementation to avoid shallow copy issues.
 \begin{lstlisting}
@@ -57,11 +61,9 @@ Many operators are best overloaded as member functions. The left-hand operand is
 		int cents;
 
 		Money operator+(const Money &rhs) const {
-			Money result;
-			result.dollars = this->dollars + rhs.dollars;
-			result.cents = this->cents + rhs.cents;
-			// handle carry over...
-			return result;
+			int total_cents = (this->dollars * 100 + this->cents)
+			                + (rhs.dollars * 100 + rhs.cents);
+			return Money{total_cents / 100, total_cents % 100};
 		}
 	};
 
@@ -79,7 +81,7 @@ Some operators must be overloaded as global (non-member) functions. This is comm
 	}
 \end{lstlisting}
 
-\subsection{Coding Exercise 35: Overloading the Assignment Operator}
+\subsection{Coding Exercise 35: Overloading the Addition Operator}
 Given the \texttt{Account} class, overload the \texttt{+} operator as a member function to add two \texttt{Account} objects, returning a new \texttt{Account} with the combined balance.
 \begin{lstlisting}
 	#include <iostream>
@@ -145,6 +147,10 @@ Starting with the \texttt{MyString} class, overload the following operators:
 	#include <cstring>
 	#include <cctype>
 
+	// NOTE: This class intentionally omits the copy constructor and copy
+	// assignment operator to keep the example focused. A production-ready
+	// version would need all three (Rule of Three) to avoid shallow-copy
+	// double-free bugs when copying MyString objects.
 	class MyString {
 	private:
 		char *str;
@@ -166,7 +172,8 @@ Starting with the \texttt{MyString} class, overload the following operators:
 		MyString operator-() const {
 			char *buff = new char[strlen(str) + 1];
 			strcpy(buff, str);
-			for (size_t i = 0; i < strlen(buff); ++i) {
+			size_t len = strlen(buff); // compute once, not every iteration
+			for (size_t i = 0; i < len; ++i) {
 				buff[i] = tolower(buff[i]);
 			}
 			MyString temp {buff};

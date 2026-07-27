@@ -39,6 +39,16 @@ int main() {
 \end{lstlisting}
 \texttt{unique\_ptr} is the default smart pointer you should choose unless you specifically need shared ownership.
 
+\begin{remark}
+	\textbf{Which smart pointer to choose?}
+	\begin{itemize}
+		\item \texttt{std::unique\_ptr} — default choice. Zero overhead, exclusive ownership, transfers via \texttt{std::move}.
+		\item \texttt{std::shared\_ptr} — when multiple owners genuinely need to share a resource and the last one should free it.
+		\item \texttt{std::weak\_ptr} — only to observe a \texttt{shared\_ptr}-managed object without extending its lifetime, typically to break a cycle.
+	\end{itemize}
+	If you are unsure, start with \texttt{unique\_ptr}. Upgrade to \texttt{shared\_ptr} only when you actually need shared ownership.
+\end{remark}
+
 \subsection{Shared Pointers (shared\_ptr)}
 \texttt{std::shared\_ptr} represents shared ownership. Multiple \texttt{shared\_ptr}s can point to the same resource. The resource is deallocated only when the last \texttt{shared\_ptr} pointing to it is destroyed. This is managed through a reference count.
 \begin{itemize}
@@ -46,6 +56,7 @@ int main() {
     \item The resource is deleted when the reference count becomes zero.
 \end{itemize}
 \begin{lstlisting}
+#include <iostream>
 #include <memory>
 
 int main() {
@@ -64,7 +75,7 @@ int main() {
 \texttt{std::weak\_ptr} is a non-owning smart pointer that holds a ``weak'' reference to an object managed by a \texttt{shared\_ptr}. It is used to break circular references between \texttt{shared\_ptr} objects.
 \begin{itemize}
     \item Does not affect the reference count.
-    \item Cannot be dereferenced directly. You must convert it to a \texttt{shared\_ptr} first.
+    \item Cannot be dereferenced directly. You must convert it to a \texttt{shared\_ptr} first using \texttt{.lock()}.
 \end{itemize}
 \begin{lstlisting}
 class B; // forward declaration
@@ -74,9 +85,22 @@ public:
 };
 class B {
 public:
-	// std::shared_ptr<A> a_ptr; // This would create a circular reference
-	std::weak_ptr<A> a_ptr; // Use weak_ptr to break the cycle
+	// std::shared_ptr<A> a_ptr; // This would create a circular reference —
+	                             // A owns B, B owns A, neither is ever freed
+	std::weak_ptr<A> a_ptr;     // weak_ptr breaks the cycle
 };
+\end{lstlisting}
+
+To actually use a \texttt{weak\_ptr}, call \texttt{.lock()} to obtain a temporary \texttt{shared\_ptr}:
+\begin{lstlisting}
+std::shared_ptr<int> shared = std::make_shared<int>(42);
+std::weak_ptr<int>   weak   = shared;
+
+if (auto locked = weak.lock()) { // returns nullptr if object was already freed
+	std::cout << "Value: " << *locked << std::endl;
+} else {
+	std::cout << "Object no longer exists." << std::endl;
+}
 \end{lstlisting}
 
 \subsection{Custom Deleters}
@@ -110,10 +134,11 @@ public:
 class Circle : public Shape {
 private:
 	double radius;
+	static constexpr double PI {3.14159265358979};
 public:
 	Circle(double r) : radius(r) {}
 	double area() const override {
-		return 3.14159 * radius * radius;
+		return PI * radius * radius;
 	}
 };
 

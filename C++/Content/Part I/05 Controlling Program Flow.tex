@@ -118,7 +118,20 @@ The \texttt{switch} statement is a multi-way selection statement. It's a good al
 	}
 \end{lstlisting}
 \begin{remark}
-	The \texttt{break} statement is crucial. Without it, execution ``falls through'' to the next case.
+	The \texttt{break} statement is crucial. Without it, execution ``falls through'' to the next case — all following cases run until a \texttt{break} or the end of the \texttt{switch} is reached. Accidental fall-through is a common bug. When fall-through is intentional, annotate it with the \texttt{[[fallthrough]]} attribute (C++17) to silence compiler warnings and signal intent:
+	\begin{lstlisting}
+		case 1:
+		case 2:
+			std::cout << "Weekend" << std::endl;
+			[[fallthrough]]; // intentional
+		case 3:
+			std::cout << "Handled" << std::endl;
+			break;
+	\end{lstlisting}
+\end{remark}
+
+\begin{remark}
+	The \texttt{switch} statement only works with \textbf{integer or character} values. You cannot switch on a \texttt{std::string}. A common beginner mistake is writing \texttt{switch(my\_string)} — this will not compile. Use \texttt{if-else if} chains for string comparisons.
 \end{remark}
 
 \subsection{Coding Exercise 13: Switch Statement --- Day of the Week}
@@ -187,6 +200,19 @@ C++11 introduced the range-based \texttt{for} loop, which is a simpler way to it
 		std::cout << score << " "; // 100 90 80
 	}
 \end{lstlisting}
+
+\begin{remark}
+	\texttt{int score : scores} copies each element. For large or non-trivial types (like \texttt{std::string}), prefer a \textbf{const reference} to avoid unnecessary copies:
+	\begin{lstlisting}
+		std::vector<std::string> names {"Alice", "Bob", "Charlie"};
+		for (const std::string &name : names) {   // no copy
+			std::cout << name << "\n";
+		}
+		// Or with auto:
+		for (const auto &name : names) { ... }
+	\end{lstlisting}
+	Use \texttt{auto \&name} (without \texttt{const}) only if you intend to modify the element in-place.
+\end{remark}
 
 \subsection{Coding Exercise 15: Using the range-based for loop}
 Given a vector of doubles \texttt{temps \{80.0, 78.5, 75.3, 82.1\}}, use a range-based \texttt{for} loop to print each temperature.
@@ -272,12 +298,16 @@ Write a program that uses a \texttt{do-while} loop to ask the user to enter a nu
 \subsection{Infinite Loops}
 An infinite loop is a loop that never terminates. This usually happens when the loop's condition never becomes false.
 \begin{lstlisting}
-	// This loop will run forever
+	// This loop will run forever (commented out intentionally)
 	// while (true) {
 	//     std::cout << "Looping... ";
 	// }
 \end{lstlisting}
 You can exit an infinite loop with \texttt{break} or by terminating the program (\texttt{Ctrl+C}).
+
+\begin{remark}
+	Intentional infinite loops with \texttt{while (true)} are a valid and common pattern — for example, a game loop or a server waiting for connections. In these cases, you use \texttt{break} or \texttt{return} to exit cleanly. The danger is an \textit{unintentional} infinite loop caused by a logic error in the condition (e.g., forgetting to increment a counter).
+\end{remark}
 
 \subsection{Nested Loops}
 You can have loops inside other loops. This is common for working with 2D data structures.
@@ -327,6 +357,7 @@ Here is the basic structure of the program using a \texttt{do-while} loop and a 
 \begin{lstlisting}
 	#include <iostream>
 	#include <vector>
+	#include <cctype>  // Required for toupper()
 
 	int main() {
 		std::vector<int> numbers;
@@ -355,6 +386,7 @@ Here is the complete solution with all menu options implemented.
 \begin{lstlisting}
 	#include <iostream>
 	#include <vector>
+	#include <cctype>  // Required for toupper()
 
 	int main() {
 		std::vector<int> numbers;

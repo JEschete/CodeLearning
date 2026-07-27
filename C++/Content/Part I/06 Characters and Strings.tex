@@ -5,17 +5,29 @@ Text is a fundamental data type in programming. In this section, we'll explore h
 
 \subsection{Character Functions}
 The \texttt{<cctype>} header provides a set of functions for working with characters. These functions can be used to test characters for certain properties (e.g., is it a letter, a digit, etc.) and to convert their case.
-\begin{lstlisting}
-	#include <cctype> // include this header
 
-	// Some common functions:
-	// isalpha(c): true if c is a letter
-	// isdigit(c): true if c is a digit
-	// isalnum(c): true if c is a letter or a digit
-	// isspace(c): true if c is a whitespace character
-	// toupper(c): returns uppercase version of c
-	// tolower(c): returns lowercase version of c
-\end{lstlisting}
+\begin{example}[Common \texttt{<cctype>} Functions]{\leavevmode}
+	\begin{lstlisting}
+		#include <iostream>
+		#include <cctype>
+
+		int main() {
+			char c {'A'};
+
+			std::cout << std::boolalpha;
+			std::cout << isalpha(c)  << "\n"; // true  - is a letter
+			std::cout << isdigit(c)  << "\n"; // false - not a digit
+			std::cout << isalnum(c)  << "\n"; // true  - letter or digit
+			std::cout << isspace(' ') << "\n"; // true  - is whitespace
+			std::cout << isupper(c)  << "\n"; // true  - is uppercase
+
+			std::cout << (char)tolower(c) << "\n"; // 'a'
+			std::cout << (char)toupper('z') << "\n"; // 'Z'
+
+			return 0;
+		}
+	\end{lstlisting}
+\end{example}
 
 \subsection{C-Style Strings}
 In C and C++, a ``string'' can be represented as an array of characters. This is known as a \textbf{C-style string}. By convention, C-style strings are terminated by a special character, the null character (\texttt{\textbackslash{}0}), which has an ASCII value of 0.
@@ -43,7 +55,7 @@ The \texttt{<cstring>} header provides functions for working with C-style string
 \end{lstlisting}
 
 \begin{remark}
-	Many C-style string functions are unsafe because they do not perform bounds checking. \texttt{strcpy} and \texttt{strcat} can easily lead to buffer overflows if the destination array is not large enough. Modern C++ code should prefer \texttt{std::string}.
+	Many C-style string functions are unsafe because they do not perform bounds checking. \texttt{strcpy} and \texttt{strcat} can easily lead to \textbf{buffer overflows} if the destination array is not large enough — a classic security vulnerability. Modern C++ code should prefer \texttt{std::string}. The exercises below practice the C-style API so you can read and understand legacy code, but new code should use \texttt{std::string}.
 \end{remark}
 
 \subsection{Coding Exercise 19: Using C-style Strings}
@@ -110,6 +122,27 @@ The C++ Standard Library provides the \texttt{std::string} class, which is a muc
 	}
 \end{lstlisting}
 
+\subsubsection{String Conversion Functions}
+
+Converting between strings and numeric types is a common need. The \texttt{<string>} header provides:
+
+\begin{lstlisting}
+	#include <string>
+
+	// Number -> string
+	std::string s = std::to_string(42);       // "42"
+	std::string t = std::to_string(3.14);     // "3.140000"
+
+	// String -> number
+	int i    = std::stoi("123");              // 123
+	double d = std::stod("3.14");            // 3.14
+	long l   = std::stol("1000000");         // 1000000
+\end{lstlisting}
+
+\begin{remark}
+	\texttt{std::stoi} and \texttt{std::stod} throw \texttt{std::invalid\_argument} if the string is not a valid number, and \texttt{std::out\_of\_range} if the value is too large for the type. Exception handling is covered in a later section.
+\end{remark}
+
 \subsection{Coding Exercise 20: Using C++ Strings --- Exercise 1}
 Ask the user to enter their full name and age. Concatenate their name and age into a single \texttt{std::string} and print it.
 \begin{lstlisting}
@@ -171,11 +204,13 @@ Write a program that implements a simple substitution cipher. Ask the user for a
 
 		std::string encrypted_message;
 		for (char c : secret_message) {
+			// .find() returns std::string::npos (a large sentinel value)
+			// if the character is not found
 			size_t position = alphabet.find(c);
 			if (position != std::string::npos) {
 				encrypted_message += key[position];
 			} else {
-				encrypted_message += c;
+				encrypted_message += c; // non-alphabet chars pass through
 			}
 		}
 		std::cout << "\nEncrypting message..." << std::endl;

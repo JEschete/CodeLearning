@@ -47,9 +47,12 @@ Protected members are used when you want to hide details from the outside world,
 
 \subsection{Constructing and Destructing Base and Derived Classes}
 When a derived object is created, the base class constructor is called first, followed by the derived class constructor. When the object is destroyed, the derived class destructor is called first, followed by the base class destructor.
-\begin{lstlisting}
-	Base constructor -> Derived constructor -> Derived destructor -> Base destructor
-\end{lstlisting}
+
+\begin{center}
+	Base constructor $\rightarrow$ Derived constructor $\cdots$ Derived destructor $\rightarrow$ Base destructor
+\end{center}
+
+Think of it as: construction builds from the bottom up (base first), and destruction tears down from the top down (derived first).
 
 \subsection{Passing Arguments to Base Class Constructors}
 If the base class constructor requires arguments, the derived class constructor must call it using a member initializer list.
@@ -104,16 +107,31 @@ A derived class can provide its own specific implementation of a base class meth
 	};
 \end{lstlisting}
 \begin{remark}
-This is not the same as polymorphism, which we will cover in the next section. With redefinition, the method called is determined at compile time (static binding).
+	This is not the same as polymorphism (covered in the next section). With redefinition, the method called is determined at \textbf{compile time} (static binding) based on the pointer/reference type, not the actual object type. This means if you call \texttt{deposit} through an \texttt{Account*} that actually points to a \texttt{Savings\_Account}, you will get the \texttt{Account::deposit} version — not the one you wanted. To get runtime dispatch, you need \texttt{virtual} functions.
+\end{remark}
+
+\begin{remark}
+	If a class is intended to be used as a base class (i.e., derived classes will be deleted through a pointer to the base), its destructor \textbf{must} be declared \texttt{virtual}. Without it, deleting a derived object through a base pointer only calls the base destructor, potentially leaking resources. This is covered in detail in the Polymorphism section.
 \end{remark}
 
 \subsection{Multiple Inheritance}
-A C++ class can inherit from more than one base class. This is called multiple inheritance and should be used with caution as it can lead to complex and ambiguous situations, like the ``Diamond Problem''.
+A C++ class can inherit from more than one base class. This is called multiple inheritance and should be used with caution as it can lead to complex and ambiguous situations.
 \begin{lstlisting}
 	class A {};
 	class B {};
 	class C : public A, public B {}; // C inherits from both A and B
 \end{lstlisting}
+
+\begin{remark}
+	The \textbf{Diamond Problem} occurs when two base classes both inherit from a common grandparent, and a class then inherits from both of them:
+	\begin{lstlisting}
+		class Animal { int age; };
+		class Dog    : public Animal {};
+		class Cat    : public Animal {};
+		class DogCat : public Dog, public Cat {}; // Which 'age' does DogCat have?
+	\end{lstlisting}
+	\texttt{DogCat} would contain two separate \texttt{Animal} sub-objects, making \texttt{age} ambiguous. C++ solves this with \textbf{virtual inheritance} (\texttt{class Dog : virtual public Animal}), but this adds complexity. Most style guides recommend avoiding multiple inheritance of implementation; it is generally safer to inherit from at most one concrete class.
+\end{remark}
 
 \subsection{Section Challenge}
 Create a \texttt{Checking\_Account} class that is derived from the \texttt{Account} class. A checking account has a fee that is applied to each withdrawal. Implement the \texttt{withdraw} method in the \texttt{Checking\_Account} class that deducts the fee before withdrawing.

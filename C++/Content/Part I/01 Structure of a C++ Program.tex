@@ -375,9 +375,10 @@ Programs often need to accept input from the command line. C++ provides an alter
 	
 	If you compile this program as \texttt{myprogram} and run it with:
 	\begin{lstlisting}[language=bash,numbers=none]
-		./myprogram hello world
+		./myprogram hello world       % Unix/macOS
+		.\myprogram.exe hello world   % Windows
 	\end{lstlisting}
-	
+
 	The output would be:
 	\begin{lstlisting}[numbers=none]
 		Number of arguments: 3
@@ -385,7 +386,7 @@ Programs often need to accept input from the command line. C++ provides an alter
 		Argument 1: hello
 		Argument 2: world
 	\end{lstlisting}
-	
+
 	Note that \texttt{argv[0]} is always the program name itself.
 \end{example}
 
@@ -527,11 +528,14 @@ You can chain multiple \texttt{<<} operators together:
 \texttt{cout} automatically handles different data types:
 
 \begin{lstlisting}
+	#include <iostream>
+	#include <string>   // Required for std::string
+
 	int age = 25;
 	double salary = 50000.50;
 	char grade = 'A';
 	std::string name = "Alice";
-	
+
 	std::cout << "Name: " << name << std::endl;
 	std::cout << "Age: " << age << std::endl;
 	std::cout << "Salary: $" << salary << std::endl;
@@ -557,6 +561,15 @@ There are two ways to create new lines:
 
 \begin{remark}
 	\texttt{std::endl} not only inserts a newline but also \textbf{flushes the output buffer}, ensuring all output is immediately written. This can be slower than \texttt{\textbackslash{}n}. Use \texttt{std::endl} when you need guaranteed immediate output (like before waiting for input), and \texttt{\textbackslash{}n} for performance-critical code.
+\end{remark}
+
+\begin{remark}
+	The \texttt{<iostream>} library also provides \texttt{std::cerr} for error output and \texttt{std::clog} for logging. \texttt{std::cerr} is unbuffered, so error messages are always written immediately—useful when a crash might prevent a buffered stream from flushing.
+
+	\begin{lstlisting}
+		std::cout << "Normal output\n";
+		std::cerr << "Error: something went wrong\n";
+	\end{lstlisting}
 \end{remark}
 
 \subsubsection{Input with \texttt{cin}}
@@ -713,8 +726,12 @@ Or use a simpler approach:
 	}
 \end{lstlisting}
 
+\begin{remark}
+	The example below uses several concepts (\texttt{while} loops, conditionals) that are covered in later sections. Don't worry if it's not fully clear yet—we'll return to robust input handling once those tools are in your toolkit.
+\end{remark}
+
 \begin{example}[Robust Input Loop]{\leavevmode}
-	
+
 	\begin{lstlisting}
 		#include <iostream>
 		#include <limits>
@@ -747,18 +764,25 @@ Or use a simpler approach:
 Here are some patterns you'll use frequently:
 
 \begin{lstlisting}
+	#include <iostream>
+	#include <string>
+
+	int value;
+	int x, y;
+	std::string sentence;
+
 	// Pattern 1: Prompt and read
 	std::cout << "Enter value: ";
 	std::cin >> value;
-	
+
 	// Pattern 2: Read multiple values
 	std::cout << "Enter x and y: ";
 	std::cin >> x >> y;
-	
+
 	// Pattern 3: Read a full line
 	std::cout << "Enter a sentence: ";
 	std::getline(std::cin, sentence);
-	
+
 	// Pattern 4: Echo back input
 	std::cout << "You entered: " << value << std::endl;
 \end{lstlisting}
@@ -873,7 +897,7 @@ When working with header files, include guards prevent multiple inclusion errors
 	#endif // MYHEADER_H
 \end{lstlisting}
 
-Or use the simpler (but non-standard) alternative:
+Or use the simpler, widely supported (but not officially standardized) alternative:
 
 \begin{lstlisting}
 	// myheader.h
@@ -927,13 +951,38 @@ While IDEs handle compilation automatically, understanding command-line compilat
 
 Common compiler flags:
 \begin{itemize}
-	\item \texttt{-o <n>} — Specify output file name
+	\item \texttt{-o <filename>} — Specify output file name
 	\item \texttt{-Wall} — Enable most warning messages
 	\item \texttt{-Wextra} — Enable additional warnings
 	\item \texttt{-std=c++17} — Use C++17 standard (or \texttt{c++20}, \texttt{c++23})
 	\item \texttt{-g} — Include debugging information
 	\item \texttt{-O2} — Enable optimizations
 \end{itemize}
+
+\subsubsection{Reading Compiler Error Messages}
+
+When you make a mistake, the compiler will tell you. Learning to read error messages is one of the most valuable skills you can develop.
+
+A typical GCC/Clang error looks like this:
+
+\begin{lstlisting}[language=bash,numbers=none]
+	main.cpp:5:5: error: expected ';' after return statement
+		return 0
+		        ^
+		        ;
+\end{lstlisting}
+
+The format is: \texttt{filename:line:column: severity: message}. Here, line 5, column 5 of \texttt{main.cpp} is missing a semicolon. The caret (\texttt{\^{}}) points directly at the problem.
+
+\begin{itemize}
+	\item \textbf{error} — Must be fixed; compilation stops
+	\item \textbf{warning} — Code compiles, but something is likely wrong; always investigate
+	\item \textbf{note} — Additional context about an error above it
+\end{itemize}
+
+\begin{remark}
+	When you have many errors, fix the \textit{first} one and recompile. A single mistake (like a missing semicolon or brace) can cause a cascade of confusing errors further down the file. After fixing the root cause, the others often disappear.
+\end{remark}
 
 \subsection{Header Files and Source Files}
 
@@ -1035,18 +1084,41 @@ Source files contain definitions:
 \end{example}
 
 \begin{example}[Exercise 3: User Input]{\leavevmode}
-	
+
 	Write a program that:
 	\begin{enumerate}
 		\item Asks the user for their name
 		\item Asks the user for their favorite number
 		\item Outputs a personalized message with both pieces of information
 	\end{enumerate}
-	
+
 	\textbf{Sample interaction:}
 	\begin{lstlisting}[numbers=none]
 		Enter your name: Bob
 		Enter your favorite number: 42
 		Hello, Bob! Your favorite number is 42.
+	\end{lstlisting}
+\end{example}
+
+\begin{example}[Exercise 4: Namespaces]{\leavevmode}
+
+	The following program uses \texttt{using namespace std;}. Rewrite it so that it:
+	\begin{enumerate}
+		\item Removes the \texttt{using namespace std;} directive
+		\item Uses \texttt{using} declarations to import only \texttt{cout} and \texttt{endl}
+		\item Uses a fully qualified name (\texttt{std::string}) for the string variable
+	\end{enumerate}
+
+	\textbf{Starting code:}
+	\begin{lstlisting}
+		#include <iostream>
+		#include <string>
+		using namespace std;
+
+		int main() {
+			string greeting = "Hello, C++!";
+			cout << greeting << endl;
+			return 0;
+		}
 	\end{lstlisting}
 \end{example}

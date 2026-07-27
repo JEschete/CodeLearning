@@ -300,11 +300,13 @@ By default, integer types are \textbf{signed} (can hold negative values). Use \t
 
 \begin{remark}
 	Be careful with unsigned types! Subtracting from zero wraps around to a huge positive number:
-	
+
 	\begin{lstlisting}
 		unsigned int x{5};
 		x = x - 10;  // x is now 4294967291, not -5!
 	\end{lstlisting}
+
+	Signed integer overflow is even more dangerous — it is \textbf{undefined behavior} in C++. The compiler is allowed to assume it never happens and may generate incorrect code as a result. Use a wider type (\texttt{long long}) or check bounds before the operation if overflow is possible.
 \end{remark}
 
 \subsubsection{Floating-Point Types}
@@ -338,16 +340,18 @@ Floating-point types store numbers with decimal points:
 Floating-point numbers have limited precision and can't represent all decimal values exactly:
 
 \begin{lstlisting}
+	#include <cmath>   // Required for std::abs with floating-point
+
 	double x{0.1};
 	double y{0.2};
 	double z{0.3};
-	
+
 	if (x + y == z) {
 		std::cout << "Equal\n";     // This might NOT print!
 	} else {
 		std::cout << "Not equal\n"; // 0.1 + 0.2 != 0.3 exactly
 	}
-	
+
 	// Better approach: check if "close enough"
 	if (std::abs((x + y) - z) < 0.0001) {
 		std::cout << "Close enough\n";
@@ -407,9 +411,13 @@ Characters are actually stored as integer values (ASCII codes):
 	char ch{'A'};
 	std::cout << ch << std::endl;           // Output: A
 	std::cout << static_cast<int>(ch) << std::endl;  // Output: 65 (ASCII code)
-	
+
 	char next = ch + 1;  // 'B' (65 + 1 = 66)
 \end{lstlisting}
+
+\begin{remark}
+	\texttt{static\_cast<int>(ch)} explicitly converts a \texttt{char} to an \texttt{int} so that \texttt{cout} prints the numeric value rather than the character. Type casting is covered in detail in the Statements and Operators section.
+\end{remark}
 
 \paragraph{Escape Sequences}
 
@@ -435,6 +443,8 @@ Special characters use escape sequences:
 C++11 introduced \texttt{auto}, which lets the compiler deduce the type:
 
 \begin{lstlisting}
+	#include <string>  // Required for std::string
+
 	auto x{42};          // int
 	auto y{3.14};        // double
 	auto z{3.14f};       // float (because of 'f' suffix)
@@ -484,12 +494,16 @@ Typical output on a 64-bit system:
 	Size of char: 1 byte(s)
 	Size of short: 2 byte(s)
 	Size of int: 4 byte(s)
-	Size of long: 8 byte(s)
+	Size of long: 8 byte(s)    // Linux/macOS; Windows gives 4!
 	Size of long long: 8 byte(s)
 	Size of float: 4 byte(s)
 	Size of double: 8 byte(s)
 	Size of bool: 1 byte(s)
 \end{lstlisting}
+
+\begin{remark}
+	\texttt{long} is the most platform-dependent integer type. On Linux and macOS, \texttt{long} is 8 bytes on 64-bit systems. On Windows (including with MSVC and MinGW), \texttt{long} is \textbf{4 bytes}—the same size as \texttt{int}. If you need a guaranteed 64-bit integer, use \texttt{long long} or \texttt{int64\_t} from \texttt{<cstdint>}.
+\end{remark}
 
 \subsubsection{\texttt{sizeof} with Variables and Expressions}
 
@@ -499,10 +513,14 @@ You can use \texttt{sizeof} with variables and expressions:
 	int age{25};
 	double salary{50000.0};
 	
-	std::cout << sizeof(age) << std::endl;       // Size of int
-	std::cout << sizeof(salary) << std::endl;    // Size of double
-	std::cout << sizeof(age + salary) << std::endl;  // Size of result (double)
+	std::cout << sizeof(age) << std::endl;       // 4 (int)
+	std::cout << sizeof(salary) << std::endl;    // 8 (double)
+	std::cout << sizeof(age + salary) << std::endl;  // 8 (double)
 \end{lstlisting}
+
+\begin{remark}
+	In the expression \texttt{age + salary}, the \texttt{int} is automatically promoted to \texttt{double} before the addition so the types match — this is called \textbf{implicit type promotion}. The result is a \texttt{double}, which is why \texttt{sizeof} returns 8. We will cover type conversions fully in the Statements and Operators section.
+\end{remark}
 
 \subsubsection{Why Size Matters}
 
@@ -788,6 +806,26 @@ For related sets of named constants, use enumerations (covered in detail in the 
 		Enter the radius of the circle: 5
 		Area: 78.5398
 		Circumference: 31.4159
+	\end{lstlisting}
+\end{example}
+
+\begin{example}[Exercise 4: \texttt{const}, \texttt{constexpr}, and \texttt{auto}]{\leavevmode}
+
+	The following code has several issues relating to constants and type deduction. Identify and fix them:
+
+	\begin{enumerate}
+		\item \texttt{pi} should be a compile-time constant (it never changes and its value is known at compile time) — use \texttt{constexpr}
+		\item \texttt{greeting} is declared as a modifiable variable but should never change — add the appropriate qualifier
+		\item The type of \texttt{result} is obvious from context — replace the explicit type with \texttt{auto}
+		\item \texttt{user\_name} uses \texttt{\#define} — replace it with a proper typed constant
+	\end{enumerate}
+
+	\begin{lstlisting}
+		#define USER_NAME "Alice"
+
+		double pi = 3.14159265358979;
+		std::string greeting = "Hello, World!";
+		double result = pi * 5.0 * 5.0;
 	\end{lstlisting}
 \end{example}
 

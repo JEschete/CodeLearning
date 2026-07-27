@@ -110,16 +110,16 @@ For better organization, it is common to put the class declaration in a header f
 To prevent a header file from being included multiple times in the same source file (which would cause redefinition errors), we use include guards.
 \begin{lstlisting}
 	// In Account.h
-	#ifndef _ACCOUNT_H_
-	#define _ACCOUNT_H_
+	#ifndef ACCOUNT_H   // Note: avoid leading underscores — reserved by the standard
+	#define ACCOUNT_H
 
 	class Account {
 		// ...
 	};
 
-	#endif // _ACCOUNT_H_
+	#endif // ACCOUNT_H
 
-	// A more modern, but non-standard, alternative is #pragma once
+	// A more modern, widely supported (but not officially standardized) alternative:
 	#pragma once
 	class Account {
 		// ...
@@ -134,15 +134,19 @@ A default constructor is a constructor that takes no arguments. If you don't pro
 \begin{lstlisting}
 	class Player {
 	public:
-		Player() { // Default constructor
-			name = "None";
-			health = 100;
-			xp = 0;
-		}
+		// Preferred: member initializer list
+		Player() : name{"None"}, health{100}, xp{0} {}
+
+		// Also valid but less efficient: assignment in body
+		// Player() { name = "None"; health = 100; xp = 0; }
 		// ...
 	};
 	Player frank; // Default constructor is called
 \end{lstlisting}
+
+\begin{remark}
+	Prefer \textbf{member initializer lists} (\texttt{: name\{"None"\}, ...}) over assignment in the constructor body. Initializer lists construct members directly with the right value, while the body-assignment approach default-constructs them first and then assigns — which is redundant and slower for types like \texttt{std::string}.
+\end{remark}
 
 \subsection{Overloading Constructors}
 You can have multiple constructors with different parameter lists. This is constructor overloading.
@@ -210,7 +214,39 @@ A copy constructor is used to create a new object as a copy of an existing objec
 \end{lstlisting}
 
 \subsection{Shallow vs. Deep Copying}
-When a class has pointer member variables, the default copy constructor performs a shallow copy (it just copies the pointer's value, not what it points to). This can lead to problems, like two objects pointing to the same memory. A deep copy involves creating a new copy of the pointed-to data. You often need to implement your own copy constructor to perform a deep copy.
+When a class has pointer member variables, the default copy constructor performs a \textbf{shallow copy} — it copies the pointer's value, not the data it points to. This means two objects end up sharing the same heap memory, causing a double-free crash when both destructors run.
+
+\begin{example}[Shallow Copy Problem and Deep Copy Fix]{\leavevmode}
+\begin{lstlisting}
+	class Shallow {
+		int *data;
+	public:
+		Shallow(int d) : data{new int{d}} {}
+		~Shallow() { delete data; }
+		// Compiler-generated copy constructor does:
+		//   data = other.data;  <-- both point to the same int!
+	};
+
+	Shallow a{42};
+	Shallow b{a}; // b.data == a.data  => double-free when both destruct!
+
+	class Deep {
+		int *data;
+	public:
+		Deep(int d) : data{new int{d}} {}
+		~Deep() { delete data; }
+		// User-defined copy constructor allocates its own storage
+		Deep(const Deep &other) : data{new int{*other.data}} {}
+	};
+
+	Deep c{42};
+	Deep d{c}; // d.data is a separate copy — safe
+\end{lstlisting}
+\end{example}
+
+\begin{remark}
+	\textbf{Rule of Three:} If your class needs to define any one of (1) a destructor, (2) a copy constructor, or (3) a copy assignment operator, it almost certainly needs all three. This rule exists because all three are needed to safely manage a raw pointer resource. In C++11 and later this extends to the \textbf{Rule of Five}, adding the move constructor and move assignment operator.
+\end{remark}
 
 \subsection{The move Constructor}
 C++11 introduced the move constructor, which is used for transferring ownership of resources from one object to another. It's an optimization that can avoid expensive deep copies.
@@ -299,7 +335,7 @@ Create a \texttt{Movie} class with attributes for name, rating (e.g., ``PG-13'')
 		}
 	};
 
-	void add_movie(std::vector<Movie> &movies, std::string name, std::string rating, int watched) {
+	void add_movie(std::vector<Movie> &movies, const std::string &name, const std::string &rating, int watched) {
 		movies.push_back(Movie(name, rating, watched));
 	}
 

@@ -31,6 +31,8 @@ You can initialize an array at declaration using a braced list of initializers.
 You access elements in an array using the subscript operator \texttt{[]}. Array indices in C++ start at 0.
 
 \begin{lstlisting}
+	#include <iostream>
+
 	int scores[] {100, 95, 88};
 
 	// Accessing elements
@@ -44,7 +46,17 @@ You access elements in an array using the subscript operator \texttt{[]}. Array 
 \end{lstlisting}
 
 \begin{remark}
-	C++ does not perform bounds checking for arrays. Accessing an array beyond its boundaries (e.g., \texttt{scores[5]} in an array of size 5) leads to undefined behavior. This is a common source of bugs.
+	C++ does not perform bounds checking for arrays. Accessing an array beyond its boundaries (e.g., \texttt{scores[5]} in an array of size 5) leads to \textbf{undefined behavior}—the program may crash, silently corrupt data, or appear to work. This is a common source of bugs. Using a range-based \texttt{for} loop (covered in the next section) is one way to iterate safely without manual index management.
+\end{remark}
+
+\begin{remark}
+	For situations where you want a fixed-size array with bounds checking and standard container semantics, prefer \texttt{std::array} from \texttt{<array>} (C++11) over raw C-style arrays:
+	\begin{lstlisting}
+		#include <array>
+		std::array<int, 5> scores {100, 95, 88, 76, 92};
+		scores.at(1) = 98;  // bounds-checked access
+	\end{lstlisting}
+	\texttt{std::array} has a known size (\texttt{.size()}), works with range-based \texttt{for}, and doesn't decay to a pointer when passed to functions.
 \end{remark}
 
 \subsection{Coding Exercise 5: Declaring, Initializing and Accessing an Array}
@@ -204,7 +216,7 @@ Write a program that declares two empty vectors of integers named \texttt{vector
 \end{lstlisting}
 
 \begin{remark}
-	Notice that when we changed \texttt{vector1}, the \texttt{vector\_2d} did NOT change. This is because \texttt{vector\_2d} contains copies of \texttt{vector1} and \texttt{vector2}.
+	Notice that when we changed \texttt{vector1}, the \texttt{vector\_2d} did \textbf{NOT} change. This is because \texttt{push\_back} stores a \textbf{copy} of the vector, not a reference to it. At the moment \texttt{vector\_2d.push\_back(vector1)} is called, the current value of \texttt{vector1} is copied into \texttt{vector\_2d}. After that, \texttt{vector1} and \texttt{vector\_2d[0]} are completely independent — modifying one has no effect on the other. This is C++'s \textbf{value semantics}: containers own their data.
 \end{remark}
 
 \subsection{Quiz 4: Section 07 Quiz}

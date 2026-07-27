@@ -39,7 +39,7 @@ To achieve dynamic binding, we use the \texttt{virtual} keyword. When a member f
 \end{lstlisting}
 
 \subsection{Virtual Destructors}
-If you have a class hierarchy and you plan to delete derived objects through a base class pointer, the base class destructor \textbf{must} be declared as \texttt{virtual}. This ensures that the correct sequence of destructors (derived then base) is called, preventing memory leaks.
+If you have a class hierarchy and you plan to delete derived objects through a base class pointer, the base class destructor \textbf{must} be declared as \texttt{virtual}. Without it, only the base class destructor runs — the derived class destructor is silently skipped, leaking any resources it would have cleaned up.
 \begin{lstlisting}
 	class Base {
 	public:
@@ -92,9 +92,14 @@ A \textbf{pure virtual function} is a virtual function that has no implementatio
 	class Shape { // Abstract Base Class
 	public:
 		virtual void draw() = 0; // pure virtual function
+		virtual ~Shape() = default; // virtual destructor — always needed in ABCs
 	};
 \end{lstlisting}
 Any class that derives from \texttt{Shape} must provide an implementation for \texttt{draw()} or it will also be an abstract class.
+
+\begin{remark}
+	\texttt{= default} tells the compiler to generate the default implementation of a special member function (destructor, constructor, copy/move operators). Here it creates a public virtual destructor with the normal body — equivalent to writing \texttt{\textasciitilde Shape() \{\}} but clearer in intent.
+\end{remark}
 
 \subsection{Abstract Classes as Interfaces}
 Abstract classes are often used to define interfaces. An interface is a contract that specifies a set of methods that a derived class must implement. This is a powerful way to enforce a common set of behaviors across different classes.
@@ -117,10 +122,11 @@ Create a small class hierarchy for shapes. Create an abstract base class \texttt
 	class Circle : public Shape {
 	private:
 		double radius;
+		static constexpr double PI {3.14159265358979};
 	public:
 		Circle(double r) : radius(r) {}
 		double area() const override {
-			return 3.14159 * radius * radius;
+			return PI * radius * radius;
 		}
 	};
 
@@ -143,7 +149,8 @@ Create a small class hierarchy for shapes. Create an abstract base class \texttt
 			std::cout << "Area: " << shape->area() << std::endl;
 		}
 
-		// Clean up memory
+		// Clean up memory manually — this is error-prone.
+		// See the Smart Pointers section for how to eliminate this entirely.
 		for (auto &shape : shapes) {
 			delete shape;
 		}

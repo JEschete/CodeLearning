@@ -9,47 +9,47 @@ A function is a named block of code that performs a specific task. We've already
 \subsection{Coding Exercise 22: Using Functions from the cmath Library}
 The \texttt{<cmath>} library contains many useful mathematical functions. Write a program that asks the user for a number, then prints its square root (\texttt{sqrt}), cosine (\texttt{cos}), and sine (\texttt{sin}).
 \begin{lstlisting}
-#include <iostream>
-#include <cmath>
+	#include <iostream>
+	#include <cmath>
 
-int main() {
-	double num;
-	std::cout << "Enter a number: ";
-	std::cin >> num;
-	std::cout << "Square root: " << sqrt(num) << std::endl;
-	std::cout << "Cosine: " << cos(num) << std::endl;
-	std::cout << "Sine: " << sin(num) << std::endl;
-	return 0;
-}
+	int main() {
+		double num;
+		std::cout << "Enter a number: ";
+		std::cin >> num;
+		std::cout << "Square root: " << sqrt(num) << std::endl;
+		std::cout << "Cosine: " << cos(num) << std::endl;
+		std::cout << "Sine: " << sin(num) << std::endl;
+		return 0;
+	}
 \end{lstlisting}
 
 \subsection{Function Definition}
 A function definition consists of a function header and a function body. The header includes the return type, the function name, and a list of parameters. The body contains the code that the function executes.
 \begin{lstlisting}
-// return_type function_name (parameter_list) {
-//     function_body
-// }
+	// return_type function_name (parameter_list) {
+	//     function_body
+	// }
 
-int add(int a, int b) {
-	return a + b;
-}
+	int add(int a, int b) {
+		return a + b;
+	}
 \end{lstlisting}
 
 \subsection{Function Prototypes}
 A function prototype is a declaration of a function that tells the compiler about the function's name, return type, and parameters. It allows you to call a function before you've defined it. Prototypes are often placed in header files.
 \begin{lstlisting}
-// function prototype
-int add(int a, int b);
+	// function prototype
+	int add(int a, int b);
 
-int main() {
-	int sum = add(5, 3); // works because of the prototype
-	return 0;
-}
+	int main() {
+		int sum = add(5, 3); // works because of the prototype
+		return 0;
+	}
 
-// function definition
-int add(int a, int b) {
-	return a + b;
-}
+	// function definition
+	int add(int a, int b) {
+		return a + b;
+	}
 \end{lstlisting}
 
 \subsection{Function Parameters and the return Statement}
@@ -58,26 +58,35 @@ Parameters are variables in a function's parameter list that get initialized wit
 \subsection{Coding Exercise 23: Functions and Prototypes --- Converting Temperatures}
 Write a function that converts Fahrenheit to Celsius. The formula is C = (F - 32) * 5/9. Create a prototype for this function. In \texttt{main}, call the function with a value and print the result.
 \begin{lstlisting}
-#include <iostream>
+	#include <iostream>
 
-// prototype
-double fahrenheit_to_celsius(double f);
+	// prototype
+	double fahrenheit_to_celsius(double f);
 
-int main() {
-	double fahrenheit = 98.6;
-	double celsius = fahrenheit_to_celsius(fahrenheit);
-	std::cout << fahrenheit << "F is " << celsius << "C" << std::endl;
-	return 0;
-}
+	int main() {
+		double fahrenheit = 98.6;
+		double celsius = fahrenheit_to_celsius(fahrenheit);
+		std::cout << fahrenheit << "F is " << celsius << "C" << std::endl;
+		return 0;
+	}
 
-// definition
-double fahrenheit_to_celsius(double f) {
-	return (f - 32.0) * 5.0 / 9.0;
-}
+	// definition
+	double fahrenheit_to_celsius(double f) {
+		return (f - 32.0) * 5.0 / 9.0;
+	}
 \end{lstlisting}
 
 \subsection{Default Argument Values}
 You can provide default values for function parameters. If a call to the function omits an argument, the default value is used.
+
+\begin{remark}
+	Default arguments must appear at the \textbf{end} of the parameter list. You cannot skip a middle parameter — omitted arguments are filled in right-to-left.
+	\begin{lstlisting}
+		void f(int a, int b = 2, int c = 3); // OK
+		void g(int a = 1, int b, int c = 3); // ERROR - b has no default
+	\end{lstlisting}
+\end{remark}
+
 \begin{lstlisting}
 void print_greeting(std::string name = "Guest", int age = 0) {
 	std::cout << "Hello, " << name << "! You are "
@@ -108,6 +117,18 @@ int main() {
 	return 0;
 }
 \end{lstlisting}
+
+\begin{remark}
+	The functions above take \texttt{std::string} \textbf{by value}, which makes a copy each time they are called. For read-only string (and other large object) parameters, prefer passing by \textbf{const reference} to avoid the copy:
+	\begin{lstlisting}
+		// By value (makes a copy - avoidable overhead)
+		void print_greeting(std::string name, int age);
+
+		// By const reference (no copy - preferred for read-only use)
+		void print_greeting(const std::string &name, int age);
+	\end{lstlisting}
+	Pass by value is fine for small, cheap-to-copy types like \texttt{int}, \texttt{double}, \texttt{char}, and \texttt{bool}.
+\end{remark}
 
 \subsection{Overloading Functions}
 Function overloading is defining multiple functions with the same name but different parameter lists (different number of parameters or different types). The compiler determines which version of the function to call based on the arguments provided.
@@ -225,21 +246,29 @@ Scope determines the visibility of an identifier. A local variable, declared ins
 When a function is called, the program pushes the function's parameters and the return address onto the call stack. The function executes, and when it returns, the return value is sent back and the stack is cleaned up.
 
 \subsection{inline Functions}
-For very short functions, you can suggest to the compiler that it perform \texttt{inline} expansion. This copies the function's code directly into the calling location, which can avoid the overhead of a function call. This is only a hint to the compiler.
+For very short functions, you can suggest to the compiler that it perform \texttt{inline} expansion. This copies the function's code directly into the calling location, which can avoid the overhead of a function call. This is only a hint to the compiler — modern compilers routinely inline small functions automatically.
 \begin{lstlisting}
-inline int add(int a, int b) { return a + b; }
+	inline int add(int a, int b) { return a + b; }
 \end{lstlisting}
 
+\begin{remark}
+	\texttt{inline} has a second, more important role: it allows a function to be \textbf{defined in a header file} without causing a linker error. Normally, if a header is included in multiple \texttt{.cpp} files, a non-inline function defined in it would be defined multiple times, causing a ``multiple definition'' linker error. \texttt{inline} tells the linker to expect multiple identical definitions and merge them. This is why small utility functions and template functions defined in headers are typically marked \texttt{inline}.
+\end{remark}
+
 \subsection{Recursive Functions}
-A recursive function is a function that calls itself, either directly or indirectly. A recursive function must have a base case (a condition that stops the recursion) to avoid an infinite loop.
+A recursive function is a function that calls itself, either directly or indirectly. A recursive function must have a \textbf{base case} (a condition that stops the recursion) to avoid infinite recursion.
 \begin{lstlisting}
-// factorial function
-unsigned long long factorial(unsigned long long n) {
-	if (n == 0)
-		return 1; // base case
-	return n * factorial(n - 1); // recursive step
-}
+	// factorial function
+	unsigned long long factorial(unsigned long long n) {
+		if (n == 0)
+			return 1; // base case
+		return n * factorial(n - 1); // recursive step
+	}
 \end{lstlisting}
+
+\begin{remark}
+	Each recursive call pushes a new frame onto the \textbf{call stack}. If the recursion is too deep (or the base case is never reached), the stack runs out of space and the program crashes with a \textbf{stack overflow}. For example, calling \texttt{factorial(-1)} with the above code would recurse forever. Always ensure your base case is reachable for all valid inputs.
+\end{remark}
 
 \subsection{Coding Exercise 28: Implementing a Recursive Function --- Sum of Digits}
 Write a recursive function to find the sum of the digits of a positive integer.
