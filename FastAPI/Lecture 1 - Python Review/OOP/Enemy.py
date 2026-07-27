@@ -16,19 +16,25 @@ class Enemy:
 
     # The folloring is the parameterized constructor. 
     # This makes us set things when we instantiate the object. 
-    def __init__(self, type_of_enemy, health_points=10, attack_damage=1)
-        self.type_of_enemy = type_of_enemy
+    def __init__(self, type_of_enemy, health_points=10, attack_damage=1):
+        self.__type_of_enemy = type_of_enemy # Only change the insance variable with __
         self.health_points = health_points
         self.attack_damage = attack_damage
 
     def talk(self):
-        print(f'I am a {self.type_of_enemy}. Be prepared to fight.')
+        print(f'I am a {self.__type_of_enemy}. Be prepared to fight.')
 
     def walk_forward(self):
-        print(f'{self.type_of_enemy} moves closer to you.')
+        print(f'{self.__type_of_enemy} moves closer to you.')
 
     def attack(self): 
-        print(f'{self.type_of_enemy} attacks for {self.attack_damage} damage.')
+        print(f'{self.__type_of_enemy} attacks for {self.attack_damage} damage.')
 
     # Self is talking about itself. It is a reference to the object that is calling the method. In this case, it is the enemy object. 
     # The self parameter is used to access the attributes and methods of the class in Python. It is a convention to use self as the first parameter of instance methods in Python classes.
+    # When using __ the attribute is still accessible within the class. 
+    def get_type_of_enemy(self):
+        return self.__type_of_enemy
+
+    def special_attack(self):
+        print('Enemy has no special attack')

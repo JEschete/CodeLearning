@@ -102,6 +102,10 @@ Why use encapsulation?
 - Callers depend on a clear interface instead of internal storage details.
 - The internal representation can change with fewer changes to calling code.
 - Bugs caused by unrelated code changing state unexpectedly become less likely.
+- Helps keep realted fields and methods together
+- Makes our code cleaner and easier to read
+- Provides more flexibility tyo our code
+- Provides more reusability with our code
 
 Encapsulation compared with abstraction
 
@@ -110,4 +114,12 @@ Encapsulation compared with abstraction
 
 They often work together. An Enemy method can provide a simple abstract operation to
 the caller while also encapsulating the rules for changing that enemy's state.
+
+If we need to change the __ value, we make getters and setters. 
+
+so like 
+def get_type_of_enemy(self):
+    return self.__type_of_enemy
+
+If you don't want it to be changeable, you don't make a setter. 
 """
