@@ -17,7 +17,7 @@ refer to a special Python language feature.
 
 Abstraction in the Enemy example
 
-See FastAPI\Lecture 1 - Python Review\OOP for the Enemy example.
+See FastAPI/Lecture 1 - Python Review/OOP for the Enemy example.
 
 The Enemy class provides methods such as:
 
@@ -72,7 +72,7 @@ Abstraction compared with encapsulation
 
 - Abstraction asks, "What useful operation should this object expose?"
 - Encapsulation asks, "How should this object's state and behavior be kept together
-	and accessed safely?"
+    and accessed safely?"
 
 The ideas often work together. For example, attack() is an abstraction for an enemy
 action, while keeping attack_damage on the Enemy object is part of encapsulation.

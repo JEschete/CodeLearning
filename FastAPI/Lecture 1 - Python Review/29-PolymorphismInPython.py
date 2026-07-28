@@ -1,72 +1,44 @@
 """
-Polymorphism 
-- means to have many forms. 
+Polymorphism
 
-# Say we have
-zoo : Animal = []
-dog  = Dog()
-zoo.append(dog)
+Polymorphism means that one operation can work with objects of different types.
+Each object supplies its own implementation of the expected behavior.
 
-and another file with
+In Python, inheritance is one way to establish that common interface, but duck
+typing also allows unrelated classes to participate when they provide the required
+methods. Type hints document intended types; they do not enforce them at runtime.
+"""
+
+
+class Animal:
+    def talk(self):
+        print("The animal makes a sound.")
+
 
 class Dog(Animal):
-**Dog methods**
+    def talk(self):
+        print("Bark!")
+
 
 class Bird(Animal):
-**Bird methods**
+    def talk(self):
+        print("Chirp!")
+
 
 class Lion(Animal):
-**Lion methods**
-
-
-The zoo.append(dog) will work because dog inherits from Animal.
-
-Doing
-dog = Animal()
-zoo.append(dog)
-
-Also works. 
-
-dog2 = Dog()
-bird = Bird()
-lion = Lion()
-
-# These all work because the animals inherit type of Animal. 
-zoo.append(dog)
-zoo.append(dog2)
-zoo.append(bird)
-zoo.append(lion)
-
-class Animal: 
     def talk(self):
-        print('Does not make a sound')
+        print("Roar!")
 
-class Dog(Animal): 
-    def talk(self):
-        print('Bark!')
 
-class Bird(Animal): 
-    def talk(self):
-        print('Chirp!')
+zoo: list[Animal] = [Animal(), Dog(), Bird(), Lion()]
 
-class Lion(Animal): 
-    def talk(self):
-        print('Roar!')
+for animal in zoo:
+    animal.talk()  # Python selects the method for the object's actual class.
 
-zoo = Animal[]
-dog = Animal()
-dog2 = Dog()
-bird = Bird()
-lion = Lion()
+"""
+Project connection
 
-zoo.append(dog)
-zoo.append(dog2)
-zoo.append(bird)
-zoo.append(lion)
-
-How will we use Polymorphism? 
-
-Create a new battle function within our main.py file
-- Uses our enemy talk() and enemy attack() methods
-
+The battle function can use the same operations on Zombie and Ogre objects without
+branching on their exact types. Calling talk(), attack(), or special_attack() selects
+the implementation supplied by each object.
 """

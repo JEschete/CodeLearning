@@ -3,6 +3,8 @@
 print("Hi Jude!")
 
 """
-This is a multi-line comment. 
-Using the # symbol for multi-line comments can be cumbersome, so Python allows for multi-line comments using triple quotes.
+This is a triple-quoted string, not a special kind of comment.
+Triple-quoted strings are used for documentation strings (docstrings) when they
+appear first in a module, class, or function. Use # at the start of each line for
+a true multi-line comment.
 """

@@ -61,8 +61,8 @@ An attribute can be written like this inside Enemy:
 class Enemy:
     def __init__(self, type_of_enemy, health_points=10, attack_damage=1):
         self.__type_of_enemy = type_of_enemy
-                self.__health_points = health_points
-                self.__attack_damage = attack_damage
+    self.__health_points = health_points
+    self.__attack_damage = attack_damage
 
 Python name-mangles __type_of_enemy to a name based on the class, approximately
 _Enemy__type_of_enemy. This discourages ordinary direct access and avoids an
@@ -102,10 +102,8 @@ Why use encapsulation?
 - Callers depend on a clear interface instead of internal storage details.
 - The internal representation can change with fewer changes to calling code.
 - Bugs caused by unrelated code changing state unexpectedly become less likely.
-- Helps keep realted fields and methods together
-- Makes our code cleaner and easier to read
-- Provides more flexibility tyo our code
-- Provides more reusability with our code
+- Related fields and methods stay together.
+- The public interface can remain stable if internal storage changes.
 
 Encapsulation compared with abstraction
 
@@ -115,11 +113,19 @@ Encapsulation compared with abstraction
 They often work together. An Enemy method can provide a simple abstract operation to
 the caller while also encapsulating the rules for changing that enemy's state.
 
-If we need to change the __ value, we make getters and setters. 
+Getter and setter methods are possible, but Python commonly uses properties when
+callers should keep attribute-style access. A property with no setter is read-only
+through that public name:
 
-so like 
-def get_type_of_enemy(self):
-    return self.__type_of_enemy
+class Enemy:
+    def __init__(self, type_of_enemy):
+        self.__type_of_enemy = type_of_enemy
 
-If you don't want it to be changeable, you don't make a setter. 
+    @property
+    def type_of_enemy(self):
+        return self.__type_of_enemy
+
+For state changes with domain rules, a meaningful method is often clearer than a
+generic setter. For example, take_damage(amount) can reject negative damage and keep
+health from falling below zero.
 """

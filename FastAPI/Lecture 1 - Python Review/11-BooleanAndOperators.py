@@ -1,6 +1,5 @@
 """
-Boolean and Operators
-
+Booleans and Operators
 """
 
 like_coffee = True
@@ -12,15 +11,16 @@ print(type(like_coffee))
 print(type(favorite_food))
 print(type(favorite_number))
 
-# Booleans are used to compare things using the comparison operators. 
-print(1 == 2) # Will return False and different than a single =, == is a comparison, does left equal right
-print(1 != 2) # Will return True because 1 is not equal to 2
-print(1 > 2) # Will return false because 1 is not greater than 2
-print(1 < 2) # Will return true
-print(1 >= 1) # Will return true
-print(1 <= 2) # Will return true
+# Comparison operators evaluate expressions and produce Boolean values.
+# A single = assigns a value; == checks whether two values are equal.
+print(1 == 2)  # False
+print(1 != 2)  # True
+print(1 > 2)  # False
+print(1 < 2)  # True
+print(1 >= 1)  # True
+print(1 <= 2)  # True
 
-# Logical Operators, Not AND OR
-print(1 > 3 and 5 < 7) # and says both conditions must be true, so this will return false. 
-print(1 > 3 or 5 < 7) # either condition can be true, this will be true because 5 is less than 7
-print(not(1==1)) # not flips the logical evaluation of the statement. 
+# Logical operators combine or reverse Boolean expressions.
+print(1 > 3 and 5 < 7)  # False: both expressions must be True.
+print(1 > 3 or 5 < 7)  # True: at least one expression is True.
+print(not (1 == 1))  # False: not reverses True to False.

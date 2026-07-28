@@ -11,10 +11,11 @@ D = 60 - 69
 F = 0 - 59
 
 Example:
-if grade = 87 then print('B')
+If grade is 87, print("B"). Remember that = assigns and == compares.
 """
 
 from random import randint
+
 grade = randint(0, 100)
 print(f"Grade: {grade}")
 if grade >= 90:

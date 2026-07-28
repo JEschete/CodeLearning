@@ -2,29 +2,29 @@
 Variables
 """
 
-# Variables are used to store data in a program. They can be used to store numbers, strings, lists, and other data types.
-cost = 10 # Cost is an integrer, integers are whole numbers
-tax_percent = .25 # Tax percent is a float, floats are numbers with decimal points
-tax = cost * tax_percent # Tax is calculated by multiplying the cost by the tax percent by calling their variable names
+# Variables give names to values so those values can be reused and updated.
+cost = 10  # An integer stores a whole number.
+tax_percent = 0.25  # A float can store a number with a decimal point.
+tax = cost * tax_percent
 
 price = cost + tax
 
-print(price) # The print function is used to display the value of a variable or expression to the console. In this case, it will display the value of the price variable, which is the sum of the cost and tax variables.
+print(price)  # Displays 12.5, the sum of cost and tax.
 
-username = "CodingwithJude" # Username is a string, strings are sequences of characters enclosed in quotes
+username = "CodingwithJude"  # A string is a sequence of characters.
 first_name = "Jude"
 
-# Strings in python can use either single or double quotes. The choice of which to use is a matter of personal preference, but it is important to be consistent throughout your code.
-print(username + " " + first_name) # The + operator is used to concatenate strings, which means to join them together. In this case, it will join the username and first_name variables with a space in between.
+# Python strings can use single or double quotes. Be consistent within a project.
+print(username + " " + first_name)  # + joins, or concatenates, strings.
 
 first_num = 10
 second_num = 2
 print(first_num)
 print(second_num)
 
-first_num = 1 
-print(first_num) # The value of the first_num variable has been changed from 10 to 1. This is an example of how variables can be reassigned to new values in a program.
-print(second_num) # The value of the second_num variable has not changed, it is still 2. This is an example of how variables can be independent of each other in a program.
+first_num = 1
+print(first_num)  # first_num was reassigned from 10 to 1.
+print(second_num)  # second_num is independent and still stores 2.
 
-first_name = "Brooke" # The value of the first_name variable has been changed from "Jude" to "Brooke". This is an example of how variables containing strings can be reassigned to new values in a program.
+first_name = "Brooke"  # Variables that contain strings can also be reassigned.
 
