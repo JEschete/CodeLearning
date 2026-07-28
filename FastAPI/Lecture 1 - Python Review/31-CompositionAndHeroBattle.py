@@ -14,5 +14,8 @@ Interfaces are a IS-A relationship.
 
 So for a car, it can HAS-A an engine which would mean that object of type vehicle Has an engine. 
 Interfaces say WHAT it is. 
+
+We will create a new Hero Class, and a weapon class. 
+The hero will have a HAS-A (composition) relationship with our Weapon class. 
 """
 
