@@ -1,33 +1,28 @@
 """
-A fighter
-Acceptance Criteria
-- Enemies that can fight one another
-- Different types of Enemies
-    - Zombie
-    - Ogre
-- Each enemeny has different powers, health points, and attack damage. 
+Enemy Battle Project
 
-We will implement using the four pillars of OOP:
-- Encapsulation
-- Abstraction
-- Inheritance
-- Polymorphism
+Acceptance criteria:
 
-What do we need to start? 
-Enemy Object:
-- Name/Type of Enemy
-- Health Points
-- Attack Damage
+- Enemies can fight one another.
+- Zombie and Ogre are different kinds of Enemy.
+- Each enemy has a type, health points, attack damage, and special behavior.
+- Shared behavior is defined once and reused where practical.
 
-What would it look like, there would be an Enemy.py file.
+The project will demonstrate encapsulation, abstraction, inheritance, and
+polymorphism. We will begin with an Enemy class in OOP/Enemy.py and use it from
+OOP/Main.py.
 
-we would do something like this:
-from Enemy import * 
-    enemy = Enemy()
+Target usage after Enemy has been implemented:
 
-print(f'{enemy.type_of_enemy} has {enemy.health_points} health points and does {enemy.attack_damage} damage.')
+    from Enemy import Enemy
 
-but the above is undefined. Overall this will break because we have not defined the Enemy class yet.
+    enemy = Enemy("Zombie")
+    print(
+        f"{enemy.type_of_enemy} has {enemy.health_points} health points "
+        f"and does {enemy.attack_damage} damage."
+    )
 
+This is a design preview rather than executable code in this lesson. Importing a
+class before its module and definition exist would raise an import error.
 """
 

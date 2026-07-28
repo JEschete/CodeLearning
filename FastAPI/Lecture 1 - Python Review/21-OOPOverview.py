@@ -1,52 +1,43 @@
 """
-What is Object Oriented Programing? 
-Obeject Oriented Programming (OOP) - is a programming paradigm based on the concept of objects, which contain data and code.
+Object-Oriented Programming Overview
 
-OOP has benefits that include: 
-- Scalability
-- Efficiency
-- Reusability
+Object-oriented programming (OOP) organizes code around objects that combine:
 
+- State: data an object stores, such as a dog's name or age.
+- Behavior: actions an object performs, such as barking.
 
-What are objects
-- All around us in real life
-- Things like:
-    - Trees
-    - houses
-    - animals
+A class describes a kind of object. Each object created from that class is a
+separate instance and can hold different state.
 
-Two ways to define: 
-- Behavior
-- State
+OOP can help group related code, reuse behavior, and make larger programs easier to
+change. It is one design approach, not a requirement for every program.
 
-Behavior - is what an object can do. For example, a dog can bark, a cat can meow, a bird can fly.
-State - is the data that an object has. For example, a dog has a name, a cat has a color, a bird has a species.
-
-Primitive Data Types - are the basic data types that are built into a programming language. For example, in Python, the primitive data types are:
-- int
-- float
-- str
-- bool
-
-So for a dog:
-- legs: int = 4
-- name: str = "Buddy"
-- breed: str = "Golden Retriever"
-- is_hungry: bool = True
-
+Python does not formally separate values into "primitive" and "object" categories:
+integers, floats, strings, and Booleans are all objects of built-in types.
 """
 
-# Dog as an object
-class Dog: 
-    legs: int = 4
-    ears: int = 2
-    type: str = "Goldendoodle"
-    age: int = 5
-    color: str = "Yellow"
 
-# Four Pillars of OOP, or Walls
-# Encapsulation
-# Abstraction
-# Inheritance
-# Polymorphism
+class Dog:
+    """Represent one dog with its own state and behavior."""
+
+    def __init__(self, name, breed, age):
+        self.name = name
+        self.breed = breed
+        self.age = age
+
+    def bark(self):
+        print(f"{self.name} says woof!")
+
+
+buddy = Dog("Buddy", "Golden Retriever", 5)
+luna = Dog("Luna", "Goldendoodle", 2)
+
+buddy.bark()
+luna.bark()
+
+# Four related OOP ideas explored in the following lessons:
+# - Encapsulation
+# - Abstraction
+# - Inheritance
+# - Polymorphism
 

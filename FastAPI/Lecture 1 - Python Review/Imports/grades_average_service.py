@@ -1,7 +1,10 @@
+"""Utilities for calculating grade averages."""
 
-def calculate_homework(homework_assigments):
-    sum_of_grades = 0
-    for homework in homework_assigments.values():
-        sum_of_grades += homework
-    final_grade = round(sum_of_grades / len(homework_assigments), 2)
-    print(final_grade)
+
+def calculate_homework(homework_assignments: dict[str, int | float]) -> float:
+    """Return the mean homework grade rounded to two decimal places."""
+    if not homework_assignments:
+        raise ValueError("At least one homework grade is required.")
+
+    total_points = sum(homework_assignments.values())
+    return round(total_points / len(homework_assignments), 2)

@@ -1,120 +1,62 @@
 """
-Inheritance - The process of acquiring properties from one class to other classes. 
-Creates a hierarchy between classes. 
+Inheritance
 
-We can make a parent class
-class Animal
+Inheritance lets a child class reuse and specialize behavior from a parent class.
+It models an IS-A relationship: a Dog is an Animal.
 
-then
-class Dog(Animal)
-**In herits all the attributes of the animal class**
-Is a child of animal. 
+- Inherited methods can be used without being rewritten.
+- A child can add new attributes and methods.
+- A child overrides a method by defining a method with the same name.
+
+Use inheritance when the child genuinely satisfies the parent's meaning and
+interface, not only to avoid repeating code.
 """
 
-class Animal: 
-    def __init__(self, weight=20, color='brown', age=5, animal_type='mammal'):
+
+class Animal:
+    def __init__(self, weight=20, color="brown", age=5, animal_type="mammal"):
         self.weight = weight
         self.color = color
         self.age = age
         self.animal_type = animal_type
 
     def eat(self):
-        print('Animal Eating')
+        print("Animal is eating.")
 
     def sleep(self):
-        print('Animal Sleeping')
+        print("Animal is sleeping.")
+
 
 class Dog(Animal):
-    can_shed: bool
-    domestic_name: str
+    def __init__(self, name, weight=20, color="brown", age=5):
+        super().__init__(weight, color, age, animal_type="dog")
+        self.name = name
+        self.can_shed = True
 
     def talk(self):
-        print('Bark')
+        print(f"{self.name} says bark!")
 
     def eat(self):
-        print('Chews on bone!')
+        print(f"{self.name} chews on a bone.")
+
 
 class Bird(Animal):
-    birdType: str
     def talk(self):
-        print('Chirp!')
+        print("Chirp!")
 
     def fly(self):
-        print('Bird begins to soar')
+        print("The bird begins to soar.")
 
 
-new_dog = Dog(35, 'Gold', 6, 'Canis Lupus')
-new_dog.can_shed = False
-
-
-print(new_dog.talk())
-
-"""
-Method overriding. 
-We are adding our own function to the Dog class using the same function name. 
-Method overriding is when a child class has its own method already present in the parent class. 
-When the child class does not have the same method, it will default to the parent method. 
-"""
-# if we do
-animal = Animal()
-# The following will fail because animal has no methods for fly or talk. 
-# animal.talk()
-# animal.fly()
+new_dog = Dog("Buddy", weight=35, color="gold", age=6)
+new_dog.talk()  # Dog's own method.
+new_dog.eat()  # Overrides Animal.eat().
+new_dog.sleep()  # Inherited from Animal.
 
 """
-How are we going to use Inheritance? 
+Project connection
 
-Currently our only class is Enemy()
-- Enemy() is our Parent Class
-
-We will create two child classes. 
-- Zombie
-- Ogre
-
-Look at zombie class
-
+Enemy is the parent class in the OOP folder. Zombie and Ogre inherit its shared
+state and behavior, call super().__init__() for that setup, and override methods such
+as talk(). See OOP/Enemy.py, OOP/Zombie.py, and OOP/Ogre.py for those classes.
 """
-
-class Enemy: 
-
-    def __init__(self, type_of_enemy, health_points=10, attack_damage=1):
-        self.__type_of_enemy = type_of_enemy 
-        self.health_points = health_points
-        self.attack_damage = attack_damage
-
-    def talk(self):
-        print(f'I am a {self.__type_of_enemy}. Be prepared to fight.')
-
-    def walk_forward(self):
-        print(f'{self.__type_of_enemy} moves closer to you.')
-
-    def attack(self): 
-        print(f'{self.__type_of_enemy} attacks for {self.attack_damage} damage.')
-
-    def get_type_of_enemy(self):
-        return self.__type_of_enemy
-
-class Zombie(Enemy):
-    def __init__(self, health_points, attack_damage):
-        super().__init__(
-            type_of_enemy='Zombie', 
-            health_points=health_points, 
-            attack_damage=attack_damage
-            )
-        
-    def talk(self):
-        print('*Grumbling...*') # Overriding the Talk method
-
-    def spread_disease(self):
-        print('The zombie is trying to spread infection') # New Zombie only method. 
-
-class Ogre(Enemy):
-    def __init__(self, health_points, attack_damage):
-        super().__init__(
-            type_of_enemy='Ogre', 
-            health_points=health_points, 
-            attack_damage=attack_damage
-            )
-
-    def talk(self):
-        print('Ogre is slamming hands all around.')

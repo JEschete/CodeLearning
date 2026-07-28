@@ -5,15 +5,14 @@ What are constructors in Python?
 Constructors are used to create and initialize objects from a class. A class is the
 blueprint, while each object created from that class is a separate instance.
 
-For example in: FastAPI\Lecture 1 - Python Review\OOP
+For example, OOP/Main.py contains:
 
-we do:
-from Enemy import *
-enemy = Enemy()
+from Enemy import Enemy
+enemy = Enemy('Zombie')
 
-Enemy is the class, and Enemy() is a call to that class. The call creates an Enemy
-instance and assigns a reference to it to the enemy variable. Each time Enemy() is
-called, a new and separate Enemy object is created.
+Enemy is the class, and Enemy('Zombie') is a call to that class. The call creates an
+Enemy instance and assigns a reference to it to the enemy variable. Each call creates
+a new and separate Enemy object.
 
 Python constructor lessons commonly refer to __init__ as the constructor. More
 precisely, Python first creates the object and then calls __init__ to initialize that
@@ -28,8 +27,9 @@ Three forms commonly discussed in beginner lessons are:
 Inherited/default initializer
 
 If a class does not define __init__, it inherits one from its parent class. The Enemy
-class in the OOP example currently works this way, so Enemy() can be called without
-any arguments. Its starting attributes are supplied by the class body instead.
+class in the OOP example no longer works this way: it defines the parameterized
+initializer shown below. A simple class with no explicit parent ultimately inherits
+object.__init__, which accepts no custom initialization arguments.
 
 No-argument initializer
 

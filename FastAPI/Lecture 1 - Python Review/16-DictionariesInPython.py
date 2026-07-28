@@ -2,7 +2,8 @@
 Dictionaries in Python
 """
 
-# Dictionaries in python will always have a key and a value. The key is the name of the item, and the value is the data associated with that item.
+# A dictionary maps unique keys to values. Keys must be hashable, while values
+# can be any type and do not need to be unique.
 user_dictionary = {
     'username': 'codingwithJude',
     'name': 'Jude',
@@ -11,8 +12,12 @@ user_dictionary = {
 
 print(user_dictionary)
 
-#if we want to access a specific value in the dictionary, we can use the key to access it. For example, if we want to access the username, we can do the following:
+# Bracket lookup raises KeyError if the key is missing.
+print(user_dictionary['username'])
+
+# .get() returns None for a missing key, or a supplied default value.
 print(user_dictionary.get('username'))
+print(user_dictionary.get('location', 'Not provided'))
 
 # we can add to a dictionary by using the key and assigning a value to it. For example, if we want to add a new key called 'married' and assign it a value of True, we can do the following:
 user_dictionary['married'] = True
@@ -39,23 +44,25 @@ user_dictionary = {
     'age': 35,
 }
 
-for x in user_dictionary.items():
-    print(x)
-    # which will only print the keys of the dictionary. If we want to print the values as well, we can do the following:
+# .items() produces one (key, value) tuple per dictionary entry.
+for item in user_dictionary.items():
+    print(item)
 
-for x, y in user_dictionary.items():
-    print(x, y)
-    # which will print both the keys and values of the dictionary.
+# Unpacking each tuple gives the key and value separate names.
+for key, value in user_dictionary.items():
+    print(key, value)
 
-# When you want to copy a dictionary, a little more is needed
+# Assignment creates a second name for the same dictionary object.
 user_dictionary_2 = user_dictionary
 user_dictionary_2.pop('age')
 print(user_dictionary)
 
-# The above code will remove the 'age' key from the user_dictionary as well, because user_dictionary_2 is just a reference to the user_dictionary. 
-# If we want to copy the dictionary and not have it be a reference, we can do the following:
+# Removing through either name changes that one shared object.
 user_dictionary['age'] = 35
 user_dictionary_2 = user_dictionary.copy()
 user_dictionary_2.pop('age')
 print(user_dictionary)
 print(user_dictionary_2)
+
+# .copy() creates a shallow copy: top-level changes are independent, but nested
+# mutable values would still be shared between these dictionaries.

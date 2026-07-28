@@ -15,7 +15,7 @@ The main vocabulary of OOP is:
 - Method: A function defined by a class that describes an object's behavior.
 - Instantiation: The process of creating an object from a class.
 
-See the FastAPI\Lecture 1 - Python Review\OOP folder for the Enemy example.
+See the FastAPI/Lecture 1 - Python Review/OOP folder for the Enemy example.
 
 In that example, Enemy is a class. It describes what every enemy should know and
 what every enemy should be able to do. A variable such as zombie refers to one Enemy
