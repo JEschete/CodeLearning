@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=D:\Learning\FastAPI\Lecture 4 - Project 1 - FastAPI Request Method Logic\fastapienv
+set VIRTUAL_ENV=D:\Learning\FastAPI\Lecture 4 - Books Project\fastapienv
 
 if not defined PROMPT set PROMPT=$P$G
 
