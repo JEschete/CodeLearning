@@ -266,3 +266,15 @@ Both parameter types can be tested interactively at:
 http://127.0.0.1:8000/docs
 ```
     
+
+
+
+----------------------------------------------------------
+We have no built in validation. 
+
+What if a book doesn't exist and how do we ensure a book ID is positive. 
+We can import Path from FastAPI and use it to enforce constraints on path parameters, such as ensuring a book ID is positive.
+
+This will cause invalid book IDs, such as negative numbers or zero, to be rejected before the endpoint logic runs.
+They will return a 422 Unprocessable Entity response, indicating that the provided path parameter does not meet the specified constraints.
+
