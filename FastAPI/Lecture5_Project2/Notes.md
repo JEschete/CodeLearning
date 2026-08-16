@@ -272,9 +272,51 @@ http://127.0.0.1:8000/docs
 ----------------------------------------------------------
 We have no built in validation. 
 
+Below is an example of using `Path` to enforce a path parameter constraint.
+
 What if a book doesn't exist and how do we ensure a book ID is positive. 
 We can import Path from FastAPI and use it to enforce constraints on path parameters, such as ensuring a book ID is positive.
 
 This will cause invalid book IDs, such as negative numbers or zero, to be rejected before the endpoint logic runs.
 They will return a 422 Unprocessable Entity response, indicating that the provided path parameter does not meet the specified constraints.
 
+We can do the same for Query parameters using the `Query` helper, allowing us to enforce constraints and provide additional metadata for query parameters.
+
+----------------------------------------------------------
+Status Codes
+What are status codes? 
+
+An https status code is used to help the client (the user or system submitting data to the server)
+to understand what happened on the server side application. 
+
+Status codes are international standards on how a client/server should handle the result of a request. 
+
+It allows everyone who sends a request to know if their submission was successful or not. 
+
+Status Codes:
+1xx Information Response: Request Processing
+2xx Success: Request Successfully Complete
+3xx Redirection: Further action needed to complete the request
+4xx Client Error: The request contains bad syntax or cannot be fulfilled
+5xx Server Error: The server failed to fulfill an apparently valid request
+
+We are going to focus on 2xx, 4xx, and 5xx status codes.
+
+2xx Successful status codes:
+200: Ok -> Standard response for a sucessful request. 
+201: Created -> Standard response for a successful resource creation. Used a lot with POST
+204: No Content -> Standard response for a successful request that does not return any content. Commonly used with PUT
+
+4xx Client Error status codes:
+400: Bad Request -> Standard response for a request that contains bad syntax or cannot be fulfilled.
+401: Unauthorized -> Standard response for a request that requires user authentication.
+404: Not Found -> Standard response for a request where the requested resource could not be found.
+422: Unprocessable Entity -> Standard response for a request where the server understands the content type and syntax is correct, but the request cannot be processed due to semantic errors.
+
+5xx Server Error status codes:
+500: Internal Server Error -> Standard response for an unexpected server error.
+503: Service Unavailable -> Standard response when the server is temporarily unable to handle the request.
+504: Gateway Timeout -> Standard response when the server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.
+
+An HTTPException is used in FastAPI to return an HTTP error response with a specific status code and detail message. 
+It allows you to handle errors gracefully and provide meaningful feedback to the client.
