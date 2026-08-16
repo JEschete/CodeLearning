@@ -24,11 +24,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 REPO = os.path.abspath(os.path.join(HERE, '..', '..'))
 
-import battle
-import effects as fx_gen
-import fragment
-import glb as glb_mod
-import rom as rom_mod
+import ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.battle as battle
+import ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.effects as fx_gen
+import ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.fragment as fragment
+import ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.glb as glb_mod
+import ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.rom as rom_mod
 
 N_POKEMON = 151
 EXTRA_NAMES = {152: 'Surfing Pikachu'}   # only the one identified with confidence

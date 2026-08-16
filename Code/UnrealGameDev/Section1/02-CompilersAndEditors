@@ -1,0 +1,79 @@
+In unreal we will be focusing on writing C++ rather than using Blueprints for now. 
+The reason for this is that C++ provides more control over the game's performance and allows for more complex and optimized code compared to Blueprints.
+
+That isn't to say blueprints aren't useful. Blueprints are great for rapid prototyping and visual scripting, and they can be used in conjunction with C++ to create a more efficient workflow.
+
+Source Code: 
+Source code is human readable code, we are going to be using C++, which is stored in a text file with a special extension `.cpp` or `.h` files. 
+`.cpp` files contain the implementation of the code, where the actual logic and functionality are written.
+`.h` files, also known as header files, contain declarations of classes, functions, and variables, which are then used in the `.cpp` files.
+
+The CPU doesn't understand source code, it only understands machine code, which is a set of binary instructions. 
+
+The compiler: 
+The compiler is a program that translates source code written in a high-level programming language like C++ into machine code that the CPU can understand and execute.
+
+The compiler we will be using on windows is Microsoft Visual C++ (MSVC), which is part of the Visual Studio development environment.
+The source code editor, which is used to write and edit the source code, is typically integrated into the development environment. In our case, we will be using Visual Studio, which provides features like syntax highlighting, code completion, and debugging tools to make the development process more efficient.
+
+This makes coding more efficient and helps developers catch errors early in the development process.
+
+An integrated development environment (IDE) combines the source code editor, compiler, and debugging tools into a single application, streamlining the development process and improving productivity.
+
+To compile with visual studio, we create a C++ project in unreal, which generates the necessary project files and sets up the build configuration. Once the project is set up, we can write our C++ code in the `.cpp` and `.h` files, and then use Visual Studio to compile the code into machine code that the CPU can execute.
+
+When we launch unreal and our unreal project, it will also automatically open Visual Studio with the project files, allowing us to start writing and compiling our C++ code immediately.
+
+You can also make changes in visual studio while the unreal editor is running, and then compile the code without having to restart the editor. This allows for a more seamless development workflow and faster iteration times.
+
+For examplem in the functions:
+
+```cpp
+void AIntroCppTestCharacter::DoJumpStart(){
+    // Pass jump to the character
+    Jump();
+
+    // We can add a message to the terminal log when we jump
+    UE_LOG(LogTemp, Display, TEXT("Hello World"));
+    // Additional logic can be added here if needed
+}
+
+We can also:
+```cpp
+void AIntroCppTestCharacter::DoJumpEnd(){
+    // Pass jump end to the character
+    StopJumping();
+
+    // We can add a message to the terminal log when we stop jumping
+    UE_LOG(LogTemp, Display, TEXT("Superhero Landing!"));
+    // Additional logic can be added here if needed
+}
+```
+
+We then right click our project in the solution explorer and select "Rebuild" to compile the changes and ensure that our code is up to date.
+
+The difference between Build, Rebuild, and Clean in Visual Studio is as follows:
+- Build: Compiles only the files that have changed since the last build.
+- Rebuild: Cleans and then builds the entire project from scratch.
+- Clean: Deletes all compiled files, allowing for a fresh build.
+
+C++ vs Blueprints
+
+There are two choices when writing code. 
+C++ is a general purpose programming language that provides more control over the game's performance and allows for more complex and optimized code compared to Blueprints.
+Blueprints are a visual scripting system that is ubilt into the unreal engine editor and can be made directly in the UE editor. 
+
+They're mean to be used together. 
+
+Blueprint Strengths: 
+- Easier to learn and completely visual, making it accessible for non-programmers.
+- Programmed in the Unreal Engine editor using a node-based visual scripting system.
+- Quick to make changes, and is good for rapid prototyping and iterative development.
+- Good for writing gameplay code. 
+
+C++ Strengths:
+- Gives full control over all areas of Unreal and beyond. 
+- We can use other people's libraries. 
+- Computationally much more efficient than Blueprints.
+- More concise and flexible for complex logic.
+- Better for writing bigger games and non-gameplay code. 

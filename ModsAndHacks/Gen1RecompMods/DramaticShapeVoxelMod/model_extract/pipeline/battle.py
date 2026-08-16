@@ -85,7 +85,7 @@ def load_move_names(repo_root='.'):
 
 class BattleTables:
     def __init__(self, rom):
-        from rom import BATTLE_DATA, PTR_TABLE_VRAM
+        from ModsAndHacks.Gen1RecompMods.DramaticShapeVoxelMod.model_extract.pipeline.rom import BATTLE_DATA, PTR_TABLE_VRAM
         self.rom = rom
         self.base = BATTLE_DATA
         self.ptr_table = rom.vram_to_rom(PTR_TABLE_VRAM)
