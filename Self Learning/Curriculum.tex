@@ -1,0 +1,259 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit, backgrounds, matrix}
+\usepackage{pdflscape}
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+\definecolor{mathcol}{HTML}{1F77B4}
+\definecolor{cscol}{HTML}{2CA02C}
+\definecolor{phycol}{HTML}{D62728}
+\definecolor{eececol}{HTML}{9467BD}
+\definecolor{ewcol}{HTML}{FF7F0E}
+\definecolor{econcol}{HTML}{8C564B}
+\definecolor{phaseband}{HTML}{EFEFEF}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.6em}{}[\vspace{-0.4em}\rule{\linewidth}{0.4pt}]
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+
+\newcommand{\track}[2]{\textcolor{#1}{\textbf{#2}}}
+\newcommand{\book}[1]{\textit{#1}}
+
+\title{\vspace{-2em}Self-Taught Engineering Curriculum\\\large A Progressive, Multi-Track Reading Plan}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-3em}
+
+\section*{Overview}
+
+This curriculum weaves six subject tracks into a progressive sequence of
+\emph{phases}. Within a phase, tracks run in parallel --- read from multiple
+books at once. Between phases, prerequisite dependencies force an order
+(e.g. differential equations and Fourier analysis must precede DSP;
+digital systems and C must precede computer organization).
+
+\smallskip
+\noindent\textbf{Tracks}:
+\track{mathcol}{Mathematics},
+\track{cscol}{Computer Science},
+\track{phycol}{Physics},
+\track{eececol}{Electrical \& Computer Engineering},
+\track{ewcol}{Electronic Warfare},
+\track{econcol}{Economics}.
+
+\section{The Six Phases}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+{\small
+\begin{tabular}{>{\bfseries\raggedright\arraybackslash}p{0.22\linewidth}
+                >{\raggedright\arraybackslash}p{0.40\linewidth}
+                >{\raggedright\arraybackslash}p{0.32\linewidth}}
+\toprule
+\textbf{Phase} & \textbf{Theme} & \textbf{Unlocks} \\
+\midrule
+\rowcolor{phaseband} 0 -- Foundations & Numeracy, algebra, first programs. & Calculus, all computing tracks. \\
+1 -- Core Tools   & Calculus I--III, C, classical mechanics. & Linear algebra, circuits, DSA. \\
+\rowcolor{phaseband} 2 -- Structure & Linear algebra, discrete math, probability, DSA, digital logic, E\&M physics. & Diff.\ eq., circuits, OS, architecture. \\
+3 -- Applied Core & ODEs, numerical methods, circuits fundamentals, OS, computer org. & Signals, control, embedded, microelectronics. \\
+\rowcolor{phaseband} 4 -- Specialization & Signals \& systems, microelectronics, semiconductors, EM fields, embedded, VHDL, random processes. & DSP, comms, control, power, radar, EW. \\
+5 -- Advanced Eng. & DSP, communications, feedback control, power systems. & Applied EW, radar, distributed systems. \\
+\rowcolor{phaseband} 6 -- Applied Domain & Electronic warfare sequence, airborne radar, distributed systems. & --- \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+
+\medskip
+\noindent Engineering Economics sits outside the dependency graph --- read it
+in any phase after basic algebra; it pairs well with Phase~3 as a
+professional-practice topic.
+
+\newpage
+\section{Phase-by-Phase Reading List}
+
+\subsection*{Phase 0 --- Foundations}
+Goal: algebra fluency, first programs, habits of study.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{mathcol}{Math} --- \book{Using and Understanding Mathematics:
+        A Quantitative Reasoning Approach} (Math 102) \\
+        \book{Algebra: Form and Function} (Math 103) \\
+        \book{Pre-Calculus, 2e} (Math 109/110)
+  \item \track{cscol}{CS} --- \book{Python for Everyone} (CMPS 150) \\
+        \book{Introduction to Programming Using Python} (CMPS 150)
+\end{itemize}
+
+\subsection*{Phase 1 --- Core Tools}
+Goal: the three pillars --- calculus, systems programming, classical physics.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{mathcol}{Math} --- \book{Technical Mathematics with Calculus}
+        (Math 210) \emph{or} \book{Applied Calculus} (Math 250) as a gentler
+        entry; use \book{Calculus: Early Transcendentals, 11e} (Math 270/301/302)
+        as the authoritative text through multivariable.
+  \item \track{cscol}{CS} --- \book{The C Programming Language} (K\&R), then
+        \book{C Programming: A Modern Approach}. (In parallel with Math.)
+  \item \track{phycol}{Physics} --- \book{Fundamentals of Physics, 11e}
+        (mechanics chapters); 10e Extended covers the same material if preferred.
+\end{itemize}
+
+\newpage
+\subsection*{Phase 2 --- Structure}
+Goal: the discrete, linear, and probabilistic scaffolding underneath
+engineering and CS; finish classical physics; cross into hardware and
+data structures.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{mathcol}{Math} --- \book{Elementary Linear Algebra, 11e}
+        (Math 362) \\
+        \book{Probability and Statistics with R} (Math 325) \\
+        \book{Discrete Structures, Logic, and Computability, 4e} (CMPS 341)
+  \item \track{cscol}{CS} --- \book{Data Structures and Algorithm Analysis
+        in C++} \\
+        \book{Introduction to Java Programming and Data Structures}
+        (CMPS 260/261) for OOP exposure
+  \item \track{phycol}{Physics} --- finish \book{Fundamentals of Physics}
+        (E\&M, waves, optics); \book{Statics and Mechanics of Materials, 5e}
+  \item \track{eececol}{EECE} --- \book{Digital Systems, 12e} (EECE 240) ---
+        only algebra and Boolean logic are needed, so start it here.
+\end{itemize}
+
+\subsection*{Phase 3 --- Applied Core}
+Goal: the mathematics of change (ODEs) and the engineering it enables.
+Econ fits naturally here.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{mathcol}{Math} --- \book{Elementary Differential Equations}
+        (Math 350) \\
+        \book{A Transition to Advanced Mathematics} (Math 360) --- optional,
+        for proof-based math and rigor before later theory.
+  \item \track{eececol}{EECE} --- \book{Fundamentals of Electric Circuits, 6e}
+        (EECE 355/353) \\
+        \book{Applied Numerical Methods with MATLAB for Engineers and
+        Scientists, 3e} (EECE 260)
+  \item \track{cscol}{CS} --- \book{Operating System Concepts} \\
+        \book{Computer Organization and Design} (the CMPS edition) ---
+        needs C and digital logic, which are now in hand.
+  \item \track{econcol}{Econ} --- \book{Fundamentals of Engineering Economics}
+        (read in parallel; no hard prerequisites beyond algebra).
+\end{itemize}
+
+\subsection*{Phase 4 --- Specialization}
+Goal: the EECE body of knowledge --- devices, fields, signals, embedded
+hardware. Several books are parallel; \book{Signals and Systems} is the
+gateway to Phase~5.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{eececol}{Microelectronics} --- \book{Microelectronic
+        Circuits, 7e} (EECE 353), with \book{Laboratory Explorations for
+        Microelectronic Circuits} and \book{The Art of Electronics, 3e}
+        as a practitioner companion.
+  \item \track{eececol}{Devices} --- \book{Fundamentals of Semiconductor
+        Devices, 2e} (EECE 335).
+  \item \track{eececol}{Fields} --- \book{Fundamentals of Applied
+        Electromagnetics} (EECE 344).
+  \item \track{eececol}{Embedded} --- \book{AVR Microcontroller and
+        Embedded Systems Using Assembly and C} (EECE 340); pair with
+        \book{The Designer's Guide to VHDL} for hardware description.
+  \item \track{eececol}{Signals \& Randomness} ---
+        \book{Signals and Systems, 3e} (EECE 444) is the keystone: read it
+        \emph{after} ODEs and linear algebra, \emph{before} DSP, control,
+        and communications. Alongside: \book{Probability, Random Variables
+        and Stochastic Processes, 4e} (Papoulis, EECE 380 Book~1) with the
+        friendlier \book{Probability and Stochastic Processes for EE/CE, 3e}
+        (EECE 380 Book~2) as a warmup.
+  \item \track{eececol}{Architecture} --- \book{Computer Organization and
+        Design, 5e} (EECE 459) as a deeper revisit if desired.
+\end{itemize}
+
+\subsection*{Phase 5 --- Advanced Engineering}
+Goal: the four classical EE capstone areas. Each depends on Signals \&
+Systems; communications also requires probability; control requires ODEs.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{eececol}{DSP} --- \book{The Scientist and Engineer's Guide
+        to Digital Signal Processing, 2e} (EECE 430). Prereqs: Fourier
+        analysis from Signals \& Systems; linear algebra; some complex
+        analysis from calculus.
+  \item \track{eececol}{Communications} --- \book{Digital and Analog
+        Communication Systems, 4e} and \book{Modern Digital and Analog
+        Communication Systems} (EECE 452). Prereqs: Signals \& Systems,
+        probability/random processes.
+  \item \track{eececol}{Control} --- \book{Feedback Control of Dynamic
+        Systems, 7e} (EECE 461); the other two Franklin/Powell copies are
+        earlier editions of the same text --- use one as the primary, the
+        other for alternate problem sets. Prereqs: ODEs, Laplace
+        transforms, linear algebra.
+  \item \track{eececol}{Power} --- \book{Power Systems Analysis}
+        (EECE 447/450). Prereqs: circuits, electromagnetics, some ODEs.
+\end{itemize}
+
+\subsection*{Phase 6 --- Applied Domain}
+Goal: apply the stack to electronic warfare and distributed systems.
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item \track{ewcol}{EW core (Adamy)} --- read strictly in order:
+        \book{EW 101: A First Course in Electronic Warfare} $\to$
+        \book{EW 102: A Second Course} $\to$
+        \book{EW 103: Tactical Battlefield Communications EW} $\to$
+        \book{EW 104: EW Against a New Generation of Threats} $\to$
+        \book{EW 105: Space Electronic Warfare}.
+  \item \track{ewcol}{Radar} --- \book{Introduction to Airborne Radar}
+        after Signals \& Systems and some DSP; use the \book{Electronic
+        Warfare and Radar Systems Handbook} as a reference throughout the
+        entire EW track.
+  \item \track{cscol}{Distributed} --- \book{Distributed Modeling and
+        Analysis} as a late-stage CS read once OS and probability are
+        comfortable.
+\end{itemize}
+
+\section{Critical Prerequisite Chains (``Do not skip'')}
+
+\begin{enumerate}[leftmargin=1.4em, itemsep=2pt]
+  \item \textbf{DSP chain}: Calculus $\to$ Linear Algebra $\to$
+        Differential Equations $\to$ Signals \& Systems $\to$ DSP.
+        Attempting DSP without Fourier analysis from Signals \& Systems
+        is the single most common self-study failure point.
+  \item \textbf{Communications chain}: Signals \& Systems \emph{and}
+        Probability / Random Processes $\to$ Communications.
+        Random processes are not optional; modulation, noise, and
+        detection theory all depend on them.
+  \item \textbf{Control chain}: Differential Equations \emph{and} Linear
+        Algebra $\to$ Signals \& Systems (for Laplace and transfer
+        functions) $\to$ Feedback Control.
+  \item \textbf{Microelectronics chain}: Physics (E\&M) $\to$ Electric
+        Circuits $\to$ Microelectronics; Semiconductor Devices reinforces
+        the physical model and can be read in parallel with
+        Microelectronics.
+  \item \textbf{Computer systems chain}: C $\to$ Digital Systems $\to$
+        Computer Organization $\to$ Operating Systems.
+        Data Structures \& Algorithms runs in parallel with the middle
+        of this chain.
+  \item \textbf{Radar / EW chain}: Electromagnetics \emph{and} Signals \&
+        Systems \emph{and} Communications $\to$ EW 101--105 and Airborne
+        Radar. The Adamy series itself is sequential.
+\end{enumerate}
+
+\section{Suggested Weekly Rhythm}
+
+Read from two or three tracks per week rather than finishing one book
+before starting another. A sustainable pattern:
+
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+  \item One \track{mathcol}{math} text (active problem solving).
+  \item One \track{eececol}{engineering} or \track{cscol}{CS} text
+        currently in-phase (applied reading).
+  \item One ``survey'' or reference read --- Art of Electronics, the EW
+        Handbook, or Engineering Economics --- for breadth without the
+        cognitive load of a new framework.
+\end{itemize}
+
+\noindent Review proofs and derivations by redoing them from a blank page
+a week later; this is the single highest-leverage habit for retaining
+mathematical material that later tracks depend on.
+
+\end{document}
