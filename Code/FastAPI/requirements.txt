@@ -1,0 +1,11 @@
+# The following are needed by the FastAPI framework
+fastapi[standard] >= 0.95.2
+uvicorn[standard] >= 0.22.0
+pydantic >= 2.5.1
+
+# The following are needed for the fastapi framework to work with SQLAlchemy
+sqlalchemy >= 2.0.20
+
+# To install the requirements.txt I need to run the following command in the terminal:
+# pip install -r Requirements.txt after activating the virtual environment.
+
