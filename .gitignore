@@ -143,7 +143,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-fastapi/
+# full path (not just "fastapi/") to avoid matching Code/FastAPI/ itself under Windows' case-insensitive git config
+Code/FastAPI/fastapi/
 
 # Spyder project settings
 .spyderproject
