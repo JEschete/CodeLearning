@@ -5,8 +5,6 @@ This folder is the home for non-game learning.
 ## Scope
 
 - Keep non-game learning content here.
-- Keep game-dev learning in D:/Dev/GameDevLearning.
-- Keep personal profile and preferences in D:/Jude/PersonalProfile.
 
 ## Goal
 
