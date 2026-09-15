@@ -3,11 +3,17 @@
 using namespace std;
 
 int main() {
-	cout << "Chantz is a doo-hicky" << endl; 
+	int age{};
+    double hourly_wage{23.50};
+    string name{};
+
+	cout << "Please enter your name and age, separated by a space: " << endl; 
+	cin >> name >> age; 
+
+	cout << "Your name is " << name <<
+            " you make "
+                << hourly_wage << " per hour at " << age
+                << " years old. \nIn a standard pay period you make $"
+                << hourly_wage * 80 << endl;
 }
 
-/*
-System.out.println("This is a java Print Statement.");
-Console.WriteLine("This C# print statement.");
-print("This is a python print statement.")
-*/

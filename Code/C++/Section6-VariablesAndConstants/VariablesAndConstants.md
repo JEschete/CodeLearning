@@ -45,3 +45,16 @@ When naming variables, there are some rules and conventions to follow:
 - cannot be a reserved keyword (like `int`, `return`, `if`, etc.)
 - Cannot redeclare a name in the same scope. 
 
+Naming variables - style and best practices
+- Be consistent with naming conventions
+- Use meaningful and descriptive names
+- Never use variables before intializing them
+- Declare variables close to where they are used
+
+Different ways to initialize variables. 
+```cpp
+int dogs = 5;          // Direct initialization, C-like
+int cats(3);           // Constructor-style initialization
+int birds{21};           // Uniform initialization (C++11 and later)
+```
+
