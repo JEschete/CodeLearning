@@ -1,4 +1,4 @@
-In the top left of of the unreal engine interface you will find the Map Name. 
+In the top left of of the unreal engine interface you will find the Map Name.
 
 ![Map Name in Unreal Engine Interface](./Images/mapname.png)
 
@@ -28,7 +28,7 @@ This is useful for quickly locating and editing specific actors in your level or
 
 Below the level name is the toolbar, notably the quick add button, which allows you to quickly add common actors to your level such as lights, cameras, and basic geometry.
 
-![Quick Add Button in Unreal Engine Interface](./Images/quickadd.png) 
+![Quick Add Button in Unreal Engine Interface](./Images/quickadd.png)
 
 After adding a cube we are able to slect it and drag it into our level within the viewport.
 You can also use the transform gizmo to move, rotate, and scale the selected actor.

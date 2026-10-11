@@ -43,7 +43,6 @@ Avoid inventing names that:
 
 Those forms are reserved for the implementation. Using ordinary names such as `favorite_number`, `calculate_total`, and `Account` avoids collisions with compiler and standard-library internals.
 
-
 ## Punctuation
 
 Punctuation tokens structure source code and separate its elements. Common examples include:
@@ -113,7 +112,7 @@ The built-in logical operators contextually convert their operands to `bool` and
 #### AND
 
 | `a` | `b` | `a && b` |
-|---:|---:|---:|
+| ---: | ---: | ---: |
 | 0 | 0 | 0 |
 | 0 | 1 | 0 |
 | 1 | 0 | 0 |
@@ -121,8 +120,8 @@ The built-in logical operators contextually convert their operands to `bool` and
 
 #### OR
 
-| `a` | `b` | <code>a &#124;&#124; b</code> |
-|---:|---:|---:|
+| `a` | `b` | `a \|\| b` |
+| ---: | ---: | ---: |
 | 0 | 0 | 0 |
 | 0 | 1 | 1 |
 | 1 | 0 | 1 |
@@ -131,7 +130,7 @@ The built-in logical operators contextually convert their operands to `bool` and
 #### NOT
 
 | `a` | `!a` |
-|---:|---:|
+| ---: | ---: |
 | 0 | 1 |
 | 1 | 0 |
 
@@ -155,7 +154,7 @@ C++ has no dedicated logical NAND, NOR, or XOR operator, but they can be express
 Logical NAND is `!(a && b)`:
 
 | `a` | `b` | `!(a && b)` |
-|---:|---:|---:|
+| ---: | ---: | ---: |
 | 0 | 0 | 1 |
 | 0 | 1 | 1 |
 | 1 | 0 | 1 |
@@ -163,8 +162,8 @@ Logical NAND is `!(a && b)`:
 
 Logical NOR is `!(a || b)`:
 
-| `a` | `b` | <code>!(a &#124;&#124; b)</code> |
-|---:|---:|---:|
+| `a` | `b` | `!(a \|\| b)` |
+| ---: | ---: | ---: |
 | 0 | 0 | 1 |
 | 0 | 1 | 0 |
 | 1 | 0 | 0 |
@@ -173,7 +172,7 @@ Logical NOR is `!(a || b)`:
 For Boolean operands, logical XOR can be written as `a != b`:
 
 | `a` | `b` | `a != b` |
-|---:|---:|---:|
+| ---: | ---: | ---: |
 | 0 | 0 | 0 |
 | 0 | 1 | 1 |
 | 1 | 0 | 1 |
@@ -336,7 +335,7 @@ This material is not covered by the course, but it connects the operators to an 
 A **half-adder** uses XOR for the sum bit and AND for the carry-out bit:
 
 | `A` | `B` | `A XOR B` (Sum) | `A AND B` (Carry-out) |
-|---:|---:|---:|---:|
+| ---: | ---: | ---: | ---: |
 | 0 | 0 | 0 | 0 |
 | 0 | 1 | 1 | 0 |
 | 1 | 0 | 1 | 0 |
@@ -345,7 +344,7 @@ A **half-adder** uses XOR for the sum bit and AND for the carry-out bit:
 A **full-adder** also accepts a carry-in bit, `Cin`:
 
 | `A` | `B` | `Cin` | `A XOR B XOR Cin` (Sum) | `(A AND B) OR (Cin AND (A XOR B))` (Carry-out) |
-|---:|---:|---:|---:|---:|
+| ---: | ---: | ---: | ---: | ---: |
 | 0 | 0 | 0 | 0 | 0 |
 | 0 | 0 | 1 | 1 | 0 |
 | 0 | 1 | 0 | 1 | 0 |
@@ -410,6 +409,8 @@ C++23 also adds `#elifdef` and `#elifndef` as direct forms of `#elif defined(NAM
 
 > [!IMPORTANT]
 > The preprocessor does not understand C++ types, scopes, overload resolution, or object lifetimes. It works primarily with preprocessing tokens and preprocessor conditions. Macro output must still form valid C++ when the compiler parses it.
+
+---
 
 > [!NOTE]
 > **How the sausage is made: macros are token substitution**
@@ -543,8 +544,8 @@ Use a pragma only when the target compiler documents it. `#pragma once` is widel
 
 `__has_include` is a C++17 preprocessor operator, not a directive. Use it when source must adapt to environments where an optional header may or may not be installed. Do not use it to hide an undeclared required dependency; the build configuration should report that clearly.
 
-
 ## Comments
+
 Comments add human-readable notes to source code without becoming part of the program's executable behavior. C++ has two comment forms:
 
 - A line comment starts with `//` and continues to the end of that line.
@@ -604,7 +605,6 @@ The declarations `char* argv[]` and `char** argv` are equivalent in a function p
 > **How the sausage is made: `main` is not the first code that runs**
 >
 > The operating system loads the executable and transfers control to startup code supplied by the platform and C++ runtime. That code prepares the process, initializes objects with static storage duration, obtains the command-line arguments, and then calls `main`. After `main` returns, the runtime performs normal termination work and reports the status to the host environment.
-
 
 ## Namespaces
 

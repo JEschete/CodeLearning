@@ -1,14 +1,17 @@
 Intro
 --------------------------------
+
 Our action plan for this section is as follows:
-1. Create a new project and setup a test level. 
+
+1. Create a new project and setup a test level.
 2. Learn C++ Basics.
 3. Make moving platforms.
-4. Make Rotating Platforms. 
-5. Import assets and design a level. 
+4. Make Rotating Platforms.
+5. Import assets and design a level.
 
 Project Setup
 --------------------------------
+
 For this project we will select the third-person template and set it as a C++ project.
 In the bottom left of the unreal editor there is the Content Drawer, which is used to manage and organize all the assets in your project.
 
@@ -20,16 +23,19 @@ In the content folder we are going to create a new folder called "MyStuff"
 
 Adding a new level
 --------------------------------
-To add a new level, go to the "File" menu in the Unreal Editor, select "New Level", and choose the desired level template. 
+
+To add a new level, go to the "File" menu in the Unreal Editor, select "New Level", and choose the desired level template.
 
 The options are:
+
 - OpenWorld: A level designed for large, open environments with pre-configured lighting and sky.
 - Empty OpenWorld: A completely empty level designed for large, open environments with no pre-placed actors.
 - Basic Level: A simple level with minimal setup, suitable for small-scale projects or testing.
 - Empty Level: A completely empty level with no pre-placed actors.
 
 The actors that the basic comes with are:
-In a lighting folder: 
+In a lighting folder:
+
 - Directional Light: Provides a global light source, simulating sunlight.
 - Exponential Height Fog: Adds atmospheric fog that changes in density based on height, enhancing the sense of depth and scale in the level.
 - SkyAtmosphere: Simulates the Earth's atmosphere, providing realistic sky and lighting effects.
@@ -38,6 +44,7 @@ In a lighting folder:
 - VolumetricCloud: Adds realistic volumetric clouds to the sky, enhancing the visual depth and atmosphere of the level.
 
 Outside of the Lighting folder, the basic level also includes:
+
 - Player Start: Defines the initial spawn location for the player character.
 - Floor: A simple static mesh representing the ground plane of the level.
 
@@ -52,4 +59,3 @@ Note: When we reopen the project, the level selected will not be automatically s
 The editor startup map is the level that will be automatically loaded when the Unreal Editor starts. Setting the desired level as the editor startup map ensures that we begin working on the correct level each time we open the project.
 
 The game default map is the level that will be used when the game is played, either in the editor or in a packaged build. Setting the desired level as the game default map ensures that the correct level is loaded during gameplay.
-

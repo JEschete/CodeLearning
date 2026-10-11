@@ -151,7 +151,7 @@ A code unit is not always a complete user-perceived character. For example, one 
 The standard integer families are `short`, `int`, `long`, and `long long`. The keyword `int` is optional in forms such as `short int` and `long int`.
 
 | Type | Minimum width | Notes |
-|---|---:|---|
+| --- | ---: | --- |
 | `short` | 16 bits | No wider than `int` |
 | `int` | 16 bits | Usually the natural integer type for the platform |
 | `long` | 32 bits | 32 bits in 64-bit MSVC; commonly 64 bits on 64-bit Linux |
@@ -185,7 +185,7 @@ When both operands of `/` are integers, C++ performs integer division and trunca
 Floating-point values are commonly represented with a sign, significand, and exponent. Their size, range, precision, and representation are implementation-dependent.
 
 | Type | Typical precision | Common implementation |
-|---|---:|---|
+| --- | ---: | --- |
 | `float` | About 6-7 decimal digits | IEEE 754 binary32, usually 32 bits |
 | `double` | About 15-16 decimal digits | IEEE 754 binary64, usually 64 bits |
 | `long double` | At least as much as `double` | Varies; MSVC commonly treats it like `double` |
@@ -341,7 +341,7 @@ Macros remain useful when preprocessing itself is required, such as conditional 
 ### Escape Sequences in Character and String Literals
 
 | Escape | Meaning |
-|---|---|
+| --- | --- |
 | `\n` | newline |
 | `\r` | carriage return |
 | `\t` | horizontal tab |
@@ -369,7 +369,7 @@ Your implementation is in [VariablesAndConstants/main.cpp](VariablesAndConstants
 ### Solution Comparison
 
 | Area | Your solution | Supplied solution |
-|---|---|---|
+| --- | --- | --- |
 | Core calculation | Correct subtotal, tax, and total formulas | Correct formulas |
 | Reuse of calculations | Stores the subtotal, tax, and total, avoiding repeated formulas | Repeats the cost expression in several output statements |
 | Constants | Declares prices, tax rate, and validity period as constants | Declares prices, tax rate, and validity period as constants |
@@ -380,11 +380,11 @@ Your implementation is in [VariablesAndConstants/main.cpp](VariablesAndConstants
 
 ### Rating
 
-**Your solution: 8.5/10**
+#### Your solution: 8.5/10
 
 The algorithm and displayed values are correct, all fixed pricing values are constant, the `float` literals match their destination types, and the named subtotal, tax, and total avoid the supplied solution's repeated arithmetic. The remaining deductions are for vague or singular names such as `cost` and `validDay`, indentation and spacing, repeated flushing with `std::endl`, default rather than fixed currency precision, and the lack of input validation.
 
-**Supplied solution: 8/10**
+#### Supplied solution: 8/10
 
 It better demonstrates the section's lesson by using constants and suitable `double` values, and its output follows the requested format more closely. It still repeats calculations, uses `using namespace std;`, performs no input validation, and does not format currency to exactly two decimal places.
 

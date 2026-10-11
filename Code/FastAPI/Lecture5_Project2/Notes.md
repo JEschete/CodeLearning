@@ -1,17 +1,21 @@
-Project 2
-Project two will still focus on creating book api endpoints. 
+# Project 2
 
-Continued education includes: 
-- GET, POST, PUT, DELETE request methods. 
+Project two will still focus on creating book api endpoints.
+
+Continued education includes:
+
+- GET, POST, PUT, DELETE request methods.
 
 New Information will include:
-- Data validation, exception handling, status codes, swagger configuration, and python request objects. 
+
+- Data validation, exception handling, status codes, swagger configuration, and python request objects.
 
 Creating a new books project
-- We will create a new class called book
-- We will be using these books throughout the project. 
 
-On top of data validations we are going to reenforce the CRUD HTTP Request Methods. 
+- We will create a new class called book
+- We will be using these books throughout the project.
+
+On top of data validations we are going to reenforce the CRUD HTTP Request Methods.
 CRUD        HTTP
 Create      POST
 Read        GET
@@ -32,39 +36,47 @@ schema_extra function within a Config class is now renamed to json_schema_extra
 
 Optional variables need a =None example: id: Optional[int] = None
 
-At some point we want to have some type of validation. 
+At some point we want to have some type of validation.
 
 ----------------------------------------------------------
 Pydantics
-What is pydantics? 
+What is pydantics?
 
-- A Python library that is used for data modeling, data parsing, and has efficient error handling. 
-- Pydantics is commonly used as a resource for data validation and how to handle data coming to our FastAPI application. 
+- A Python library that is used for data modeling, data parsing, and has efficient error handling.
+- Pydantics is commonly used as a resource for data validation and how to handle data coming to our FastAPI application.
 
 We will be implementing pydantics
-- Create a different request model for data validation. 
+
+- Create a different request model for data validation.
 - Field data validation on each variable / element
 
-# Inheriting from Basemodel gives us more functionality. 
+```python
+# Inheriting from Basemodel gives us more functionality
+
 class BookRequest(BaseModel):
     id: int
     title: str = Field(min_length=3)
     author: str = Field(min_length=1)
     description: str = Field(min_length=1, max_length=100)
     rating: int = Field(gt=0, lt=5)
+```
 
 BookRequest and Book Conversion
+
 - We convert the pydantics request into a Book
 
+```python
 @app.post("/create-book")
-async def create_book(book_request: BookRequest): # We have to make the BookRequest 
-    new_book = Book(**book_request.dict()) # **  operator will pas the key/value from BookRequest() into the Book() constructor. 
+async def create_book(book_request: BookRequest): # We have to make the BookRequest
+    new_book = Book(**book_request.dict()) #**  operator will pas the key/value from BookRequest() into the Book() constructor.
     BOOKS.append(new_book)
+```
 
 ----------------------------------------------------------
 FastAPI Project: Pydantic Configurations
 
 ----------------------------------------------------------
+
 ## FastAPI Path and Query Parameters
 
 Parameters let an endpoint receive values from the URL. FastAPI determines
@@ -265,16 +277,13 @@ Both parameter types can be tested interactively at:
 ```text
 http://127.0.0.1:8000/docs
 ```
-    
-
-
 
 ----------------------------------------------------------
-We have no built in validation. 
+We have no built in validation.
 
 Below is an example of using `Path` to enforce a path parameter constraint.
 
-What if a book doesn't exist and how do we ensure a book ID is positive. 
+What if a book doesn't exist and how do we ensure a book ID is positive.
 We can import Path from FastAPI and use it to enforce constraints on path parameters, such as ensuring a book ID is positive.
 
 This will cause invalid book IDs, such as negative numbers or zero, to be rejected before the endpoint logic runs.
@@ -284,14 +293,14 @@ We can do the same for Query parameters using the `Query` helper, allowing us to
 
 ----------------------------------------------------------
 Status Codes
-What are status codes? 
+What are status codes?
 
 An https status code is used to help the client (the user or system submitting data to the server)
-to understand what happened on the server side application. 
+to understand what happened on the server side application.
 
-Status codes are international standards on how a client/server should handle the result of a request. 
+Status codes are international standards on how a client/server should handle the result of a request.
 
-It allows everyone who sends a request to know if their submission was successful or not. 
+It allows everyone who sends a request to know if their submission was successful or not.
 
 Status Codes:
 1xx Information Response: Request Processing
@@ -303,7 +312,7 @@ Status Codes:
 We are going to focus on 2xx, 4xx, and 5xx status codes.
 
 2xx Successful status codes:
-200: Ok -> Standard response for a sucessful request. 
+200: Ok -> Standard response for a sucessful request.
 201: Created -> Standard response for a successful resource creation. Used a lot with POST
 204: No Content -> Standard response for a successful request that does not return any content. Commonly used with PUT
 
@@ -318,5 +327,5 @@ We are going to focus on 2xx, 4xx, and 5xx status codes.
 503: Service Unavailable -> Standard response when the server is temporarily unable to handle the request.
 504: Gateway Timeout -> Standard response when the server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.
 
-An HTTPException is used in FastAPI to return an HTTP error response with a specific status code and detail message. 
+An HTTPException is used in FastAPI to return an HTTP error response with a specific status code and detail message.
 It allows you to handle errors gracefully and provide meaningful feedback to the client.

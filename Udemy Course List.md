@@ -1,11 +1,13 @@
 # Udemy Course List - Recommended Order
 
 This order is optimized for your current priorities:
+
 - Primary: Game development (Unity first)
 - Secondary: Unreal cross-training later
 - Tertiary: Non-game Python/web stack
 
 Legend:
+
 - [DO] = full course
 - [SKIM] = move fast, fill gaps only
 - [OPTIONAL] = useful but not required now

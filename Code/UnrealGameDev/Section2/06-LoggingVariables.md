@@ -1,5 +1,6 @@
 Logging Variables
 -----------------------------------
+
 In Unreal we have the UE_LOG(), it is not a function but a macro. Macros are different from functions in that they are expanded by the preprocessor before compilation. This means they can do things that functions cannot, such as logging the file name and line number automatically.
 
 ```cpp
@@ -21,8 +22,8 @@ To decompose the above:
     - %s is a format specifier for strings.
 
 ```cpp
-	FString MyName = "Jude Eschete";
+ FString MyName = "Jude Eschete";
     UE_LOG(LogTemp, Display, TEXT("My name is: %s"), *MyName);
 ```
 
-Above we have to put an * in front of MyName in the UE_LOG() call to get the underlying TCHAR pointer from the FString. This is because UE_LOG expects a C-style string for the %s format specifier, and FString provides the underlying TCHAR pointer when dereferenced with *.
+Above we have to put an *in front of MyName in the UE_LOG() call to get the underlying TCHAR pointer from the FString. This is because UE_LOG expects a C-style string for the %s format specifier, and FString provides the underlying TCHAR pointer when dereferenced with*.

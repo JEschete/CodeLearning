@@ -1,5 +1,6 @@
 Geometry Brushes
 -----------------------------
+
 Geometry brushes are used to create basic shapes and structures within the level. They are primarily used for blocking out level geometry before adding detailed meshes and assets.
 
 The first brush we will use is the box brush, which allows us to create rectangular prisms within the level. It is useful for creating walls, floors, and other basic structures.
@@ -10,7 +11,7 @@ The default brush type is additive, which means it adds geometry to the level. T
 
 Next is the cylinder brush, which by default only has 8 sides, so it's more like an octagonal prism rather than a perfectly smooth cylinder. We can increase the number of sides in the brush settings to make it appear more circular.
 
-When we play if we get a yellow warning about virtual shadow maps we can go to edit->project settings and search for shadow maps, and then change it to just shadow maps. 
+When we play if we get a yellow warning about virtual shadow maps we can go to edit->project settings and search for shadow maps, and then change it to just shadow maps.
 
 The difference between virtual shadow maps and regular shadow maps is that virtual shadow maps provide higher quality shadows with more accurate details, especially for large and complex scenes. However, they can be more performance-intensive, which is why switching to regular shadow maps can help improve performance if the virtual shadow maps are not necessary for the level.
 

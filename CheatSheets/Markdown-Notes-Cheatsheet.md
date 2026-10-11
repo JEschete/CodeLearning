@@ -45,6 +45,7 @@ print("hello")
 ```
 
 Tips:
+
 - Use one `# H1` per file.
 - Keep heading text short and descriptive.
 
@@ -57,6 +58,7 @@ This is paragraph two.
 ```
 
 Line breaks:
+
 - Leave one blank line between paragraphs.
 - For a hard line break, end line with two spaces.
 
@@ -140,6 +142,7 @@ for i in range(3):
 ````
 
 Common language tags:
+
 - `python`
 - `csharp`
 - `cpp`
@@ -265,6 +268,7 @@ Use this after writing on paper.
 ```
 
 Rule:
+
 - Do not transcribe everything.
 - Distill what is reusable.
 
@@ -314,11 +318,13 @@ When to use:
 Good naming reduces search friction.
 
 Recommended:
+
 - `YYYY-MM-DD-topic.md`
 - `python-oop-notes.md`
 - `api-design-patterns.md`
 
 Avoid:
+
 - `notes.md` (too generic)
 - `new notes final v2.md` (version chaos)
 

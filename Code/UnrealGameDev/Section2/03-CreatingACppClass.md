@@ -1,4 +1,4 @@
-We are starting by creating a C++ class in Unreal Engine to create a basic moving platform. 
+We are starting by creating a C++ class in Unreal Engine to create a basic moving platform.
 
 We start by going to the tools menu and selecting "New C++ Class." This will open a wizard that guides us through the process of creating a new C++ class in Unreal Engine.
 
@@ -19,6 +19,7 @@ You have to drop assets into the details panel to add visible components, such a
 Now in Visual studio we can see that the MovingPlatform class has been created with its header and source files. The header file contains the class declaration, including any properties and functions, while the source file contains the implementation of those functions.
 
 We can see there are access specifiers, they are:
+
 - `public`: Members declared under this specifier are accessible from outside the class.
 - `protected`: Members declared under this specifier are accessible within the class and by derived classes.
 - `private`: Members declared under this specifier are accessible only within the class itself.
@@ -29,10 +30,13 @@ Within the methods there is the return type, which specifies the type of value t
 void MovePlatform(); // This method does not return any value
 FVector GetPlatformLocation(); // This method returns a FVector value
 ```
+
 Then we also have the following
+
 ```cpp
 class OBSTACLEASSAULT_API AMovingPlatform : public AActor
 ```
+
 Lets break down the class declaration:
 
 - `class`: This keyword is used to define a new class in C++.
@@ -44,4 +48,3 @@ Lets break down the class declaration:
 - `: public AActor`: This indicates that `AMovingPlatform` inherits from the `AActor` class, meaning it will have all the properties and behaviors of an actor in Unreal Engine.
 
 The class and methods start with A because it is a convention in Unreal Engine to prefix actor classes with an A. This helps to easily identify classes that are actors within the engine.
-

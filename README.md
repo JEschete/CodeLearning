@@ -19,9 +19,9 @@ Build durable skill, not just platform progress.
 
 ## Folder Conventions
 
-- Python/Udemy/<CourseName>/
-- C++/Content/<Topic>/
-- CheatSheets/<LanguageOrTool>/
+- `Python/Udemy/<CourseName>/`
+- `C++/Content/<Topic>/`
+- `CheatSheets/<LanguageOrTool>/`
 
 Per-course recommended files:
 
