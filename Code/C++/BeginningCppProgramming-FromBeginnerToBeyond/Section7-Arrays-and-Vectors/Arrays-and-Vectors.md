@@ -107,7 +107,7 @@ How does it work?
 
 ## Multi-dimensional Arrays
 
-Element_Type array_name [dim1_size][dim2_size];
+`Element_Type array_name [dim1_size][dim2_size];`
 
 ```cpp
     int movie_rating [3][4]; // contains garbage data

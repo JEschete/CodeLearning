@@ -1,3 +1,5 @@
+# Creating a C++ Class
+
 We are starting by creating a C++ class in Unreal Engine to create a basic moving platform.
 
 We start by going to the tools menu and selecting "New C++ Class." This will open a wizard that guides us through the process of creating a new C++ class in Unreal Engine.

@@ -380,11 +380,11 @@ Your implementation is in [VariablesAndConstants/main.cpp](VariablesAndConstants
 
 ### Rating
 
-**Your solution: 8.5/10**
+#### Your solution: 8.5/10
 
 The algorithm and displayed values are correct, all fixed pricing values are constant, the `float` literals match their destination types, and the named subtotal, tax, and total avoid the supplied solution's repeated arithmetic. The remaining deductions are for vague or singular names such as `cost` and `validDay`, indentation and spacing, repeated flushing with `std::endl`, default rather than fixed currency precision, and the lack of input validation.
 
-**Supplied solution: 8/10**
+#### Supplied solution: 8/10
 
 It better demonstrates the section's lesson by using constants and suitable `double` values, and its output follows the requested format more closely. It still repeats calculations, uses `using namespace std;`, performs no input validation, and does not format currency to exactly two decimal places.
 

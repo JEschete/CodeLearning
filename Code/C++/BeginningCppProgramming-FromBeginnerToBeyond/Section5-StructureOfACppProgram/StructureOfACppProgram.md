@@ -120,7 +120,7 @@ The built-in logical operators contextually convert their operands to `bool` and
 
 #### OR
 
-| `a` | `b` | <code>a &#124;&#124; b</code> |
+| `a` | `b` | `a \|\| b` |
 | ---: | ---: | ---: |
 | 0 | 0 | 0 |
 | 0 | 1 | 1 |
@@ -162,7 +162,7 @@ Logical NAND is `!(a && b)`:
 
 Logical NOR is `!(a || b)`:
 
-| `a` | `b` | <code>!(a &#124;&#124; b)</code> |
+| `a` | `b` | `!(a \|\| b)` |
 | ---: | ---: | ---: |
 | 0 | 0 | 1 |
 | 0 | 1 | 0 |
@@ -409,6 +409,8 @@ C++23 also adds `#elifdef` and `#elifndef` as direct forms of `#elif defined(NAM
 
 > [!IMPORTANT]
 > The preprocessor does not understand C++ types, scopes, overload resolution, or object lifetimes. It works primarily with preprocessing tokens and preprocessor conditions. Macro output must still form valid C++ when the compiler parses it.
+
+---
 
 > [!NOTE]
 > **How the sausage is made: macros are token substitution**

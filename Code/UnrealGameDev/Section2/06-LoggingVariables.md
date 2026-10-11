@@ -1,5 +1,4 @@
-Logging Variables
------------------------------------
+# Logging Variables
 
 In Unreal we have the UE_LOG(), it is not a function but a macro. Macros are different from functions in that they are expanded by the preprocessor before compilation. This means they can do things that functions cannot, such as logging the file name and line number automatically.
 

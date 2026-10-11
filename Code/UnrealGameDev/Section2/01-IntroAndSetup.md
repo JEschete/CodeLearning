@@ -1,5 +1,4 @@
-Intro
---------------------------------
+# Intro
 
 Our action plan for this section is as follows:
 
@@ -9,8 +8,7 @@ Our action plan for this section is as follows:
 4. Make Rotating Platforms.
 5. Import assets and design a level.
 
-Project Setup
---------------------------------
+## Project Setup
 
 For this project we will select the third-person template and set it as a C++ project.
 In the bottom left of the unreal editor there is the Content Drawer, which is used to manage and organize all the assets in your project.
@@ -21,8 +19,7 @@ To the right of the content browser is the asset view, which displays the conten
 
 In the content folder we are going to create a new folder called "MyStuff"
 
-Adding a new level
---------------------------------
+## Adding a new level
 
 To add a new level, go to the "File" menu in the Unreal Editor, select "New Level", and choose the desired level template.
 

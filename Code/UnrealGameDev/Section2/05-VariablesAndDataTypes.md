@@ -1,5 +1,4 @@
-Variables and Data Types
-----------------------------------------
+# Variables and Data Types
 
 What is a variable?
 

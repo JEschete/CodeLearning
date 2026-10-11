@@ -1,5 +1,4 @@
-Geometry Brushes
------------------------------
+# Geometry Brushes
 
 Geometry brushes are used to create basic shapes and structures within the level. They are primarily used for blocking out level geometry before adding detailed meshes and assets.
 

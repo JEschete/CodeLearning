@@ -1,5 +1,4 @@
-Common unity editor controls
--------------------------------
+# Common unity editor controls
 
 Without holding right click
 
