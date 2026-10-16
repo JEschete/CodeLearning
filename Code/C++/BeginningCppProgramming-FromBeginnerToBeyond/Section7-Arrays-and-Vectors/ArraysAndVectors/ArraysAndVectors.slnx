@@ -3,6 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="../SectionChallenge/SectionChallenge.vcxproj" />
-  <Project Path="ArraysAndVectors.vcxproj" />
+  <Project Path="../SectionChallenge/SectionChallenge.vcxproj" Id="acdd6096-8141-4e48-a73c-d9bb6e0af590" />
+  <Project Path="ArraysAndVectors.vcxproj" Id="73f35cf5-076b-4f88-bfc4-665b938c925f" />
 </Solution>
