@@ -198,3 +198,36 @@ They are:
 - less than or equal to <=
 - <=> // three-way comparison operator (C++20 and later)
 
+## Logical Operators
+
+not ! - negation
+and && - logical AND
+or || - logical OR
+
+Short Circuit Evaluation
+When evaluating a logical expreession C++ stops as soon as the result is known.
+For example:
+
+```cpp
+bool a = false;
+bool b = true;
+
+if (a && b) {
+    // This block will not be executed because 'a' is false.
+    // C++ will not evaluate 'b' due to short-circuit evaluation.
+}
+```
+
+## Compound Assignment operators
+
+They are: 
++= is lhs += rhs; lhs = lhs + (rhs);
+-= is lhs -= rhs; lhs = lhs - (rhs);
+*= is lhs *= rhs; lhs = lhs * (rhs);
+%= is lhs %= rhs; lhs = lhs % (rhs);
+/= is lhs /= rhs; lhs = lhs / (rhs);
+&= is lhs &= rhs; lhs = lhs & (rhs);
+|= is lhs |= rhs; lhs = lhs | (rhs);
+^= is lhs ^= rhs; lhs = lhs ^ (rhs);
+<<= is lhs <<= rhs; lhs = lhs << (rhs);
+>>= is lhs >>= rhs; lhs = lhs >> (rhs);
