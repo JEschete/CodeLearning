@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../SectionChallenge/SectionChallenge.vcxproj" Id="04920e62-c22f-4e26-bfa0-18fba056ca05" />
   <Project Path="Statements-and-Operators.vcxproj" Id="34d999f6-306b-4529-b00b-96001a2acbf9" />
 </Solution>

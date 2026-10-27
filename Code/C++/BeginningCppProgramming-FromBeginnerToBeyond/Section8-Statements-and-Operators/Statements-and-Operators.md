@@ -231,3 +231,23 @@ They are:
 ^= is lhs ^= rhs; lhs = lhs ^ (rhs);
 <<= is lhs <<= rhs; lhs = lhs << (rhs);
 >>= is lhs >>= rhs; lhs = lhs >> (rhs);
+
+## Operator Precedence
+
+Higher to Lower 
+Operator                                Associativity
+---------
+[] -> . ()                              left to right
+++ -- -(unary) *(de-ref) & sizeof       right to left
+* / %                                   left to right
++ -                                     left to right
+<< >>                                   left to right
+< <= > >=                               left to right
+== !=                                   left to right
+&                                       left to right
+^                                       left to right
+|                                       left to right
+&&                                      left to right
+||                                      left to right
+= op= ?:                                right to left
+
